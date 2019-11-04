@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>The Frameset Boilerplate: Mainframe</title>
+
+    <script type="text/javascript" src="./../spts/mPage.js"></script>
+     <script language="javascript">
+     		function up()   
+		    {   
+		    	MAddPage()
+				document.getElementById("upClick").click();
+
+		    }   
+
+
+		    function down()   
+		    {   
+		    	MSubPage();
+		         document.getElementById("downClick").click();
+		    }   
+
+     </script>
+</head>
+	<body style="font-family:sans-serif">
+			<a id="upClick" href="./../menus/sidebar.html" target="sidebar" style="display: none">上一页</a>
+			<a id="downClick" href="./../menus/sidebar.html" target="sidebar" style="display: none">下一页</a>
+			<a id="" href="" target="" style="float: left; font-size: 40px; margin-left: 50px;margin-right: 50px"  onclick="up()">下一页</a>
+	      	<a id="" href="" target="" style="float: left; font-size: 40px;" onclick="down()">上一页</a>
+	      	<a id="" href="" target="" style="float: right; font-size: 40px; margin-left: 50px;margin-right: 50px"  onclick="up()">下一页</a>
+	      	<a id="" href="" target="" style="float: right; font-size: 40px;" onclick="down()">上一页</a>
+	      	
+
+	</body>
+</html>

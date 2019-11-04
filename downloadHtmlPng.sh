@@ -1,0 +1,257 @@
+#!/bin/bash
+
+#TDOO文件名包含空格未处理 只处理了包看 "副本" 字眼的文件
+
+#html文件返回到img目录路径
+html2ImgPath="../img/"
+#已经处理过的html文件的标记
+hasFlushHtmlMark="$html2ImgPath"
+
+
+#系统类型  0:mac 1:win 2linux
+os=1
+if [ "$(uname)" == "Darwin" ]
+then
+	os=0
+fi
+
+
+shellParm1="$1"
+shellParm1Exit=0
+if [ -n "$1" ]; then
+    shellParm1Exit=1
+    #去掉最后的/ 如果有
+    if [[ $shellParm1 == */ ]]; then
+    	shellParm1=${shellParm1%/*}
+    fi
+fi
+
+
+
+filepath=$(cd "$(dirname "$0")"; pwd)  
+
+# 清理一次文件夹
+# rm -rf img
+# mkdir img
+
+imgPath="${filepath}/img"
+rootHtmlPath="${filepath}/Tutorial"
+
+
+ #下载png
+ #刷新html文件
+function Download(){
+
+
+	htmlFileName=$1
+	if  ! [ $htmlFileName  ] 
+	then
+	echo "没有放html文件!! 结束shell"
+		exit
+	fi
+
+
+	htmlPath="${rootHtmlPath}/${htmlFileName}"
+
+
+	#过滤  <img src   和   img data-src 类型的http
+	# strExPatten='<img src='
+	# strExPatten1='<img data-src='
+	# str="${strExPatten}\"http\S*\""
+	# str="${strExPatten1}\"http\S*\""
+
+	# strSearchHttp="\"http\S*\""
+	# strSearchHttp="<img.*src.*http*\>"
+	strSearchHttp="<img.*src.*"
+
+	# str="\"http\S*\""
+	# grep -o "${str}" ${htmlPath}
+
+	# if [  $os = 1 ]
+	# then
+
+
+	currentTimeStamp=$(($(date +%s)*1000000))
+
+
+	randomInt=$RANDOM
+
+
+	htmlContent=$(cat ${htmlPath})
+
+
+	if [[ $htmlContent == *${hasFlushHtmlMark}*  ]]
+	then
+		# echo "已经处理过了"
+		return
+	fi
+
+
+
+	echo "${htmlFileName}  正在下载img, 请稍后"
+
+	htmlOriContent=$(cat ${htmlPath})
+
+	for imgHttpEx in `grep "${strSearchHttp}" ${htmlPath}`
+	do
+		url=${imgHttpEx}
+		
+		#提取包含src字段的超链接
+		if [[ $url = src* ]] || [[ $url = data-src* ]] || [[ $url = data-original-src* ]]
+	 	then
+			url=${url#*\"}
+			url=${url%\"*}
+		else
+			continue
+		fi
+		
+
+		((currentTimeStamp++))
+		imgNewName='A_'${randomInt}'_'${currentTimeStamp}
+
+		if [  -f $imgNewName  ]
+		then
+			echo "img命名冲突,无法下载img文件!!! 结束下载!!"
+			return
+		fi
+
+		
+		newImgPath=${html2ImgPath}$imgNewName
+		oldStr=$url
+		newStr=$newImgPath
+		if [[ $os = 1 ]]; then
+			sed -i "s#${oldStr}#${newStr}#g" ${htmlPath}
+		else
+			sed -i "" "s#${oldStr}#${newStr}#g" ${htmlPath}
+		fi
+
+
+		httpUrl=$url
+
+		if [[ $httpUrl = //* ]]; then
+			
+			if [ $shellParm1Exit == 1 ]; then
+				potocal=${shellParm1%:*}
+			    httpUrl="${potocal}:${url}"
+			else
+				echo "$htmlContent" > "${htmlPath}"
+				echo "还原了html文件 ${htmlPath}"
+				echo "错误！！"
+				echo '想要传入完整的域名部分(不能有引号) 如 https://www.baidu.com'
+				echo "结束进程！ 请用git还原下载的图片！"
+				exit
+			fi
+		elif [[ $httpUrl = /* ]]; then
+			if [ $shellParm1Exit == 1 ]; then
+			    httpUrl="${shellParm1}${url}"
+			else
+				echo "$htmlContent" > "${htmlPath}"
+				echo "还原了html文件 ${htmlPath}"
+				echo "错误！！"
+				echo '想要传入完整的域名部分(不能有引号) 如 https://www.baidu.com'
+				echo "结束进程！ 请用git还原下载的图片！"
+				exit
+			fi
+		else
+			if ! [[ $httpUrl = http* ]]; then
+
+				if [ $shellParm1Exit == 1 ]; then
+					if [[ $httpUrl = ../* ]]; then
+						len=${#httpUrl}-3
+						httpUrl=${httpUrl:3:len}
+					fi
+					httpUrl="${shellParm1}/${httpUrl}"
+				else
+					echo "$htmlContent" > "${htmlPath}"
+					echo "还原了html文件 ${htmlPath}"
+					echo "错误！！"
+					echo '想要传入完整的域名部分(不能有引号) 如 https://www.baidu.com'
+					echo "结束进程！ 请用git还原下载的图片！"
+					exit
+				fi
+				
+			fi
+		fi
+		echo "----------------------------------------------------------------------------------------"
+		echo $httpUrl
+		
+
+		# wget -O $imgNewName $url -q
+		wget -O $imgNewName $httpUrl
+	done
+
+
+	# exit
+
+
+	#写入html文件
+
+
+
+	htmlContent=$(cat ${htmlPath})
+	htmlContent="<!--${hasFlushHtmlMark}-->$htmlContent"
+	echo "$htmlContent" > "${htmlPath}"
+
+	if [[ $os = 1 ]]; then
+		sed -i  "s/<pre/<!--\r\n\r\n\r\n\r\n\r\n--> <!-- 代码 --><!--\r\n\r\n--> <pre/g" ${htmlPath}
+		sed -i  "s/<\/pre>/<\/pre><!--\r\n\r\n\r\n-->/g" ${htmlPath}
+	else
+		sed -i "" "s/<pre/<!--\r\n\r\n\r\n\r\n\r\n--> <!-- 代码 --><!--\r\n\r\n--> <pre/g" ${htmlPath}
+		sed -i "" "s/<\/pre>/<\/pre><!--\r\n\r\n\r\n-->/g" ${htmlPath}
+	fi
+
+	
+
+}
+
+
+
+
+#echo "${htmlPath}"
+if ! [ -d ${rootHtmlPath} ]; then
+  echo "请在当前位置创建一个名为html的文件夹, 并将html脚本放到 html 文件夹内!  结束shell";
+  exit
+fi
+
+
+cd img  
+
+
+
+#TDOO文件名包含空格未处理 只处理了包看 "副本" 字眼的文件
+SAVEIFS=$IFS
+if [ $os = 1 ]
+then
+	IFS=$(echo -en "\n\b")
+fi
+
+fileArr=()
+for f in $(ls $rootHtmlPath)
+do
+	fullPath="${rootHtmlPath}"'/'"$f"
+	if  [[ "$f" != *副本* ]] && [  -f "$fullPath"  ]
+	then
+		len=${#fileArr[@]}
+		fileArr[$len]="$f"
+	fi
+done
+
+
+if [ $os = 1 ]
+then
+	IFS=$SAVEIFS
+fi
+
+
+for f in ${fileArr[*]}
+do
+	Download $f
+done
+
+
+
+
+
+echo "处理完成"
+
+

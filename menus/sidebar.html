@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>The Frameset Boilerplate: Sidebar</title>
+
+    <style type="text/css">
+        a:link{text-decoration:none;}
+        ul,li {margin:0;padding:0;}
+	</style>
+
+     <script type="text/javascript" src="./../spts/mPage.js"></script>
+     <script language="javascript">
+
+      function ShowSelect(idx){
+        var li = document.getElementsByTagName("li");  //获取页面所有li节点
+        for(var i=0;i<li.length;i++)                                     //循环li节点
+        {
+          li[i].style.backgroundColor="#FFF";                  //将所有li背景颜色修改
+        }
+        li[idx].style.backgroundColor="#b4bac0";                //将当前点击的li背景颜色修改
+    }
+
+    function ShowPage(){
+      var mPage = MGetPage();
+      var mShowPage = MGetShowPage();
+      if(mPage!=mShowPage){
+        var num = parseInt(mPage);
+        MSetShowPage(num);
+        var arr = document.getElementsByTagName("a");  //获取页面所有li节点
+        var a = arr[num];
+        ShowSelect(num)
+        a.click();
+      }
+      
+    }
+
+
+
+    document.onreadystatechange=function()     //当页面状态改变时执行函数
+    {
+      //var mPage = MGetPage()
+    if(document.readyState == "complete")         //当页面加载状态为完成时执行条件内容
+     
+    { 
+
+      ShowPage()
+
+
+      var li = document.getElementsByTagName("li");  //获取页面所有li节点
+      for(var i=0;i<li.length;i++)                                     //循环li节点
+      {
+       li[i].onclick=function(){                                         //为循环的li节点绑定 onclick事件
+        for(var j=0;j<li.length;j++)
+        {
+         li[j].style.backgroundColor="#FFF";                  //将所有li背景颜色修改
+         this.style.backgroundColor="#b4bac0";                //将当前点击的li背景颜色修改
+
+         if(li[j]==this){
+            MSetShowPage(j);
+         }
+         
+        }
+
+       }
+      }
+    }
+    }
+    </script>
+
+
+</head>
+<body style="font-family:sans-serif">
+    <ul>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+      <li><a href="../Tutorial/.html" target="main"> </a></li>
+    </ul>
+</body>
+</html>

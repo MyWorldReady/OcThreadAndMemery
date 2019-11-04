@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title id="xxxf">The Frameset Boilerplate</title>
+
+
+    
+    <script type="text/javascript">
+
+            function pcIndex(){              
+              document.write("<frameset border=\"0\" cols=\"10%,*\">")
+               document.write("<frame src=\"menus/sidebar.html\" name=\"sidebar\">")
+               document.write("<frame id=\"mMainFrames\" src=\"frames/main.html\" name=\"main\">")
+               document.write("</frameset>")
+            }
+
+            function phoneIndex(){              
+              document.write("<frameset border=\"0\" cols=\"10%,*\">")
+               document.write("<frame src=\"menus/sidebar.html\" name=\"sidebar\">")
+               document.write("<frameset border=\"0\" rows=\"9*,*\">")
+               document.write("<frame id=\"mMainFrames\" src=\"frames/main.html\" name=\"main\">")
+               document.write("<frame src=\"frames/footer.html\" name=\"footer\">")
+               document.write("</frameset>")
+               document.write("</frameset>")
+            }
+
+            //平台、设备和操作系统
+            var system = {
+                win: false,
+                mac: false,
+                xll: false,
+                ipad:false
+            };
+            //检测平台
+            var p = navigator.platform;
+            system.win = p.indexOf("Win") == 0;
+            system.mac = p.indexOf("Mac") == 0;
+            system.x11 = (p == "X11") || (p.indexOf("Linux") == 0);
+            system.ipad = (navigator.userAgent.match(/iPad/i) != null)?true:false;
+            //跳转语句，如果是手机访问就自动跳转到wap.baidu.com页面
+            if (system.win || system.mac || system.xll||system.ipad) { //电脑 ipad
+                pcIndex();
+            } else {                                                    //手机
+                phoneIndex();
+            }
+
+            document.onreadystatechange=function(){
+                var oFrm = document.getElementById("mMainFrames");
+                oFrm.onload = oFrm.onreadystatechange = function() {
+                    window.scrollTo(0,0);
+                }
+            }
+
+
+    </script>
+
+</head>
+
+<!-- <frameset border="0" cols="10%,*">
+	<frame src="menus/sidebar.html" name="sidebar">
+	<frameset border="0" rows="9*,*">
+        <frame id="mMainFrames" src="frames/main.html" name="main">
+        <frame src="frames/footer.html" name="footer">
+	</frameset>
+</frameset> -->
+
+
+</html>
