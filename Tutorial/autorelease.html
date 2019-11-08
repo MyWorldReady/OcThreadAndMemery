@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+	<pre>
+		int ai
+*因为超出变量作用域,
+自动变量“inta"被废弃,不可再访问
+	</pre>
+	<p>
+		
+autorelease会像C语言的自动变量那样来对待对象实例。当超出其作用域(相当于变量作用
+域)时,对象实例的 release实例方法被调用。另外,同C语言的自动变量不同的是,编程人员
+可以设定变量的作用域
+autorelease的具体使用方法如下:
+	</p>
+	<ul>
+		<li>生成并持有 NSAutorelease Pool对象; </li>
+		<li>调用已分配对象的 autorelease实例方法; </li>
+		<li> 废弃 NSAutorelease Pool对象。</li>
+	</ul>
+	<img src="../img/dasdasd110234511.PNG">
+	<p>
+		NSAutoreleasePool对象的生存周期相当于C语言变量的作用域。对于所有调用过 autorelease
+实例方法的对象,在废弃 NSAutorelease Pool对象时,都将调用 release实例方法。如图1-12所示。
+用源代码表示如下:
+	</p>
+	<pre>
+		NSAutoreleasePool *pool =[[NSAutoreleasePool alloc] init]i
+id obj=[[NSObject alloc] init];
+[obj autorelease];
+[pool drain];
+	</pre>
+	<p>
+		上述源代码中最后一行的“[ pool drain]”等同于“[ obj release]”
+	</p>
+	<p>
+		在 Cocoa框架中,相当于程序主循环的 NSRun Loop或者在其他程序可运行的地方,对
+NSAutorelease Pool对象进行生成、持有和废弃处理。因此,应用程序开发者不一定非得使用
+NSAutorelease Pool对象来进行开发工作。如图1-13所示
+	</p>
+	<img src="../img/dasdasd110234512.PNG">
+	<p>
+		尽管如此,但在大量产生 autorelease的对象时,只要不废弃 NSAutorelease Pool对象,那么
+生成的对象就不能被释放,因此有时会产生内存不足的现象。典型的例子是读入大量图像的同时
+改变其尺寸。图像文件读入到 NSData对象,并从中生成 Ullage对象,改变该对象尺寸后生成
+新的 Ullage对象。这种情况下,就会大量产生 autorelease的对象
+	</p>
+	<pre>
+		for(inti=0;i<图像数;++i){
+	/*读入图像大量产生 autorelease的对象。
+	由于没有废弃 NSAutoreleasepoo1对象最终导致内存不足
+	经过时间由于没有废弃 NSAutoreleas
+	autoreleasepool的对象持续增加
+	*/
+	}
+	</pre>
+	<img src="../img/dasdasd110234513.PNG">
+	<p>
+		在此情况下,有必要在适当的地方生成、持有或废弃 NSAutorelease Pool对象。
+	</p>
+	<pre>
+		for(inti=0;i<图像数;++1i){
+			NSAutoreleasePool *pool =[[NSAutoreleasePool alloc] init]i
+	/*读入图像
+	*大量产生 autorelease的对象。
+	[pool drain]
+	通过[poo1 drain
+	autorelease的对象被一起 release。
+	*/
+}
+	</pre>
+	<img src="../img/dasdasd110234514.PNG">
+	<p>
+		另外, Cocoa框架中也有很多类方法用于返回 autorelease的对象。比如 NSMutable Array类
+的 array With Capacity类方法。
+	</p>
+	<pre>
+		id array = [NSMutableArray arraywithCapacity: 1];
+	</pre>
+	<p>
+		此源代码等同于以下源代码。
+	</p>
+	<pre>
+		id array = [[[NSMutableArray alloc] initwithCapacity: 1] autorelease];
+	</pre>
+
+
+    
+</body>
+</html>
