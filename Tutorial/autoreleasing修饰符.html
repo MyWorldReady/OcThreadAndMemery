@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+	<p>
+		将对象赋值给附有__autoreleasing修饰符的变量等同于ARC无效时调用对象的 autorelease
+方法。我们通过以下源代码来看一下。
+	</p>
+	<pre>
+@autoreleasepool {
+	id __autoreleasing obj= [[NSObject alloc] init];
+}
+	</pre>
+
+	<p>
+		该源代码主要将 NSObject类对象注册到 autoreleasepool中,可作如下变换:
+	</p>
+
+	<pre>
+/*编译器的模拟代码*/
+id pool objc autoreleasePool Push();
+id obj objc msgSend(NSObject, @selector (alloc));
+objc_msgSend(obj, @selector(init));
+objc_autorelease(obj);
+objc_autoreleasePoolPop(pool);
+	</pre>
+
+	<p>
+		这与苹果的 autorelease实现中的说明(参考1.2.7节)完全相同。虽然ARC有效和无效时,
+其在源代码上的表现有所不同,但 autorelease的功能完全一样。
+在 alloc/new/copy/mutable Copy方法群之外的方法中使用注册到 autoreleasepool中的对象会如
+何呢?下面我们来看看 NSMutable Array类的aray类方法。
+	</p>
+
+	<pre>
+@autoreleasepool {
+	id __autoreleasing obj = [NSMutableArray array]
+}
+	</pre>
+
+	<p>
+		这与前面的源代码有何不同呢?
+	</p>
+
+	<pre>
+/*编译器的模拟代码*/
+id pool objc_autoreleasePoolPush ();
+id obj objc_msgSend(NSMutableArray, @selector (array));
+objc_retainAutoreleasedReturnValue (obj);
+objc_autorelease(obj);
+objc_autoreleasePoolPop(pool);
+	</pre>
+
+	<p>
+		虽然持有对象的方法从 alloc方法变为 objc_retain AutoreleasedReturn Value函数,但注册
+autoreleasepool的方法没有改变,仍是 objc_autorelease函数。
+	</p>
+
+
+
+
+    
+</body>
+</html>

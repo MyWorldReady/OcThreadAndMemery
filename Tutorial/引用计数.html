@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+	<p>
+		实际上,本书为了让读者掌握引用计数式内存管理的思维方式,特地没有介绍引用计数数值
+本身(只在导入部和 Core Foundation的转换中稍有说明)。但考虑到有些读者可能极想知道引用
+计数的数值,因此在这里提供获取引用计数数值的函数。
+	</p>
+	<pre>
+		uintptr_t _objc_rootRetaincount(id obj)
+	</pre>
+
+	<p>
+		如上声明的_objc_rootRetainCount函数可获取指定对象的引用计数数值。请看以下几个
+例子。
+	</p>
+
+	<pre>
+		id strong obj =[[NSObject alloc] init];
+NSLog(@"retain count - %d", _objc_rootRetaincount(obj));
+	</pre>
+
+	<p>
+		该源代码中,对象仅通过变量obj的强引用被持有,所以为1。
+	</p>
+
+	<pre>
+		retain count 1
+	</pre>
+
+	<p>
+		下面使用__weak修饰符。
+	</p>
+
+	<pre>
+id strong obj =[[NSObject alloc] init]:
+id __weak o= obj
+NSLog(@"retain count %d", objc_rootRetaincount (ob3));
+	</pre>
+
+	<p>
+		
+由于弱引用并不持有对象,所以赋值给附有weak修饰符的变量中也必定不会改变引用计数数值。
+	</p>
+	<pre>
+		retain count 1
+	</pre>
+
+	<p>
+		结果同预想一样。那么通过__autoreleasing修饰符向 autoreleasepool注册又会如何呢?
+	</p>
+	<pre>
+@autoreleasepool {
+	id __strong obj =[[NSObject alloc] init];
+	id __autoreleasing o= obj;
+	NSLog(@"retain count %d", objc_rootRetaincount (obj));
+}
+	</pre>
+	<p>
+		结果如下:
+	</p>
+	<pre>
+		retain count 2
+	</pre>
+	<p>
+		对象被附有 __strong修饰符变量的强引用所持有,且被注册到 autoreleasepool中,所以为2。
+以下确认@ autoreleasepool块结束时释放已注册的对象。
+	</p>
+	<pre>
+id __strong obj =[ [NSObject alloc] init];
+@autoreleasepool{
+id __autoreleaseing o =obj;
+	NSLog(@"retain count %d in @autoreleasepool", _objc_rootRetaincount(ob));
+	NSLog(@"retain count =%d", _objc_rootRetaincount(obj));
+}
+	</pre>
+
+	<p>
+		在@ autoreleasepool块之后也显示引用计数数值。
+	</p>
+
+	<pre>
+retain count =2 in @autoreleasepool
+retain count =1
+	</pre>
+
+	<p>
+		如我们预期的一样,对象被释放。
+以下在通过附有__weak修饰符的变量使用对象时,基于显示 autoreleasepool状态的_objc_autoreleasePoolPrint函数来观察注册到 autoreleasepool中的引用对象。
+	</p>
+	<pre>
+@autoreleasepool {
+	id __strong ob]=[[NSObject alloc] init];
+	_objc_autoreleasePoolPrint();
+	id __weak o = obj;
+	NSLog(e"before using __weak: retain count %d", objc rootRetainCount(obj));
+	NSLog(e"class @",[o class));
+	NSLog(e"after using	__weak: retain count = %d, objc rootRetaincount (obj));
+	_objc_autoreleasePoolPrint():	
+}
+	</pre>
+	<p>
+		结果如下
+	</p>
+	<pre>
+objc[14481]:############
+objc[14481]: AUTORELEASE POOLs for thread Oxad0892c0
+objc[14481]: 1 releases pending
+objc[14481]:[0x6a85000]PAGE (hot)(cold
+objc[14481]:[0x6a85028]###并#井###井###PooL0x6a85028
+objc[14481]:###########
+before using __weak: retain count 1
+class NSObject
+after using __weak: retain count 2
+objc[14481]:#############
+objc[14481]: 2 releases pending.
+objc[14481]:[0x6a850001.,,PAGE(hot)(co1d)
+objc14481]:[0x6a85028]####静##排##PooL0x6a85028
+objc[14481]:【0x6a8502c
+0x6719e40 NSObject
+objc[14481]:############
+	</pre>
+
+	<p>
+		通过以上过程我们可以看出,不使用__autoreleasing修饰符,仅使用附有__weak声明的变
+量也能将引用对象注册到了 autoreleasepool中。
+虽然以上这些例子均使用了 _objc_rootRetainCount函数,但实际上并不能够完全信任该函数
+取得的数值。对于已释放的对象以及不正确的对象地址,有时也返回“1”。另外,在多线程中使
+用对象的引用计数数值,因为存有竞态条件的问题,所以取得的数值不一定完全可信。
+虽然在调试中_objc_rootRetainCount函数很有用,但最好在了解其所具有的问题的基础上来
+使用。
+	</p>
+
+
+
+
+    
+</body>
+</html>

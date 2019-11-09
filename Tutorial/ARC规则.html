@@ -1222,6 +1222,278 @@ id ob = (id)p;
 		同__bridge_retained转换与 retain类似,__bridge__transfer转换与 release相似。在给 id obj赋
 值时 retain即相当于 __strong修饰符的变量。
 	</p>
+	<p>
+		如果使用以上两种转换,那么不使用id型或对象型变量也可以生成、持有以及释放对象
+虽然可以这样做,但在ARC中并不推荐这种方法。使用时还请注意。
+	</p>
+	<pre>
+void *p=(__bridge_retained void *)[[NSObject alloc] init];
+NSLog(@"class=g@",[(__bridge id)p class]);
+(void)(__bridge transfer id)p;
+	</pre>
+	<p>
+		该源代码与ARC无效时的下列源代码相同。
+	</p>
+	<pre>
+		/*ARC无效*
+id p=[[NSObject alloc] init];
+NSLog(%@"class=%@", [ p class]);
+[p release];
+	</pre>
+	<p>
+		这些转换多数使用在 Objective-C对象与 Core Foundation对象之间的相互变换中。
+	</p>
+	<h1>专档 Objective-c对象与 Core Foundation对象</h1>
+	<p>
+		Core Foundation对象主要使用在用C语言编写的 Core Foundation框架中,并使用引用计数
+的对象。在ARC无效时, Core Foundation框架中的 retain/release分别是 CFRetain/ CFRelease
+Core Foundation对象与 Objective-C对象的区别很小,不同之处只在于是由哪一个框
+架( Foundation框架还是 Core Foundation框架)所生成的。无论是由哪种框架生成的对象,
+旦生成之后,便能在不同的框架中使用。 Foundation框架的AP|生成并持有的对象可以
+用 Core Foundation框架的AP释放。当然,反过来也是可以的。
+因为 Core Foundation对象与 Objective-C对象没有区别,所以在ARC无效时,只用简
+单的C语言的转换也能实现互换。另外这种转换不需要使用额外的CPU资源,因此也被称
+为“免费桥”(Toll-Free Bridge)。
+Toll-Free Bridge类一览可参考以下文档。
+	<br>
+	Toll-freebrIdged Types http://developer.applecom/library/mac/documentation/CoreFoundation/Conceptual/CFDesign Concepts/Articles/tollFreeBridgedTypes.html
+	</p>
+
+	<p>
+		以下函数可用于 Objective-C对象与 Core Foundation对象之间的相互变换,即 Toll-Free
+Bridge
+转换。
+	</p>
+
+	<pre>
+CFTypeRef CFBridgingRetain(id x){
+	return __bridge_retained CFTypeRef)X;
+}
+id CFBridgingRelease(CFTypeRef x){
+	return __bridge_transfer id)x:
+}
+	</pre>
+	<p>
+		我们来看看到底是如何使用的。以下将生成并持有的 NSMutableArray对象作为Core
+Foundation对象来处理。
+	</p>
+	<pre>
+CFMutableArrayRef cfobject = NULL;
+id obj= [[NSMutableArray alloc] init];
+cfobject CFBridgingRetain(ob);
+CFShow(cfobject);
+printf ("retain count d\n", CEGetRetainCount(cfobject));
+printf("retain count after the scope d\n", CFGetRetaincount(cfobject));
+CFRelease(cfobject);
+	</pre>
+	<p>
+		该源代码正常运行后,会输出以下结果。()表示空的数组。
+	</p>
+
+	<pre>
+		(
+		)
+		retain count 2
+retain count after the scope  = 1
+	</pre>
+	<p>
+		由此可知, Foundation框架的API生成并持有的 Objective-C对象能够作为 Core Foundation
+对象来使用。也可以通过 CFRelease来释放。当然,也可以使用_ bridge retained转换来替代
+CFBridgingRetain。大家可选用自己更熟悉的方法。
+	</p>
+	<pre>
+		CEMutableArrayRef cfobject = __bridge_retained CEMutableArrayRef)obj;
+	</pre>
+
+	<p>
+		以下基于 CFGetRetain Count的值来确认对象的所有状况。
+	</p>
+
+	<pre>
+CFMutableArrayRef cfobject = NULL;
+{
+	id obj=[[NSMutableArray alloc] init]:
+	/*
+	*变量obj持有对生成并持有对象的强引用。
+	*/
+
+	cfOjbect = CFBridgingRetain(obj);
+	//通过 CFBridgingRetain,
+	//将对象 CFRetain,
+	//赋值给变量 object
+
+	CFShow(cfObject);
+	printf("retain count - %d\n",CFGetRetainCount(cfOjbect));
+	//通过变量obj的强引用和
+	//通过CFBridgingRetain,
+	//引用计数为2
+}
+
+/*
+*因为变量obj超出其作用域,所以其强引用失效,
+*引用计数为1。
+/
+printf ("retain count after the scope %d\n", CFGetRetainCount( cfobject));
+CFRelease (cfObject );
+/*
+*因为将对象 CFRelease,所以其引用计数为0,
+*故该对象被废弃。
+
+
+	</pre>
+	<p>
+		使用__bridge转换来替代 CFBridgingRetain或__bridge_retained转换时,源代码会变成什
+么样呢?
+	</p>
+	<pre>
+CFMutableArrayRef cfobject =NULL;
+{
+	id obj = [ [NSMutableArray alloc] init];
+	/*
+	*变量obj持有对生成并持有对象的强引用。	
+	*/
+
+	cfObject = __bridge CFMutableArrayRef )obj;
+	CFShow( cfObject );
+	printf ("retain count %d\n", CFGetRetainCount( cfobject ));
+	/*
+	*因为 bridge转换不改变对象的持有状况,
+	*所以只有通过变量obj的强引用,
+	*引用计数为1
+}
+
+/*
+*因为变量ob超出其作用域,
+*所以其强引用失效,对象得到释放,
+*无持有者的对象被废弃
+*/
+
+/*
+*此后对对象的访问出错!(悬垂指针)
+*/
+
+printf("retain count after the scope = %d\n", CFGetRetainCount cfobject))；
+CFRelease( cfObject);
+
+	</pre>
+
+	<p>
+		由此可知, CFBridgingRetain或者__bridger_etained转换是不可或缺的。
+	</p>
+	<p>
+		这次反过来,将使用 Core Foundation的AP生成并持有对象,将该对象作为 NSMutableArray
+对象来处理
+	</p>
+
+	<pre>
+		CEMutableArrayRef cfobject
+CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
+printf ("retain count d\n", CFGetRetaincount (cfobject));
+id obj = CFBridgingRelease(cfobject);
+printf ("retain count after the cast %d\n", CFGetRetainCount(cfobject));
+NSLog(@"class=%@", obj);
+	</pre>
+
+	<p>
+		由此可知,与之前相反的由 Core foundation框架的API生成并持有的 Core Foundation对象
+也能够作为 Objective-C对象来使用。其运行结果如下:
+	</p>
+
+	<pre>
+		retain count = 1
+retain count after the cast = 1
+	</pre>
+
+	<p>
+		当然也可使用__bridge_transfer转换替代 CFBridgingRelease
+	</p>
+	<pre>
+		id obj = (__bridge_transfer id)cfobject;
+	</pre>
+
+	<p>
+		此处也要基于 CFGetRetainCount的值来确认对象的持有状况。
+	</p>
+	<pre>
+CFMutableArrayRef cfObject = CFArraycreateMutable( kCFAllocatorDefault, 0, NULL);
+printf ("retain count = %d\n", CFGetRetainCount cfobject ));
+/*Core foundation框架的API生成并持有对象
+*之后的对象引用计数为“1
+*/
+
+id obj = CFBridgingRelease( cfObject );
+/*
+*通过 CFBridgingRelease赋值
+*变量。bj持有对象强引用的同时
+*对象通过 CFRelease释放。
+*/
+
+printf("retain count after the cast %d\n", CFGetRetainCount( cfobject ));
+/*
+*因为只有变量obj
+*持有对生成并持有对象的强引用,
+*故引用计数为“1
+*
+*另外,因为经由 CFBridgingRelease转换后,
+*赋值给变量 object中的指针
+*也指向仍然存在的对象,
+*所以可以正常使用。
+*/
+
+NSLog(@"class=%@",obj)；
+}
+/*
+*因为变量obj超出其作用域,
+*所以其强引用失效,对象得到释放,
+*无所有者的对象随之被废弃
+*/
+	</pre>
+
+	<p>
+		以下为用__bridge转换替代 CFBridgingRelease或__bridge_transfer转换的情形。
+	</p>
+
+	<pre>
+CEMutableArrayRef cfobject
+CFArrayCreateMutable( kCFAllocatorDefault, 0, NULL );
+printf("retain count 8d\n", CFGetRetainCount( cfobject ));
+/*
+Core Foundation框架生成并持有对象
+之后的对象引用计数为“1"。
+*/
+
+id obj=(__bridge id )cfobject:
+/*
+*因为赋值给附有__strong修饰符的变量中,
+*所以发生强引用。
+*/
+
+printf("retain count after the cast= %d\n", CFGetRetainCount( cfObject ));
+/*
+*因为变量obj持有对象强引用且
+*对象没有进行 CFRelease,
+*所以引用计数为“2
+*/
+
+NSLog (@"class=%@", obj);
+/*
+*因为变量obj超出其作用域,
+*所以其强引用失效,对象得以释放。
+*
+*因为引用计数为“1”,所以对象仍然存在。
+*发生内存泄漏!
+*/
+	</pre>
+	<p>
+		因此,必须恰当使用 CFBridgingRetain/CF BridgingRelease或者__bridge_retained/__bridge_transfer转换。在将 Objective-C变量赋值给C语言变量,即没有附加所有权修饰符的void*等指
+针型变量时,伴随着一定的风险。在实现代码时要高度重视。
+	</p>
+
+
+
+
+
+
 
 
 
