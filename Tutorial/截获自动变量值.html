@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+	<p>
+		通过 Block语法和 Block类型变量的说明,我们已经理解了“带有自动变量值的匿名函数”
+中的“匿名函数”。而“带有自动变量值”究竟是什么呢?“带有自动变量值”在 Blocks中表现
+为“截获自动变量值”。截获自动变量值的实例如下:
+	</p>
+	<pre>
+int main (){
+	int dmy = 256:
+	int val =10;
+	const char *fmt = "val - %d\n";
+	void (^blk)(void) = ^{
+		Printf (fmt, val);
+	}	
+	va1=2
+	fmt = "These values were changed. val %d\n";
+	blk();
+	return 0;
+}	
+</pre>
+<p>
+	该源代码中, Block语法的表达式使用的是它之前声明的自动变量fmt和val。 Blocks中,
+Block表达式截获所使用的自动变量的值,即保存该自动变量的瞬间值。因为 Block表达式保存
+了自动变量的值,所以在执行Bock语法后,即使改写 Block中使用的自动变量的值也不会影响
+Block执行时自动变量的值。该源代码就在 Block语法后改写了Bock中的自动变量va和fmt
+下面我们一起看一下执行结果
+</p>
+ 	<pre>
+ 		val=10
+ 	</pre>
+ 	<p>
+ 		执行结果并不是改写后的值“ These values were changed.val=2”,而是执行 Block语法时的
+自动变量的瞬间值。该 Block语法在执行时,字符串指针“val=%d\n”被赋值到自动变量fmt中,
+int值10被赋值到自动变量val中,因此这些值被保存(即被截获),从而在执行块时使用。
+这就是自动变量值的截获。
+ 	</p>
+
+
+
+    
+</body>
+</html>

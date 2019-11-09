@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    <p>
+    	上节中讲到的Bck语法单从其记述方式上来看,除了没有名称以及带有“^”以外,其他
+都与C语言函数定义相同。在定义C语言函数时,就可以将所定义函数的地址赋值给函数指针
+类型变量中。
+    </p>
+    <pre>
+int func(int count){
+	return count l;
+}
+int (*funcptr)(int)=&func;
+    </pre>
+    <p>
+    	这样一来,函数func的地址就能赋值给函数指针类型变量 funcptr中了。
+同样地,在 Block语法下,可将 Block语法赋值给声明为 Block类型的变量中。即源代码中
+旦使用 Block语法就相当于生成了可赋值给 Block类型变量的“值”。 Blocks中由 Block语法
+生成的值也被称为“ Block”。在有关 Blocks的文档中,“ Block”既指源代码中的 Block语法,也
+指由 Block语法所生成的值。
+声明 Block类型变量的示例如下:
+    </p>
+    <pre>
+    	int (^blk)(int);
+    </pre>
+    <p>
+    	与前面的使用函数指针的源代码对比可知,声明 Block类型变量仅仅是将声明函数指针类型
+变量的“*”变为“A”。该 Block类型变量与一般的C语言变量完全相同,可作为以下用途使用
+    </p>
+    <ul>
+    	<li> 自动变量</li>
+    	<li> 函数参数</li>
+    	<li> 静态变量</li>
+    	<li> 静态全局变量</li>
+    	<li> 全局变量</li>
+    </ul>
+    <p>
+    	那么,下面我们就试着使用 Block语法将 Block赋值为 Block类型变量。
+    </p>
+    <pre>
+    	int (^blk)(int)=^(int count){return count + 1;};
+    </pre>
+    <p>
+    	由“^”开始的 Block语法生成的 Block被赋值给变量bk中。因为与通常的变量相同,所以
+当然也可以由 Block类型变量向 Block类型变量赋值。
+    </p>
+
+    <pre>
+int (^bll)(int)= blk;
+int (^blk2)(int);
+b1k2=b1k1;
+    </pre>
+    <p>
+    	在函数参数中使用 Block类型变量可以向函数传递 Block
+    </p>
+    <pre>
+    	void func (int (^blk)(int)){}
+    </pre>
+   	<p>
+   		在函数返回值中指定 Block类型,可以将 Block作为函数的返回值返回。
+   	</p>
+   	<pre>
+int (^func()(int)){
+	return ^(int count){return count + 1;};
+}
+   	</pre>
+   	<p>
+   		由此可知,在函数参数和返回值中使用 Block类型变量时,记述方式极为复杂。这时,我们
+可以像使用函数指针类型时那样,使用 typedef来解决该问题。
+   	</p>
+   	<pre>
+   		typedef int (^blk_t)(int);
+   	</pre>
+   	<p>
+   		如上所示,通过使用 typedef可声明“blk_t”类型变量。我们试着在以上例子中的函数参数
+和函数返回值部分里使用一下。
+   	</p>
+   	<pre>
+/*原来的记述方式
+void func(int (^blk)(int))
+*/
+void func(blk_t blk){}
+
+/*原来的记述方式
+int (^func()(int))
+*/
+
+blk_t func (){}
+   	</pre>
+   	<p>
+   		通过使用 typedef,函数定义就变得更容易理解了。
+另外,将赋值给 Block类型变量中的 Block方法像C语言通常的函数调用那样使用,这种方
+法与使用函数指针类型变量调用函数的方法几乎完全相同。变量 funcptr为函数指针类型时,像
+下面这样调用函数指针类型变量:
+   	</p>
+   	<pre>
+   		int result =(*funcptr)(10);
+   	</pre>
+   	<p>
+   		变量blk为 Block类型的情况下,这样调用 Block类型变量:
+   	</p>
+   	<pre>
+   		int result blk(10);
+   	</pre>
+   	<p>
+   		通过 Block类型变量调用 Block与C语言通常的函数调用没有区别。在函数参数中使用
+Block类型变量并在函数中执行 Block的例子如下:
+   	</p>
+   	<pre>
+int func(blk_t blk, int rate){
+	return blk(rate);
+}
+   	</pre>
+   	<p>
+   		当然,在 Objective-C的方法中也可使用。
+   	</p>
+   	<pre>
+   		-(int) methodUsingBlock: (blk_t)blk rate:(int)rate{
+   			return blk(rate);
+   		}
+   	</pre>
+   	<p>
+   		Block类型变量可完全像通常的C语言变量一样使用,因此也可以使用指向 Block类型变量
+的指针,即 Block的指针类型变量。
+   	</p>
+   	<pre>
+typedef int (blk t)(int);
+blk_t blk = ^(int count){return count + 1;}
+blk_t *blkptr =&blk
+(*blkptr)(10)
+   	</pre>
+   	<p>
+   		由此可知 Block类型变量可像C语言中其他类型变量一样使用。
+   	</p>
+
+
+
+
+
+
+    
+</body>
+</html>
