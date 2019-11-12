@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+	<p>
+		如果在 Block中使用附有 __strong修饰符的对象类型自动变量,那么当 Block从栈复制到堆
+时,该对象为 Block所持有。这样容易引起循环引用。我们来看看下面的源代码:
+	</p>
+	<pre>
+typedef void (^blk_t)(void);
+@interface Myobject : Nsobject{
+	blk_t blk_;
+}
+@end
+
+@implementation Myobject{
+	-(id)init{
+		self = [super init];
+		blk_=^{NSLog(Q"self 0", self);}
+		return self;	
+	}	
+	-(void)dealloc{
+		NSLog(@"dealloc");
+	}
+@end
+int main (){
+	id o =[[Myobject alloc] init];
+	NSLog(@"%@",o);
+	return 0;
+}
+	</pre>
+	<p>
+		该源代码中 MyObject类的 dealloc实例方法一定没有被调用。
+MyObject类对象的Bock类型成员变量bk持有赋值为 Block的强引用。即 MyObject类对
+象持有 Block。init实例方法中执行的 Block语法使用附有 __strong修饰符的id类型变量self。并
+且由于 Block语法赋值在了成员变量blk中,因此通过 Block语法生成在栈上的 Block此时由栈
+复制到堆,并持有所使用的self。self持有 Block, Block持有self。这正是循环引用。如图2-13
+所示
+	</p>
+
+	<img src="../img/dasdasd110234552.PNG">
+
+	<p>
+		另外,编译器在编译该源代码时能够査出循环引用,因此编译器能正确地进行警告。
+	</p>
+	<img src="../img/dasdasd110234553.PNG">
+	<p>
+		为避免此循环引用,可声明附有weak修饰符的变量,并将self赋值使用。
+	</p>
+	<pre>
+(id)init{
+	self = [ super init];
+	id __weak tmp = self;
+	blk_ = ^{NSLog(e"self e", tmp);};
+	return self	;
+}
+	</pre>
+	<img src="../img/dasdasd110234554.PNG">
+	<p>
+		在该源代码中,由于 Block存在时,持有该Blck的 MyObject类对象即赋值在变量tmp中
+的self必定存在,因此不需要判断变量tmp的值是否为nil
+在面向os4, Snow Leopard的应用程序中,必须使用 __unsafe_unretained修饰符代替
+__weak修饰符。在此源代码中也可使用__unsafe_unretained修饰符,且不必担心悬垂指针。
+	</p>
+	<pre>
+-(id)init{
+	self = [super init];
+	id _unsafe_unretained tmp = self
+	blk = ^{NSLog(@"self = %@", tmp)};
+	return self;
+}
+	</pre>
+	<p>
+		另外,以下源代码中 Block内没有使用self也同样截获了self,引起了循环引用。
+	</p>
+	<pre>
+@interface Myobject : NSobject{
+	blk_t blk_;
+	id obj_;
+}
+@end
+
+@implementation Myobject{
+	-(id)init{
+		self = [super init];
+		blk_ =^{NSLog(@"obj = %@", obj_);)}
+		return self;
+	}
+}
+	</pre>
+
+	<p>
+		通过编译器给出的警告信息可知原因。
+	</p>
+
+	<img src="../img/dasdasd110234555.PNG">
+	<p>
+		即 Block语法内使用的obj实际上截获了self。对编译器来说,obj_只不过是对象用结构体
+的成员变量。
+	</p>
+	<pre>
+blk_ = ^{NSLog(@"obj_ = %@", self->obj_);}
+	</pre>
+
+	<p>
+		该源代码也基本与前面一样,声明附有__weak修饰符的变量并赋值obj_使用来避免循环引
+用。在此源代码中也可安全地使用 __unsafe_unretained修饰符,原因同上,
+	</p>
+	<pre>
+-(id)init{
+	id __weak obj=obj_;
+	blk_ = ^{NSLog(@"obj_ = %@", obj);)};
+	return self	;
+}
+	</pre>
+
+	<p>
+		在为避免循环引用而使用__weak修饰符时,虽说可以确认使用附有__weak修饰符的变量
+时是否为nil,但更有必要使之生存以使用赋值给附有__weak修饰符变量的对象。
+另外,还可以使用 __block变量来避免循环引用。
+	</p>
+	<pre>
+typedef void (^blk t)(void);
+@interface Myobject : NSobject{
+	blk_t blk_;	
+}
+@end
+
+@implementation Myobject{
+	-(id)init{
+		self = [super init];
+		blk_ = ^{
+			NSLog (@"self=%@",tmp);
+			tmp nil;
+		};	
+		return self:
+	}
+	
+	-(void)execBlock{
+		b1k();
+	}	
+	-(void) dealloc{
+		NSLog(@"dealloc");
+	}	
+}
+@end
+
+int main(){
+	id o= [[Myobject alloc] init]:
+	[o execBlock];
+	return o;
+}
+	</pre>
+
+	<p>
+		该源代码没有引起循环引用。但是如果不调用 execBlock实例方法,即不执行赋值给成员变
+量bk的 Block,便会循环引用并引起内存泄漏。在生成并持有 MyObject类对象的状态下会引
+起以下循环引用,如图2-15所示。
+	</p>
+	<ul>
+		<li> Myobject类对象持有 Block</li>
+		<li> Block持有__block变量</li>
+	</ul>
+
+	<p>
+		 __block变量持有 Myobject类对象
+	</p>
+	<img src="../img/dasdasd110234556.PNG">
+	<p>
+		如果不执行 execBlock实例方法,就会持续该循环引用从而造成内存泄漏。
+通过执行 execBlock实例方法, Block被实行,nil被赋值在 __block变量tmp中。
+	</p>
+	<pre>
+b1k=^{
+	NSLog(@"self = %@",tmp)
+	tmp = nil	
+}
+	</pre>
+
+	<p>
+		因此, __block变量tmp对 Myobject类对象的强引用失效。避免循环引用的过程如下所示:
+	</p>
+	<ul>
+		<li> MyObject类对象持有 Block</li>
+		<li> Block持有 __block变量</li>
+	</ul>
+
+	<img src="../img/dasdasd110234557.PNG">
+	<p>
+		下面我们对使用__block变量避免循环引用的方法和使用__weak修饰符及 __unsafe_unretained修饰符避免循环引用的方法做个比较。
+使用 __block变量的优点如下:
+	</p>
+	<ul>
+		<li> 通过 __block变量可控制对象的持有期间</li>
+		<li> 
+			在不能使用weak修饰符的环境中不使用_unsafe_unretained修饰符即可(不必担心悬垂指针)
+
+		</li>
+
+
+	</ul>
+	<p>
+				在执行Block时可动态地决定是否将ni或其他对象赋值在 __block变量中。
+				<br>
+				使用 block变量的缺点如下
+	</p>
+	<ul>
+		<li> 为避免循环引用必须执行 Block</li>
+	</ul>
+	<p>
+		存在执行了 Block语法,却不执行 Block的路径时,无法避免循环引用。若由于 Block引发
+了循环引用时,根据 Block的用途选择使用__block变量、__weak修饰符或__unsafe_unretained修饰符来避免循环引用。
+	</p>
+
+	
+
+
+
+
+
+
+
+
+
+    
+</body>
+</html>

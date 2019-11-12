@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+
+	<h1>什么是GCD</h1>
+	<p>
+		什么是GCD?以下摘自苹果的官方说明。
+Grand Central Dispatch(GCD)是异步执行任务的技术之一。一般将应用程序中记述的线程
+管理用的代码在系统级中实现。开发者只需要定义想执行的任务并追加到适当的 Dispatch Queue
+中,GCD就能生成必要的线程并计划执行任务。由于线程管理是作为系统的一部分来实现的,
+因此可统一管理,也可执行任务,这样就比以前的线程更有效率。①
+也就是说,GCD用我们难以置信的非常简洁的记述方法,实现了极为复杂繁琐的多线程编
+程,可以说这是一项划时代的技术。下面是使用了GCD源代码的例子,虽然稍显抽象,但从中
+也能感受到GCD的威力。
+	</p>
+	<pre>
+dispatch_async( queue, ^{
+	/*
+	*长时间处理
+	*例如AR用画像识别
+	*例如数据库访问
+	*/
+
+	/*
+	*长时间处理结束,主线程使用该处理结果。
+	*/
+	dispatch_async(dispatch_get_main_queue(),^{
+		/*
+		*只在主线程可以执行的处理
+		*例如用户界面更新
+		*/
+	});
+});
+	</pre>
+
+	<p>
+		这仅有一行的代码表示让处理在后台线程中执行。
+	</p>
+	<pre>
+		dispatch_async(dispatch_get_main_queue(),^{
+	</pre>
+
+	<p>
+		这样,仅此一行代码就能够让处理在主线程中执行。另外,大家看到脱字( caret)符号“^”
+就能发现,GCD使用了上一章讲到的“ Blocks”,进一步简化了应用程序代码。
+在导入GCD之前, Cocoa框架提供了 NSObject类的 perform Selectorln Background: withO
+bject实例方法和 performSelectorOnMainThread实例方法等简单的多线程编程技术。例如,可以
+改用 perform Selector系方法来实现前面使用了GCD的源代码看看。
+	</p>
+	<pre>
+/*
+* NSObject performSelectorInBackground: withobject;方法中
+*执行后台线程
+*/
+-(void) launchThreadByNSObject performSelectorInBackground_withobject
+[self performSelectorInBackground: @selector(doWork)withobject: nil]:
+
+/*
+*后台线程处理方法
+*/
+-(void)dowork{
+	NSAutoreleasePool *pool =[[NSAutoreleasePool alloc] init];
+	/*
+	*长时间处理
+	*例如AR用画像识别
+	*例如数据库访问
+	*长时间处理结束,主线程使用其处理结果
+	*/
+	[self performSelectoronMainThread:@selector(doneWork)
+		withobject:nil waitUntilDone: No];
+	[pool drain]	
+}
+
+	/*
+	*主线程处理方法
+	*/
+	-(void)doneWork{
+		/*
+		*只在主线程可以执行的处理
+		*例如用户界面更新	
+		*/
+	}
+
+}
+	</pre>
+	<p>
+		perform Selector系方法确实要比使用 NSThread类进行多线程编程简单,但与之前使用GCD
+的源代码相比,结果一目了然。相比 performSelector系方法,GCD更为简洁。如果使用GCD,
+不仅不必使用 NSThread类或 performSelector系方法这些过时的APl,更可以通过GCD提供的系
+统级线程管理提高执行效率。真是到处都是优点呀。
+	</p>
+	
+
+
+
+    
+</body>
+</html>

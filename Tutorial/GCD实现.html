@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+	<h1>Dispatch Queue</h1>
+	<p>
+		GCD的 Dispatch Queue非常方便,那么它究竟是如何实现的呢?
+	</p>
+	<ul>
+		<li> 用于管理追加的 Block的C语言层实现的FIFO队列</li>
+		<li> Atomic函数中实现的用于排他控制的轻量级信号</li>
+		<li> 用于管理线程的C语言层实现的一些容器</li>
+	</ul>
+	<p>
+		不难想象,GCD的实现需要使用以上这些工具。但是,如果仅用这些内容便可实现,那么
+就不需要内核级的实现了。
+甚至有人会想,只要努力编写线程管理的代码,就根本用不到GCD。真的是这样吗?
+我们先来回顾一下苹果的官方说明。
+	</p>
+	<p>
+		<strong>
+			通常,应用程序中编写的线程管理用的代码要在系统级实现。
+		</strong>
+	</p>
+	<p>
+		实际上正如这句话所说,在系统级即iOS和OSX的核心XNU内核级上实现。
+因此,无论编程人员如何努力编写管理线程的代码,在性能方面也不可能胜过ⅹNU内核级
+所实现的GCD。
+使用GCD要比使用 pthreads和 NSThread这些一般的多线程编程API更好。并且,如果使
+用GCD就不必编写为操作线程反复出现的类似的源代码(这被称为固定源代码片断),而可以在
+线程中集中实现处理内容,真的是好处多多。我们尽量多使用GCD或者使用了 Cocoa框架GCD
+的 NSOperation Queue类等APl
+那么首先确认一下用于实现 Dispatch Queue而使用的软件组件。如表34所示。
+	</p>
+	<table>
+		<tbody>
+			<tr>
+				<th> 组件名称</th>
+				<th> 提供技术</th>
+			</tr>
+			<tr>
+				<td> libdispatch</td>
+				<td> Dispatch Queue</td>
+			</tr>
+			<tr>
+				<td> Libc(pthreads)</td>
+				<td> pthread_ workqueue</td>
+			</tr>
+			<tr>
+				<td> XNU内核</td>
+				<td> workqueue</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<p>
+		编程人员所使用GCD的AP全部为包含在 libdispatch库中的C语言函数。 Dispatch Queue通过
+结构体和链表,被实现为FIFO队列。FIFO队列管理是通过 dispatch async等函数所追加的 Block
+	</p>
+
+	<p>
+		Block并不是直接加入FIFO队列,而是先加入 Dispatch Continuation这一 dispatch continuation t
+类型结构体中,然后再加入FIFO队列。该
+Dispatch Continuation用于记忆 Block所属的 Dispatch
+Group和其他一些信息,相当于一般常说的执行上下文。
+Dispatch Queue可通过 dispatch set target queue函数设定,可以设定执行该 Dispatch Queue
+处理的 Dispatch Queue为目标。该目标可像串珠子一样,设定多个连接在一起的 Dispatch Queue
+但是在连接串的最后必须设定为 Main Dispatch Queue,或各种优先级的 Global Dispatch Queue,
+或是准备用于 Serial Dispatch Queue的各种优先级的 Global Dispatch Queue。
+Main Dispatch Queue在 RunLoop中执行 Block。这并不是令人耳目一新的技术
+Global Dispatch Queue有如下8种。
+	</p>
+	<ul>
+		<li> Global Dispatch Queue( High Priority)</li>
+		<li> Global Dispatch Queue( Default Priority</li>
+		<li> Global Dispatch Queue( Low Priority</li>
+		<li> Global Dispatch Queue( Background Priority</li>
+		<li> Global Dispatch Queue(High Overcommit Priority</li>
+		<li> Global Dispatch Queue(Default Overcommit Priority</li>
+		<li> Global Dispatch Queue( Low Overcommit Priority)</li>
+		<li> Global Dispatch Queue( Background Overcommit Priority)</li>
+	</ul>
+	<p>
+		优先级中附有 Overcommit的 Global Dispatch Queue使用在 Serial Dispatch Queue中。如
+Overcommit这个名称所示,不管系统状态如何,都会强制生成线程的 Dispatch Queue
+这8种 Global Dispatch Queue各使用1个 pthread workqueue。GCD初始化时,使用 pthread
+workqueue_create_np函数生成 pthread_workqueue
+open系统调用,在初始化XNU内核的wsee之后获取 workqueue信息regi
+pthread_workqueue包含在Lbc提供的 pthreads API中。其使用 bsdthread_register和 work
+XNU内核持有4种 workqueue
+	</p>
+	<ul>
+		<li> WORKQUEUE_HIGH_PRIOQUEUE</li>
+		<li> WORKQUEUE_DEFAULT_PRIOQUEUE</li>
+		<li> WORKQUEUE_LOW_PRIOQUEUE</li>
+		<li> WORKQUEUE_BG_PRIOQUEUE</li>
+	</ul>
+	<p>
+		以上为4种执行优先级的 workqueue。该执行优先级与 Global Dispatch Queue的4种执行优
+先级相同。
+下面看二下 Dispatch Queue中执行 Block的过程。当在 Global Dispatch Queue中执行 Block时,
+libdispatch从 Global Dispatch Queue自身的FIFO队列中取出 Dispatch Continuation,调用 pthread
+workqueue_additem_np函数。将该 Global Dispatch Queue自身、符合其优先级的 workqueue信息
+以及为执行 Dispatch Continuation的回调函数等传递给参数。
+	</p>
+	<img src="../img/dasdasd110234578.PNG">
+	<p>
+		pthread workqueue additem n函数使用
+worka kernreturn
+系统调用,通知 workqueue增加应
+当执行的项目。根据该通知,XNU内核基于系统状态判断是否要生成线程。如果是 Overcommit
+优先级的 Global Dispatch Queue, workqueue则始终生成线程。
+该线程虽然与iOS和OSX中通常使用的线程大致相同,但是有一部分 pthread API不能使用。
+详细信息可参考苹果的官方文档《并列编程指南》的“与 POSIX线程的互换性”一节。
+另外,因为 workqueue生成的线程在实现用于 workqueue的线程计划表中运行,所以与一般
+线程的上下文切换不同。这里也隐藏着使用GCD的原因。
+workqueue的线程执行 pthread workqueue函数,该函数调用 libdispatch的回调函数。在该回
+调函数中执行加入到 Dispatch Continuation的 Block。
+Block执行结束后,进行通知 Dispatch Group结束、释放 Dispatch Continuation等处理,开始
+准备执行加入到 Global Dispatch Queue中的下一个 Block。
+以上就是 Dispatch Queue执行的大概过程。
+由此可知,在编程人员管理的线程中,想发挥出匹敌GCD的性能是不可能的。
+	</p>
+
+	<h1>Dispatch Source</h1>
+	<p>
+		GCD中除了主要的 Dispatch Queue外,还有不太引人注目的 Dispatch Source。它是BSD系
+内核惯有功能 kqueue的包装。
+kqueue是在XNU内核中发生各种事件时,在应用程序编程方执行处理的技术。其CPU负荷非常小,尽量不占用资源。 kqueue可以说是应用程序处理XNU内核中发生的各种事件的方法
+中最优秀的一种。
+Dispatch Source可处理以下事件。如表3-5所示。
+	</p>
+	<table>
+		<tbody>
+			<tr>
+				<th> 名称</th>
+				<th> 内容</th>
+			</tr>
+			<tr>
+				<td> DISPATCH_SOURCE_TYPE_DATA_ADD</td>
+				<td> 变量增加</td>
+			</tr>
+			<tr>
+				<td> DISPATCH_ SOURCE_TYPE_DATA_OR</td>
+				<td> 变量oR</td>
+			</tr>
+			<tr>
+				<td> DISPATCHSOURCE_TYPE_MACHSEND_MACH</td>
+				<td> 端口发送</td>
+			</tr>
+			<tr>
+				<td> DISPATCH_SOURCE_TYPE_MACH_RECVMACH</td>
+				<td> 端口接收</td>
+			</tr>
+			<tr>
+				<td> DISPATCH_SOURCE_TYPE_PROC</td>
+				<td> 检测到与进程相关的事件</td>
+			</tr>
+			<tr>
+				<td> DISPATCH_SOURCE_TYPE_READ</td>
+				<td> 可读取文件映像</td>
+			</tr>
+			<tr>
+				<td> DISPATCH_SOURCE_TYPE_SIGNAL</td>
+				<td> 接收信号</td>
+			</tr>
+			<tr>
+				<td> DISPATCH_SOURCE_TYPE_TIMER</td>
+				<td> 定时器</td>
+			</tr>
+			<tr>
+				<td> DISPATCH_SOURCE_TYPE_VNODE</td>
+				<td> 文件系统有变更</td>
+			</tr>
+			<tr>
+				<td> DISPATCH_SOURCE_TYPE_WRITE</td>
+				<td> 可写入文件映像</td>
+			</tr>
+		</tbody>
+	</table>
+	<p>
+		事件发生时,在指定的 Dispatch Queue中可执行事件的处理。
+下面我们使用 DISPATCH_SOURCE_TYPE_READ,异步读取文件映像。
+	</p>
+	<img src="../img/dasdasd110234579.PNG">
+	<br>
+	<img src="../img/dasdasd110234580.PNG">
+	<p>
+		与上面源代码非常相似的代码,使用在了 Core Foundation框架的用于异步网络的API
+CFSocket中。因为 Foundation框架的异步网络API是通过 CFSocket实现的,所以可享受到仅使
+用 Foundation框架的 Dispatch Source(即GCD)带来的好处
+最后给大家展示一个使用了 DISPATCH SOURCE TYPE TIMER的定时器的例子。在网络
+编程的通信超时等情况下可使用该例。
+	</p>
+	<img src="../img/dasdasd110234581.PNG">
+	<p>
+		看了异步读取文件映像用的源代码和这个定时器用的源代码后,有没有注意到什么呢?实际
+上 Dispatch Queue没有“取消”这一概念。一旦将处理追加到 Dispatch Queue中,就没有方法可将该处理去除,也没有方法可在执行中取消该处理。编程人员要么在处理中导入取消这一概念,
+要么放弃取消,或者使用 NSOperation Queue等其他方法。
+Dispatch Source与 Dispatch Queue不同,是可以取消的。而且取消时必须执行的处理可指定
+为回调用的 Block形式。因此使用 Dispatch Source实现XNU内核中发生的事件处理要比直接使
+用 kqueue实现更为简单。在必须使用 kqueue的情况下希望大家还是使用 Dispatch Source,它比
+较简单。
+通过讲解,大家应该已经理解了主要的 Dispatch Queue以及次要的 Dispatch Source了吧。
+	</p>
+
+
+
+    
+</body>
+</html>

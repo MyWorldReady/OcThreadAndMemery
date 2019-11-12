@@ -1,0 +1,461 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+	<p>
+		Block是“带有自动变量值的匿名函数”,但 Block究竟是什么呢?本节将通过 Block的实现
+进一步帮大家加深理解。
+前几节讲的 Block语法看上去好像很特别,但它实际上是作为极普通的C语言源代码来处理
+的。通过支持 Block的编译器,含有 Block语法的源代码转换为一般C语言编译器能够处理的源
+代码,并作为极为普通的C语言源代码被编译。
+这不过是概念上的问题,在实际编译时无法转换成我们能够理解的源代码,但 clang(LLwM
+编译器)具有转换为我们可读源代码的功能。通过“ rewrite-objc”选项就能将含有 Block语法的
+源代码变换为C艹+的源代码。说是C艹+,其实也仅是使用了 struct结构,其本质是C语言源代码。
+	</p>
+	<pre>
+		clang- rewrite-objc源代码文件名
+	</pre>
+	<p>
+		下面,我们转换 Block语法。
+	</p>
+	<pre>
+int main (
+void (^blk)(void) = {
+	Printf("Block\n");};
+	b1k();
+	return 0	
+}
+	</pre>
+
+	<p>
+		此源代码的Bck语法最为简单,它省略了返回值类型以及参数列表。该源代码通过 clang
+可变换为以下形式:
+	</p>
+
+	<pre>
+struct __block_impl{
+	void *isa;
+	int Flags;
+	int Reserved;
+	void *Funcptr:
+};
+struct __main_block_impl_0{
+	struct __block_impl impl;
+	struct __main_block_desc_0* Desai
+	__main_block_impl_o(void *fp, struct __main_block_desc_0 *desc, int flags=0){
+		impl.isa = NSConcreteStackBlock;
+		impl.Flags = flags;
+		impl.Funcptr = fp;
+		Desc = desc	;
+	}
+};
+static void __main_block_func_o(struct __main_block_impl_0* __cself){
+	printf("Block\n")	
+}
+static struct __main_block_desc_0{
+	unsigned long reserved;
+	unsigned long Block_size;
+}
+__main_block_desc_0_DATA ={
+	0,
+	sizeof (struct __main_block_impl_0)		
+};
+int main (){
+	void (*blk)(void) = (void (*)(void))& __main_block_impl_0(
+		(void * __main_block_func_0,&__main_block_desc_0_DATA);
+
+	((void (*)(struct __block_impl *)){
+		(struct __block_impl *)blk)->FuncPtr)((struct __block_impl *)blk);	
+	}
+
+	return 0;
+}
+	</pre>
+
+	<p>
+		8行的源代码竟然增加到了43行。但是如果仔细观察就能发现,这段源代码虽长却不那么
+复杂。下面,我们将源代码分成几个部分逐步理解。首先来看最初的源代码中的 Block语法。
+	</p>
+
+	<pre>
+		^[printf("Block\n");
+	</pre>
+	<p>
+		可以看到,变换后的源代码中也含有相同的表达式。
+	</p>
+	<pre>
+static void __main_block_func_0(struct __main_block_impl_0* __cself){
+	printf("Block\n");	
+}
+	</pre>
+
+	<p>
+		如变换后的源代码所示,通过 Blocks使用的匿名函数实际上被作为简单的C语言函数来处
+理。另外,根据 Block语法所属的函数名(此处为main)和该 Block语法在该函数出现的顺序值
+(此处为0)来给经 clang变换的函数命名。
+该函数的参数__cself相当于C++实例方法中指向实例自身的变量this,或是 Objective-C实
+例方法中指向对象自身的变量self,即参数 __cself为指向 Block值的变量。
+	</p>
+	<h1>专档c++的this, Objective-C的se1f</h1>
+	<p>
+		C++中定义类的实例方法如下:
+	</p>
+	<pre>
+void Myclass:: method(int arg){
+	printf("%p %d\n", this, arg);	
+}
+	</pre>
+
+	<p>
+		C++编译器将该方法作为C语言函数来处理。
+	</p>
+	<pre>
+void __ZN7MyClass6methodE1(Myclass *this, int arg);
+{
+	printf("%p %d\n", this, arg);	
+}
+	</pre>	
+
+	<p>
+		MyClass::method方法的实质就是_ZN7MyClasse6methodEi函数。"this"作为第一个参数传递进去。该方法的调用如下:
+	</p>
+
+	<pre>
+MyClass cls
+cls.method (10);
+	</pre>
+
+	<p>
+		该源代码通过C++编译器转换成C语言函数调用的形式:
+	</p>
+	<pre>
+struct MyClass cls;
+__ZN7Myclass6methodEi (&cls, 10);
+	</pre>
+
+	<p>
+		即this就是 My Class类(结构体)的实例。
+同样,我们也来看一下 Objective-C的实例方法:
+	</p>
+	<pre>
+-(void) method: (int)arg{
+	NSLog(@"%p %d\n", self, arg);
+}
+	</pre>
+
+	<p>
+		objectⅳve-C编译器同C++的方法一样,也将该方法作为C语言的函数来处理。
+	</p>
+	<pre>
+		void _I_Myobject_method_ (struct Myobject *self, SEL_cmd, int arg){
+			NSLog(@"sp %d\n", self, arg);
+	}
+	</pre>
+
+	<p>
+		与C++中变换结果的ths相同,“sef"作为第一个参数被传递过去。以下为调用方代码。
+	</p>
+	<pre>
+Myobject *obj=[[Myobject alloc] init];
+[bi method: 10];
+	</pre>
+
+	<p>
+		如果使用cang的-rewrite-objc选项,则上面源代码会转换为:
+	</p>
+
+	<pre>
+Myobject *obj =  objc_msgsend(
+	objc_getclass("Myobject"), sel_registerName("alloc));
+obj = objc_msgSend (obj, sel_registerName("init"));
+objc_msgSend (obj, sel_registerName("method: "),10);
+	</pre>
+	<p>
+		objc_msgSend函数根据指定的对象和函数名,从对象持有类的结构体中检索⊥
+MyObject_method_函数的指针并调用。此时, objc_msgSend函数的第一个参数obi
+作为 MyObject_method函数的第一个参数sef进行传递。同C++一样,self就是
+MyObject类的对象。
+	</p>
+	<p>
+		遗憾的是,由这次 Block语法变换而来的 __main_block_func_0函数并不使用__csef。使用
+参数 __cself的例子将在后面介绍,我们先来看看该参数的声明。
+	</p>
+	<pre>
+		struct __main_block_impl_0 * __cself
+	</pre>
+	<p>
+		与C++的this和 Objective-C的self相同,参数_cself是 __main_block_impl_0结构体的指针。
+	</p>
+
+	<p>
+		该结构体声明如下:
+	</p>
+	<pre>
+struct __main_block_impl_0 {
+	struct __block_impl impl;
+	struct __main_block_desc_0* Desc;
+}
+	</pre>
+
+	<p>
+		由于转换后的源代码中,也一并写入了其构造函数,所以看起来稍显复杂,如果除去该构造
+函数, __main_block__impl_0结构体会变得非常简单。第一个成员变量是impl,我们先来看一下
+其__block_impl结构体的声明。
+	</p>
+	<pre>
+struct __block_impl {
+	void *isa:
+	int Flags;
+	int Reserved;
+	void *funcPtr;
+};
+	</pre>
+
+	<p>
+		我们从其名称可以联想到某些标志、今后版本升级所需的区域以及函数指针。这些会在后面
+详细说明。第二个成员变量是Desc指针,以下为其 __main_block_desc_0结构体的声明。
+	</p>
+
+	<pre>
+struct __main_block_desc_0{
+	unsigned long reserved;
+	unsigned long Block_size;	
+}
+	</pre>
+
+	<p>
+		这些也如同其成员名称所示,其结构为今后版本升级所需的区域和Bock的大小。
+那么,下面我们来看看初始化含有这些结构体的 __main_block_impl_0结构体的构造函数。
+	</p>
+	<pre>
+__main_block_impl_0(void *fp, struct __main_block_desc_o *desc, int flags=0){
+	impl.isa = & _NSConcreteStackBlock;
+	impl.Flags = flags;
+	impl.FuncPtr = fp;
+	Desc = desc:			
+}
+	</pre>
+
+	<p>
+		以上就是初始化 __main_block_impl_0结构体成员的源代码。我们刚刚跳过了
+NSConcreteBlock的说明。 __NSConcreteStackBlock用于初始化__block_impl结构体的isa成员。
+虽然大家很想了解它,但在进行讲解之前,我们先来看看该构造函数的调用。
+	</p>
+
+	<pre>
+void (*blk)(void) =
+(void (*)(void))& __main_block_impl_0(
+	(void *) __main_block_func_0,&__main_block_desc_0_DATA);
+	</pre>
+
+	<p>
+		因为转换较多,看起来不是很清楚,所以我们去掉转换的部分,具体如下:
+	</p>
+	<pre>
+struct __main_block_impl_0 tmp = 
+	__main_block_impl_0( __main_block_func_0,&__main_block_desc_0_DATA);
+struct __main_block_impl_0 *blk = & tmp;
+	</pre>
+
+	<p>
+		这样就容易理解了。该源代码将 __main_block_impl_0结构体类型的自动变量,即栈上生成
+的 __main_block_impl_0结构体实例的指针,赋值给 __main_block_impl_0结构体指针类型的变量
+blk。以下为这部分代码对应的最初源代码。
+	</p>
+	<pre>
+void (^blk)(void)=^{printf("Block\n);}
+	</pre>
+
+	<p>
+		将 Block语法生成的 Block赋给 Block类型变量bk。它等同于将 __main_block_impl_0结构
+体实例的指针赋给变量bk。该源代码中的 Block就是_main_ block impl_0结构体类型的自动变
+量,即栈上生成的 __main_block_impl_0结构体实例
+下面就来看看 __main_block_impl_0结构体实例构造参数。
+	</p>
+	<pre>
+__main_block_impl_0( __main_block_func_0,&_main_block_desc_0_DATA);
+	</pre>
+
+	<p>
+		第一个参数是由 Block语法转换的C语言函数指针。第二个参数是作为静态全局变量初始化
+的__main_block_desc_0结构体实例指针。以下为__main_block_desc_0结构体实例的初始化部分代码。
+	</p>
+	<pre>
+static struct __main_block_desc_0 __main_block_desc_0_DATA ={0,sizeof(struct __main_block_impl_0) };
+	</pre>
+
+	<p>
+		由此可知,该源代码使用 Block,即 __main_block_impl_0结构体实例的大小,进行初始化。
+下面看看栈上的 main block impl0__main_block_impl_0结构体实例(即 Block)是如何根据这些参数进行初
+始化的。如果展开__main_block_impl_0结构体的__block_impl结构体,可记述为如下形式:
+	</p>
+
+	<pre>
+struct __main_block_impl_0{
+	void *isa:
+	int Flags:
+	int Reserved:
+	void *Funcptr
+	struct __main_block_desc_0* Desc	
+}
+	</pre>
+	<p>
+		该结构体根据构造函数会像下面这样进行初始化
+	</p>
+	<pre>
+isa = &_NSConcreteStackBlock;
+Flags = 0;
+Reserved 0:
+Funcptr = __main_block_func_0:
+Desc = &__main_block_desc_0_DATA:		
+	</pre>
+	<p>
+		虽然大家非常迫切地想了解 _NSConcreteStack Block,不过我们还是先把其他部分讲完再对
+此进行说明。将 __main_block_func_0函数指针赋给成员变量 FuncPtr。
+我们来确认一下使用该 Block的部分。
+	</p>
+	<pre>
+		b1k();
+	</pre>
+	<p>
+		这部分可变换为以下源代码:
+	</p>
+	<pre>
+		((void (*)(struct __block_impl *))
+(struct __block_impl *)blk)->FuncPtr)((struct __block_impl *)blk);
+	</pre>
+	<p>
+		去掉转换部分。
+	</p>
+	<pre>
+		(*blk->impl.FuncPtr)(blk);
+	</pre>
+
+	<p>
+		这就是简单地使用函数指针调用函数。正如我们刚才所确认的,由 Block语法转换的
+__main_block_func_0函数的指针被赋值成员变量 FuncP中。另外也说明了, __main_block_func_0
+函数的参数 __cself指向 Block值。在调用该函数的源代码中可以看出 Block正是作为参数进行
+了传递。
+到此总算摸清了 Block的实质,不过刚才跳过没有说明的 _NSConcreteStackBlock到底是什
+么呢?
+	</p>
+
+	<pre>
+		isa = &_NSConcreteStackBlock;
+	</pre>
+	<p>
+		将 Block指针赋给 Block的结构体成员变量isa。为了理解它,首先要理解 Objective-C类和
+对象的实质。其实,所谓 Block就是 Objective-C对象。
+“id”这一变量类型用于存储 Objective-C对象。在 Objective-C源代码中,虽然可以像使用
+void*类型那样随意使用i,但此d类型也能够在C语言中声明。在/ usr/include/objc/runtime. h
+中是如下进行声明的:
+	</p>
+	<pre>
+typedef struct objc_object
+	class isa
+}*id;
+	</pre>
+	<p>
+		id为 objc_object结构体的指针类型。我们再来看看 Class
+	</p>
+	<pre>
+typedef struct objc_class *class;
+	</pre>
+	<p>
+		Class为 objc_class结构体的指针类型。 objc_class结构体在/usr/include/objc/runtime.h中声明如下:
+	</p>
+	<pre>
+struct objc_class{
+	Class isa;	
+}
+	</pre>
+
+	<p>
+		这与obic_ object结构体相同。然而, objc_object结构体和 objc_class_f结构体归根结底是在各
+个对象和类的实现中使用的最基本的结构体。下面我们通过编写简单的 Objective-C类声明来确
+认一下。
+	</p>
+	<pre>
+@interface Myobject:NSObject{
+	int val0;
+	int vall;	
+}
+@end
+	</pre>
+
+	<p>
+		基于 objc_object结构体,该类的对象的结构体如下
+	</p>
+	<pre>
+struct Myobject {
+	Class isa;
+	int val0;
+	int val1;	
+}	
+	</pre>
+
+	<p>
+		MyObject类的实例变量v0和vall被直接声明为对象的结构体成员。“ Objective-C中由类
+生成对象”意味着,像该结构体这样“生成由该类生成的对象的结构体实例”。生成的各个对象,
+即由该类生成的对象的各个结构体实例,通过成员变量isa保持该类的结构体实例指针。如图24
+所示。
+	</p>
+	<img src="../img/dasdasd110234542.PNG">
+	<p>
+		各类的结构体就是基于 objc_class结构体的 class_t结构体。 class_t结构体在obc4运行时库
+的 runtime/objc-runtime-new.h中声明如下:
+	</p>
+	<pre>
+struct class t {
+	struct class_t *isa:
+	struct class_t *superclass;
+	Cache cache:
+	IMP *vtable:
+	uintptr_t data_NEVER_USE;	
+}
+	</pre>
+
+	<p>
+		在 Objective-C中,比如 NSObject的 class t结构体实例以及 NSMutableArray的 class_t结构
+体实例等,均生成并保持各个类的 class_t结构体实例。该实例持有声明的成员变量、方法的名称、方法的实现(即函数指针)、属性以及父类的指针,并被 Objective-C运行时库所使用。
+到这里,就可以理解 Objective-C的类与对象的实质了。
+那么回到刚才的 Block结构体。
+	</p>
+
+	<pre>
+struct __main_block_impl_0{
+	void *isa:
+	int Flags;
+	int Reserved:
+	void *FuncPtri
+	struct __main_block_desc_0* Desc:			
+}
+	</pre>
+
+	<p>
+		此__main_block_impl_0结构体相当于基于 objc_object结构体的 Objective-C类对象的结构体。
+另外,对其中的成员变量isa进行初始化,具体如下:
+	</p>
+	<pre>
+		isa = &_NSConcreteStackBlock:
+	</pre>
+	<p>
+		即 NSConcreteStack Block相当于 class t结构体实例。在将 Block作为 Objective-C的对象处
+理时,关于该类的信息放置于 NSConcreteStack Block中。
+现在大家就能理解 Block的实质,知道 Block即为 Objective-C的对象了。
+	</p>
+
+
+
+
+
+
+
+    
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    	
+    <p>
+    	本节主要讲解如何截获自动变量值。与之前一样,将截获自动变量值的源代码通过 clang进
+行转换。
+    </p>
+
+    <pre>
+struct __main_block_impl_0 {
+	struct __block_impl impl;
+	struct __main_block_desc_0* Desc;
+	const char *fmt;
+	int val;
+	__main_block_impl_0(void *fp, struct main block desc o*desc,
+	const char fmt, int val, int flags=0): fmt( fmt), val( val)(
+		impl.isa = &_NSConcretestackBlock:
+		impl.Flags fags;
+		impl.FuncPtr = fp;
+		Desc = desc:
+	};
+	static void __main_block_func_0(struct __main_block_impl_0 * __cself)
+	{
+		const char *fmt = __cself->fmt;
+		int val = __cself->val;
+		printf(fmt, val);	
+	}
+	
+	static struct __main_block_desc_o{
+		unsigned long reserved;
+		unsigned long Block_size;
+	} __main_block_desc_0_DATA =(
+	0
+	sizeof (struct __main_block_impl_0)
+	};
+	int main(){
+		int dmy =256
+		int val= 10:
+		const char *fmt = "val = %d\n":
+		void (*blk)(void)=&__main_block_impl_0(
+			__main_block_func_0,&__main_block_desc_0_DATA, fmt, val);
+		return 0:
+	}
+}
+    </pre>
+    <p>
+    	这与前面转换的源代码稍有差异。下面来看看其中的不同之处。首先我们注意到, Block语
+法表达式中使用的自动变量被作为成员变量追加到了 __main_block_impl_0结构体中。
+    </p>
+
+    <pre>
+struct main __main_block_impl_0{
+	struct __block_impl impl;
+	struct __main_block_desc_0* Desc;
+	const char *fmt;
+	int val;
+}
+    </pre>
+    <p>
+    	__main_block_impl_0结构体内声明的成员变量类型与自动变量类型完全相同。请注意,
+Block语法表达式中没有使用的自动变量不会被追加,如此源代码中的变量dmy。 Blocks的自动
+变量截获只针对 Block中使用的自动变量。下面来看看初始化该结构体实例的构造函数的差异。
+    </p>
+    <pre>
+__main_block_impl_0(void *fp, struct __main_block_desc_0*desc,
+const char *_fmt, int val, int flags=0): fmt(_fmt), val(_val)(
+    </pre>
+
+    <p>
+    	在初始化结构体实例时,根据传递给构造函数的参数对由自动变量追加的成员变量进行初始
+化。以下通过构造函数调用确认其参数
+    </p>
+    <pre>
+void (*blk)(void)=& __main_block_impl_0(
+__main_block_func_0,& __main_block_desc_0_DATA, fmt, val);
+    </pre>
+
+    <p>
+    	使用执行 Block语法时的自动变量fmt和val来初始化__main_block_impl_0结构体实例。
+即在该源代码中, __main_block_impl_0结构体实例的初始化如下:
+    </p>
+    <pre>
+impl.isa = NSConcreteStackBlock;
+impl.Flags =0;
+impl.FuncPtr=__main_block_func_0
+Desc = &__main_block_desc_0_DAtA
+fmt ="val =%d\n";
+va1=10;   	
+    </pre>
+    <p>
+    	由此可知,在 __main_block_impl_0结构体实例(即 Block)中,自动变量值被截获。
+下面再来看一下使用 Block的匿名函数的实现。最初源代码的 Block语法如下所示:
+    </p>
+    <pre>
+^printf{fmt, val);}
+    </pre>
+    <p>
+    	该源代码可转换为以下函数:
+    </p>
+    <pre>
+static void __main_block_func_o(struct __main_block_impl_0 *__cself){
+	const char *fmt = __cself->fmt;
+	int val =__cself->val;
+	printf(fmt, val);
+}
+    </pre>
+
+    <p>
+在转换后的源代码中,截获到 __main_block_impl_0结构体实例的成员变量上的自动变量,
+这些变量在 Block语法表达式之前被声明定义。因此,原来的源代码表达式无需改动便可使用截
+获的自动变量值执行。
+总的来说,所谓“截获自动变量值”意味着在执行 Block语法时, Block语法表达式所使用
+的自动变量值被保存到 Block的结构体实例(即 Block自身)中。
+然而,如2.2.5节中提到的, Block不能直接使用C语言数组类型的自动变量。如前所述,
+截获自动变量时,将值传递给结构体的构造函数进行保存。
+下面确认在 Block中利用C语言数组类型的变量时有可能使用到的源代码。首先来看将数组
+传递给 Block的结构体构造函数的情况。    	
+    </p>
+    <pre>
+void func(char a[10]){
+	printf("%d\n",a[o]);	
+}
+int main (){
+	char a[10]={2};
+	func (a);
+}
+    </pre>
+    <p>
+    	该源代码可以顺利编译,并正常执行。在之后的构造函数中,将参数赋给成员变量中,这样
+在变换了 Block语法的函数内可由成员变量赋值给自动变量。源代码预测如下。
+    </p>
+    <pre>
+void func (char a[10]){
+	char b[10]= a;
+	printf("%d\n",b[o]);
+}
+int main(){
+	char a[10]={2};
+	func(a);
+}
+    </pre>
+    <p>
+    	该源代码将C语言数组类型变量赋值给C语言数组类型变量中,这是不能编译的。虽然变
+量的类型以及数组的大小都相同,但C语言规范不允许这种赋值。当然,有许多方法可以截获
+值,但 Blocks似乎更遵循C语言规范。
+    </p>
+
+}
+
+
+
+
+
+    
+</body>
+</html>

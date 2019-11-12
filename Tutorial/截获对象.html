@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+	<p>
+		以下源代码生成并持有 NSMutable Array类的对象,由于附有__strong修饰符的赋值目标变
+量的作用域立即结束,因此对象被立即释放并废弃。
+	</p>
+	<pre>
+		id array = [[NSMutableArray alloc] init]:
+	</pre>
+
+	<p>
+		我们来看一下在 Block语法中使用该变量aray的代码
+	</p>
+
+	<pre>
+blk_t blk;
+{
+	id array = [[NSMutableArray alloc] init];
+	blk = [^(id obj){
+		[array addobject: obj];
+		NSLog(@"array count %d", [array count]);
+	},copy];
+}
+blk([[NSObject alloc] init])
+blk([[NSObject alloc] init])		
+blk([[NSObject alloc] init])		
+	</pre>
+
+	<p>
+		变量作用域结束的同时,变量aray被废弃,其强引用失效,因此赋值给变量aray的
+NSMutable Array类的对象必定被释放并废弃。但是该源代码运行正常,其执行结果如下:
+	</p>
+
+	<pre>
+array count =1
+array count =2
+array count 3
+	</pre>
+
+	<p>
+		这一结果意味着赋值给变量aray的 NSMutable Array类的对象在该源代码最后 Block的执行
+部分超出其变量作用域而存在。通过编译器转换后的源代码如下:
+	</p>
+
+	<pre>
+/*B1ock用结构体/函数部分*
+struct __main_block_impl {
+	struct __block_impl impl;
+	struct __main_block_desc_0* Desc;
+	id __strong array;
+	__main_block_impl_0(void *fp, struct __main_block_desc_o *desc,
+	id __strong_array, int flags=0): array(_array)(
+		impl.isa = &_NSConcreteStackBlock;
+		impl.Flags = flags;
+		impl.FuncPtr = fp;
+		Desc = desc;
+	}
+};
+
+static void __main_block_func_0(struct __main_block_impl_0* __cself, id obj)(
+	id __strong array = __cself->array;
+	[array addobject: obj]:
+	NSLog(@"array count %ld, [array count]);
+}
+
+static void __main_block_copy_o(struct __main_block_impl_0*dst,
+struct __main_block_implv0 *src){
+	_Block_object_assign(&dst->array, src->array, BLOCK FIELD IS OBJECT)i	
+}
+
+static void main __block_dispose_0(struct __main_block_impl_0 *src){
+	_Block object dispose(src->array, BLOCK FIELD IS OBJECT);	
+}
+
+static struct __main_block_desc_0{
+	unsigned long reserved;
+	unsigned long Block_size;
+	void (*copy)(struct __main_block_impl_0*, struct __main_block_impl_0*);
+	void (*dispose)(struct __main_block_impl_0*);
+} __main_block_desc_0_DATA ={
+	0
+	sizeof(struct __main_block_impl_0),
+	__main_block_copy_0,
+	__main_block_dispose_o	
+}
+
+/*Block语法,使用 Block部分*/
+blk_t blk
+
+{
+	id __strong array -[[NSMutableArray alloc] init];
+	blk =&__main_block_impl_0(
+	__main_block_func_0,&__main_block_desc_0_DATA, array, 0x22000000);
+	blk = [blk copy];	
+}
+
+(*blk->impl.FuncPtr)(blk, [[NSObject alloc] init));
+(*blk->impl.FuncPtr)(blk, [[NSObject alloc] init]);
+(*blk->impl.FuncPtr)(blk, [[NSObject alloc] init]);
+	</pre>
+
+	<p>
+		请注意被赋值 NSMutable Array类对象并被截获的自动变量aray。我们可以发现它是 Block
+用的结构体中附有 __strong修饰符的成员变量
+	</p>
+
+	<pre>
+struct __main_block_impl_0 I{
+	struct __block_impl impl;
+	struct __main_block_desc_0* Desc;
+	id __strong array;
+}
+	</pre>
+
+	<p>
+		按照134节,在 Objective-C中,C语言结构体不能含有附有__strong修饰符的变量。因为
+编译器不知道应何时进行C语言结构体的初始化和废弃操作,不能很好地管理内存。
+但是 Objective-C的运行时库能够准确把握 Block从栈复制到堆以及堆上的 Block被废弃的
+时机,因此 Block用结构体中即使含有附有__strong修饰符或__weak修饰符的变量,也可以恰
+当地进行初始化和废弃。为此需要使用在 __main_block_desc0结构体中增加的成员变量copy和
+dispose,以及作为指针赋值给该成员变量的__main_block_copy0函数和__main_block_dispose0函数。
+由于在该源代码的 Block用结构体中,含有附有 strong修饰符的对象类型变量aray,所
+以需要恰当管理赋值给变量aray的对象。因此__main_block_copy0函数使用 __Block_object_assign函数将对象类型对象赋值给Bock用结构体的成员变量aray中并持有该对象。
+	</p>
+
+	<pre>
+static void __main_block_copy_o(struct __main_block_impl_o*dst,
+	struct __main_block_impl_0*src){
+		_Block_object_assign(&dst->array, src->array, BLOCK_FIELD_IS_OBJECT);	
+}
+	</pre>
+
+	<p>
+		_Block_object_assign函数调用相当于 retain实例方法的函数,将对象赋值在对象类型的结构
+体成员变量中。
+另外,__main_block_dispose0函数使用_Block_object_dispose函数,释放赋值在 Block用
+结构体成员变量array中的对象。
+	</p>
+	<pre>
+static void __main_block_dispose_o(struct __main_block_impl_o *src)
+	_Block_object_dispose(src->array, BLOCK_FIELD_IS_OBJECT);
+	</pre>
+	<p>
+		_Block_object_dispose函数调用相当于 release实例方法的函数,释放赋值在对象类型的结构
+体成员变量中的对象。
+虽然此__main_block_copy_0函数(以下简称copy函数)和 __main_block_dispose_0函数(以
+下简称 dispose函数)指针被赋值在__main_block_desc0结构体成员变量copy和 dispose中,但
+在转换后的源代码中,这些函数包括使用指针全都没有被调用。那么这些函数是从哪调用呢?
+在 Block从栈复制到堆时以及堆上的 Block被废弃时会调用这些函数。我们整理到表26看看:
+	</p>
+	<table>
+		<tbody>
+			<tr>
+				<th> 函数</th>
+				<th> 调用时机</th>
+			</tr>
+			<tr>
+				<td> coy函数</td>
+				<td> 栈上的Bock复制到堆时</td>
+			</tr>
+			<tr>
+				<td> dispose函数</td>
+				<td> 堆上的Bock被废弃时</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<p>
+		那么什么时候栈上的 Block会复制到堆呢?
+	</p>
+	<ul>
+		<li> 调用 Block的copy实例方法时</li>
+		<li> Block作为函数返回值返回时</li>
+		<li> 将 Block赋值给附有 strong修饰符id类型的类或 Block类型成员变量时</li>
+		<li>
+			在方法名中含有 using Block的 Cocoa框架方法或 Grand Central Dispatch的API中传递Block时
+		</li>
+	</ul>
+
+	<p>
+		在调用 Block的copy实例方法时,如果 Block配置在栈上,那么该 Block会从栈复制到堆。
+Block作为函数返回值返回时、将 Block赋值给附有 __strong修饰符id类型的类或 Block类型
+成员变量时,编译器自动地将对象的 Block作为参数并调用 Block copy函数,这与调用 Block
+的copy实例方法的效果相同。在方法名中含有 using Block的 Cocoa框架方法或 Grand Central
+Dispatch的AP中传递 Block时,在该方法或函数内部对传递过来的 Block调用 Block的cpy实
+例方法或者 Block copy函数。
+也就是说,虽然从源代码来看,在上面这些情况下栈上的 Block被复制到堆上,但其实可归
+结为 Block copy函数被调用时 Block从栈复制到堆。
+相对的,在释放复制到堆上的 Block后,谁都不持有 Block而使其被废弃时调用 dispose函数。
+这相当于对象的 dealloc实例方法。
+有了这种构造,通过使用附有__strong修饰符的自动变量, Block中截获的对象就能够超出
+其变量作用域而存在。
+虽然这种使用copy函数和 dispose函数的方法在224节中没做任何说明,但实际上在使用
+__block变量时已经用到了。
+	</p>
+	<pre>
+static void __main_block_copy_0(
+	struct __main_block_impl_0*dst, struct __main_block_impl_o*src){
+		_Block_object_assign(&dst->val, src->val, BLOCK_FIELD_IS_BYREF);	
+}
+static void __main_block_dispose_o(struct __main_block_impl o*src){
+	_Block_object_dispose (src->val, BLOCK_FIELD_IS_BYREF);
+}
+	</pre>
+	<p>
+		转换后的源代码在 Block用结构体的部分基本相同,其不同之处如表27所示:
+表27截获对象时和使用bock变量时的不同
+	</p>
+	<table>
+		<tbody>
+			<tr>
+				<td> 对象</td>
+				<td> BLOCK_FIELD_IS_OBJECT</td>
+			</tr>
+			<tr>
+				<td> __bock变量</td>
+				<td> BLOCK_FIELD_IS_BYREF</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<p>
+		通过 BLOCK_FIELD_IS_OBJECT和 BLOCK_FIELD_IS_BYREF参数,区分copy函数和
+dispose函数的对象类型是对象还是 __block变量。
+但是与copy函数持有截获的对象、 dispose函数释放截获的对象相同,copy函数持有所使用
+的 __block变量, dispose函数释放所使用的 __block变量
+由此可知, Block中使用的赋值给附有 __strong修饰符的自动变量的对象和复制到堆上的
+__block变量由于被堆上的 Block所持有,因而可超出其变量作用域而存在。
+那么在刚才的源代码中,如果不调用 Block的copy实例方法又会如何呢?
+	</p>
+	<pre>
+blk_t blk;
+{
+	id array = [[NSMutableArray alloc] init];
+	blk = ^(id obj){
+		[array addobject: obj]i
+		NSLog(@"array count = %ld", [ array count]);	
+	}
+}
+blk([[NSObject alloc] init]);
+blk([[NSObject alloc] init]);
+blk([[NSObject alloc] init]);
+	</pre>
+
+	<p>
+		执行该源代码后,程序会强制结束。
+因为只有调用_Block_copy函数才能持有截获的附有 __strong修饰符的对象类型的自动变量
+值,所以像上面源代码这样不调用_ Block copy函数的情况下,即使截获了对象,它也会随着变
+量作用域的结束而被废弃。
+因此, Block中使用对象类型自动变量时,除以下情形外,推荐调用 Block的copy实例方法。
+	</p>
+
+	<ul>
+		<li> Block作为函数返回值返回时</li>
+		<li> 将 Block赋值给类的附有__strong修饰符的id类型或 Block类型成员变量时</li>
+		<li> 向方法名中含有 using Block的 Cocoa框架方法或 Grand Central Dispatch的API中传递Block时</li>
+	</ul>
+
+	
+
+
+
+
+    
+</body>
+</html>

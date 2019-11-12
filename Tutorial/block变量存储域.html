@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+	<p>
+		上节只对 Block进行了说明,那么对 __block变量又是如何处理的呢?使用 __block变量的
+Block从栈复制到堆上时, __block变量也会受到影响。总结如表2-5所示。
+	</p>
+	<table>
+		<tbody>
+			<tr>
+				<th> __bLock变量的配置存储域</th>
+				<th> Block从栈复制到堆时的影响</th>
+			</tr>
+			<tr>
+				<td> 栈</td>
+				<td> 从栈复制到堆并被Block持有</td>
+			</tr>
+			<tr>
+				<td> 堆</td>
+				<td> 被Block持有</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<p>
+		若在1个 Block中使用_bock变量,则当该 Block从栈复制到堆时,使用的所有_ block
+变量也必定配置在栈上。这些 __block变量也全部被从栈复制到堆。此时, Block持有 __block变
+量。即使在该 Block已复制到堆的情形下,复制 Block也对所使用的_ __block变量没有任何影响
+如图29所示。
+	</p>
+	<img src="../img/dasdasd110234549.PNG">	
+	<p>
+		在多个Bock中使用 __block变量时,因为最先会将所有的 Block配置在栈上,所以 __block
+变量也会配置在栈上。在任何一个 Block从栈复制到堆时, __block变量也会一并从栈复制到堆
+并被该 Block所持有。当剩下的 Block从栈复制到堆时,被复制的 Block持有 __block变量,并
+增加 __block变量的引用计数。如图2-10所示。
+	</p>
+
+	<img src="../img/dasdasd110234550.PNG">
+
+	<p>
+		通过该功能,无论是在 Block语法中、 Block语法外使用 __block变量,还是 __block变量配
+置在栈上或堆上,都可以顺利地访问同一个__block变量。
+	</p>
+
+	
+
+
+
+    
+</body>
+</html>
