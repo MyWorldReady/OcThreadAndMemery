@@ -27,11 +27,13 @@ int main (){
 }	
 </pre>
 <p>
+	<strong>
 	该源代码中, Block语法的表达式使用的是它之前声明的自动变量fmt和val。 Blocks中,
 Block表达式截获所使用的自动变量的值,即保存该自动变量的瞬间值。因为 Block表达式保存
 了自动变量的值,所以在执行Bock语法后,即使改写 Block中使用的自动变量的值也不会影响
 Block执行时自动变量的值。该源代码就在 Block语法后改写了Bock中的自动变量va和fmt
 下面我们一起看一下执行结果
+</strong>
 </p>
  	<pre>
  		val=10

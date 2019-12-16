@@ -62,25 +62,27 @@ block decl :: type expression
 	</p>
 	<img src="../img/dasdasd110234536.PNG">
 	<p>
+		<strong>
 		省略返回值类型时,如果表达式中有 retur语句就使用该返回值的类型,如果表达式中没有
 return语句就使用void类型。表达式中含有多个 return语句时,所有 return的返回值类型必须相
-同。前面的源代码省略其返回值类型时如下所示:
+同。前面的源代码省略其返回值类型时如下所示:</strong>
 	</p>
 	<pre>
 		^(int count){return count 1; }
 	</pre>
 	<p>
+		<strong>
 		该 Block语法将按照 return语句的类型,返回int型返回值。
-其次,如果不使用参数,参数列表也可省略。以下为不使用参数的 Block语法:
+其次,如果不使用参数,参数列表也可省略。以下为不使用参数的 Block语法:</strong>
 	</p>
 	<pre>
-		^void (void)printf("Blocks\n");}
+		^void (void){printf("Blocks\n");}
 	</pre>
 	<p>
 		该源代码可省略为如下形式:
 	</p>
 	<pre>
-		^{printf("Blocks\n");}
+		<strong>^{printf("Blocks\n");}</strong>
 	</pre>
 	<p>
 		返回值类型以及参数列表均被省略的 Block语法是大家最为熟知的记述方式吧。如图23

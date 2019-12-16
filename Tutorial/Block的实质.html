@@ -6,13 +6,21 @@
     <title>The Frameset Boilerplate: Mainframe</title>
 </head>
 <body style="font-family:sans-serif">
+
+	<h1>Block的实质</h1>
     
 	<p>
 		Block是“带有自动变量值的匿名函数”,但 Block究竟是什么呢?本节将通过 Block的实现
 进一步帮大家加深理解。
+<br>
+<br>
+
 前几节讲的 Block语法看上去好像很特别,但它实际上是作为极普通的C语言源代码来处理
 的。通过支持 Block的编译器,含有 Block语法的源代码转换为一般C语言编译器能够处理的源
 代码,并作为极为普通的C语言源代码被编译。
+<br>
+<br>
+
 这不过是概念上的问题,在实际编译时无法转换成我们能够理解的源代码,但 clang(LLwM
 编译器)具有转换为我们可读源代码的功能。通过“ rewrite-objc”选项就能将含有 Block语法的
 源代码变换为C艹+的源代码。说是C艹+,其实也仅是使用了 struct结构,其本质是C语言源代码。
@@ -83,7 +91,7 @@ int main (){
 	</p>
 
 	<pre>
-		^[printf("Block\n");
+		^{printf("Block\n")};
 	</pre>
 	<p>
 		可以看到,变换后的源代码中也含有相同的表达式。
@@ -96,7 +104,10 @@ static void __main_block_func_0(struct __main_block_impl_0* __cself){
 
 	<p>
 		如变换后的源代码所示,通过 Blocks使用的匿名函数实际上被作为简单的C语言函数来处
-理。另外,根据 Block语法所属的函数名(此处为main)和该 Block语法在该函数出现的顺序值
+理。<br>
+
+
+另外,根据 Block语法所属的函数名(此处为main)和该 Block语法在该函数出现的顺序值
 (此处为0)来给经 clang变换的函数命名。
 该函数的参数__cself相当于C++实例方法中指向实例自身的变量this,或是 Objective-C实
 例方法中指向对象自身的变量self,即参数 __cself为指向 Block值的变量。
@@ -170,8 +181,7 @@ Myobject *obj=[[Myobject alloc] init];
 	</p>
 
 	<pre>
-Myobject *obj =  objc_msgsend(
-	objc_getclass("Myobject"), sel_registerName("alloc));
+Myobject *obj =  objc_msgsend(objc_getclass("Myobject"), sel_registerName("alloc));
 obj = objc_msgSend (obj, sel_registerName("init"));
 objc_msgSend (obj, sel_registerName("method: "),10);
 	</pre>
@@ -249,8 +259,7 @@ NSConcreteBlock的说明。 __NSConcreteStackBlock用于初始化__block_impl结
 
 	<pre>
 void (*blk)(void) =
-(void (*)(void))& __main_block_impl_0(
-	(void *) __main_block_func_0,&__main_block_desc_0_DATA);
+(void (*)(void))& __main_block_impl_0((void *) __main_block_func_0,&__main_block_desc_0_DATA);
 	</pre>
 
 	<p>

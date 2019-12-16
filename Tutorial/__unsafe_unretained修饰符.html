@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+
+		<h1>__unsafe_unretained修饰符</h1>
+	<p>
+		__unsafe_unretained修饰符正如其名 unsafe所示,是不安全的所有权修饰符。尽管ARC式
+的内存管理是编译器的工作,但附有__unsafe_unretained修饰符的变量不属于编译器的内存管理
+对象。这一点在使用时要注意。
+	</p>
+	<pre>
+		id __unsafe_unretained obj =[[NSObject alloc] init];
+	</pre>
+	<p>
+		该源代码将自己生成并持有的对象赋值给附有 __unsafe_unretained修饰符的变量中。虽然使用了 unsafe的变量,但编译器并不会忽略,而是给出适当的警告。
+	</p>
+	<img src="../img/dasdasd110234521.PNG">
+	<p>
+		<strong>附有 __unsafe_unretained修饰符的变量同附有__weak修饰符的变量一样,因为自己生成并
+持有的对象不能继续为自己所有,所以生成的对象会立即被释放。</strong>
+<br>
+到这里, __unsafe_unretained
+修饰符和__weak修饰符是一样的,下面我们来看看源代码的差异。
+	</p>
+	<pre>
+id  <strong>__unsafe_unretained</strong> obj1 = nil;
+{
+	id <strong>__strong</strong> obj0=[[ NSObject a1loc]init];
+	<strong>obj1  = obj0;</strong>
+	NSLog(e"A: %@",obj1)			
+}
+
+NSLog(e"B: %@", obj1);
+	</pre>
+	<p>
+		该源代码的执行结果为:
+	</p>
+	<pre>
+		A: &lt;NSObject: 0x753e180&gt;
+B: &lt;NSObject: 0x753e180&gt;
+	</pre>
+	<p>
+		我们还像以前那样,通过确认对象的持有情况来理解发生了什么。
+	</p>
+	<pre>
+		id __unsafe_unretained obj1 =nil;
+
+{
+	/*
+	*自己生成并持有对象
+	*/
+
+	id __strong obj=[[NsObject alloc] init]
+
+	/*
+	*因为ob0变量为强引用,
+	*所以自己持有对象
+	*/
+
+	obj1 = obj0;
+
+	/*
+	*虽然obj0变量赋值给obj1,
+	*但是obj1变量既不持有对象的强引用也不持有弱引用
+	*/
+
+	NSLog("A:%@”,obj1);
+	/*
+	*输出ob1变量表示的对象
+	*/
+
+	
+
+	
+}
+
+/*
+	*输出ob1变量表示的对象
+	*因为obj0变量超出其作用域,强引用失效,
+	*所以自动释放自己持有的对象。
+	*因为对象无持有者,所以废弃该对象。
+	*/
+
+
+
+NSLog(Q"B: %@",obj1);
+
+/*
+*obj1变量表示的对象
+*已经被废弃(悬垂指针)!
+*错误访问!
+*/
+
+	</pre>
+	<p>
+		<strong>也就是说,最后一行的 NSLog只是碰巧正常运行而已。虽然访问了已经被废弃的对象,但
+应用程序在个别运行状况下才会崩溃。</strong><br>
+在使用__unsafe_unretained修饰符时,赋值给附有 __strong修饰符的变量时有必要确保被赋
+值的对象确实存在
+但是,在使用前,让我们再一次想想为什么需要使用附有 __unsafe_unretained修饰符的变量。
+比如在ioS4以及 OS X Snow Leopard的应用程序中,必须使用 __unsafe_unretained修饰符
+来替代__weak修饰符。赋值给附有__unsafe_unretained修饰符变量的对象在通过该变量使用时,
+如果没有确保其确实存在,那么应用程序就会崩溃
+	</p>
+
+
+
+    
+</body>
+</html>

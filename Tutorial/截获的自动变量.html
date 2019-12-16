@@ -7,6 +7,8 @@
 </head>
 <body style="font-family:sans-serif">
     
+	<h1>截获的自动变量</h1>
+
 	<p>
 		如果将值赋值给 Block中截获的自动变量,就会产生编译错误。
 	</p>
@@ -24,8 +26,8 @@ void (^blk)(void)=^{val =1;}
 	<pre>
 id array = [[NSMutableArray alloc] init];
 void (^blk)(void)=^{
-	id ob] =[[NSObject alloc] init];
-	[array addobject: obj]i;
+	id obj =[[NSObject alloc] init];
+	[array addobject: obj];
 }
 	</pre>
 	<p>
@@ -38,7 +40,7 @@ void (^blk)(void)=^{
 	<pre>
 id array =[[NSMutableArray alloc] init];
 void (^blk)(void)=^{
-	array [[NSMutableArray alloc] init];
+	array = [[NSMutableArray alloc] init];
 };
 	</pre>
 
@@ -70,12 +72,12 @@ void (^blk)(void)=^{
 	</p>
 	<img src="../img/dasdasd110234541.PNG">
 	<p>
-		
+		<strong>
 这是因为在现在的 Blocks中,截获自动变量的方法并没有实现对C语言数组的截获。这时,
-使用指针可以解决该问题。
+使用指针可以解决该问题。</strong>
 	</p>
 	<pre>
-const char *text = "hello";
+<strong>const char *text = "hello";</strong>
 void (^blk)(void)=^{
 	printf("%c\n", text[2])
 }

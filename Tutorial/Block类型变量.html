@@ -43,7 +43,7 @@ int (*funcptr)(int)=&func;
     	那么,下面我们就试着使用 Block语法将 Block赋值为 Block类型变量。
     </p>
     <pre>
-    	int (^blk)(int)=^(int count){return count + 1;};
+    	<strong>int (^blk)(int)=^(int count){return count + 1;};</strong>
     </pre>
     <p>
     	由“^”开始的 Block语法生成的 Block被赋值给变量bk中。因为与通常的变量相同,所以
@@ -59,14 +59,14 @@ b1k2=b1k1;
     	在函数参数中使用 Block类型变量可以向函数传递 Block
     </p>
     <pre>
-    	void func (int (^blk)(int)){}
+    	<strong>void func (int (^blk)(int)){}</strong>
     </pre>
    	<p>
    		在函数返回值中指定 Block类型,可以将 Block作为函数的返回值返回。
    	</p>
    	<pre>
 int (^func()(int)){
-	return ^(int count){return count + 1;};
+	<strong>return ^(int count){return count + 1;};</strong>
 }
    	</pre>
    	<p>
@@ -74,10 +74,12 @@ int (^func()(int)){
 可以像使用函数指针类型时那样,使用 typedef来解决该问题。
    	</p>
    	<pre>
-   		typedef int (^blk_t)(int);
+   		<strong>typedef int (^blk_t)(int);</strong>
    	</pre>
    	<p>
-   		如上所示,通过使用 typedef可声明“blk_t”类型变量。我们试着在以上例子中的函数参数
+   		如上所示,通过使用 typedef可声明“blk_t”类型变量。
+      <br>
+      我们试着在以上例子中的函数参数
 和函数返回值部分里使用一下。
    	</p>
    	<pre>
@@ -112,7 +114,7 @@ blk_t func (){}
 Block类型变量并在函数中执行 Block的例子如下:
    	</p>
    	<pre>
-int func(blk_t blk, int rate){
+<strong>int func(blk_t blk, int rate){</strong>
 	return blk(rate);
 }
    	</pre>
@@ -129,7 +131,7 @@ int func(blk_t blk, int rate){
 的指针,即 Block的指针类型变量。
    	</p>
    	<pre>
-typedef int (blk t)(int);
+typedef int (blk_t)(int);
 blk_t blk = ^(int count){return count + 1;}
 blk_t *blkptr =&blk
 (*blkptr)(10)

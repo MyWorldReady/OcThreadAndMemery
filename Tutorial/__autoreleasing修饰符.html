@@ -1,0 +1,335 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>The Frameset Boilerplate: Mainframe</title>
+</head>
+<body style="font-family:sans-serif">
+    
+
+		<h1>__autoreleasing修饰符</h1>
+	<p>
+		ARC有效时 autorelease会如何呢?实际上,后面讲到的原则中也会说明(参考1.3.3节),
+不能使用 autorelease方法。另外,也不能使用 NSAutoreleasePool类。这样一来,虽然 autorelease
+无法直接使用,但实际上,ARC有效时 autorelease功能是起作用的。
+ARC无效时会像下面这样来使用:
+	</p>
+	<pre>
+		/*
+		*<strong>ARC无效</strong>
+		*/
+NSAutoreleasePool *pool=[[NSAutorelease Pool alloc] init];
+id obj= [[NSObject alloc] init];
+[obj autorelease];
+[pool drain];
+	</pre>
+	<p>
+		ARC有效时,该源代码也能写成下面这样:
+	</p>
+	<pre>
+@autoreleasepool {
+	id <strong>__autoreleasing</strong> obj=[[NSObject alloc] init];
+}
+	</pre>
+	<p>
+		指定“@autoreleasepool块”来替代“ NSAutorelease Pool类对象生成、持有以及废弃”这一范围。<br><br>
+
+		<strong>
+另外,ARC有效时,要通过将对象赋值给附加了 __autoreleasing修饰符的变量来替代调用
+autorelease方法</strong>。
+<br><br>
+<strong>
+对象赋值给附有__autoreleasing修饰符的变量等价于在ARC无效时调用对象
+的 autorelease方法,即对象被注册到 autoreleasepool
+也就是说可以理解为,在ARC有效时,用@autoreleasepool块替代 NSAutoreleasePool类,
+用附有 __autoreleasing修饰符的变量替代 autorelease方法</strong>。如图1-21所示。
+	</p>
+	<img src="../img/dasdasd110234522.PNG">
+
+	<p>
+		但是,显式地附加__autoreleasing修饰符同显式地附加__strong修饰符一样罕见。<br>
+我们通过实例来看看为什么非显式地使用 __autoreleasing修饰符也可以。<br><br>
+
+<strong>
+取得非自己生成并持有的对象时,如同以下源代码,虽然可以使用 alloc/new/copy/mutableCopy以外的方法来取得对象,但该对象已被注册到了 autoreleasepool。<br>
+这同在ARC无效
+时取得调用了 autorelease方法的对象是一样的</strong>。<br><br>
+<strong>
+这是由于编译器会检查方法名是否以 alloc/new/copy/mutableCopy开始,如果不是则自动将返回值的对象注册到 autoreleasepool
+另外,根据后面要讲到的遵守内存管理方法命名规则(参考1.34节),init方法返回值的对
+象不注册到 autoreleasepool</strong>
+	</p>
+	<pre>
+@autoreleasepool {
+	id __strong obj= [NSMutableArray array]
+}
+	</pre>
+
+	<p>
+		我们再来看看该源代码中对象的所有状况。
+	</p>
+
+	<pre>
+		@autoreleasepool {
+/*
+*取得非自己生成并持有的对象
+*/
+id __strong obj= [NSMutableArray array];
+
+/*
+*因为变量obj为强引用,
+*所以自己持有对象。
+*并且该对象
+*由编译器判断其方法名后
+*自动注册到 autoreleasepoo1
+
+}
+/*
+*因为变量obj超出其作用域,强引用失效
+*所以自动释放自己持有的对象。
+*同时,随着 autoreleasepoo1块的结束,
+*注册到 autoreleasepoo1中的
+*所有对象被自动释放。
+*因为对象的所有者不存在,所以废弃对象
+*/
+	</pre>
+	<p>
+		像这样,不使用 __autoreleasing修饰符也能使对象注册到 autoreleasepool。以下为取得非自
+己生成并持有对象时被调用方法的源代码示例。
+	</p>
+
+	<pre>
+		-(id)array{
+	return [[NSMutableArray alloc] init];
+}
+	</pre>
+	<p>
+		该源代码也没有使用__autoreleasing修饰符,可写成以下形式。
+	</p>
+	<pre>
+		- (id)array{
+	id obj = [[NSMutableArray alloc] init];
+	return obj;
+}
+	</pre>
+	<p>
+		因为没有显式指定所有权修饰符,所以id obj同附有 __strong修饰符的 id __strong obj是完
+全一样的。<br>
+
+<strong>
+由于 return使得对象变量超出其作用域,所以该强引用对应的自己持有的对象会被自
+动释放,但该对象作为函数的返回值,编译器会自动将其注册到 autoreleasepool</strong>。<br>
+以下为使用__weak修饰符的例子。虽然__weak修饰符是为了避免循环引用而使用的,但
+在访问附有__weak修饰符的变量时,实际上必定要访问注册到 autoreleasepool的对象。
+	</p>
+	<pre>
+		id __weak obj1 =obj0;
+NSLog (@"class=%@", [obj1 class]);
+	</pre>
+	<p>
+		以下源代码与此相同。
+	</p>
+	<pre>
+		id __weak obj1 = obj0;
+id __autoreleasing tmp = obj1;
+NSLog(@"class=%@", [tmp class]);
+	</pre>
+	<p>
+		为什么在访问附有__weak修饰符的变量时必须访问注册到 autoreleasepool的对象呢?
+<br>
+		这是
+因为__weak修饰符只持有对象的弱引用,而在访问引用对象的过程中,该对象有可能被废弃
+如果把要访问的对象注册到 autoreleasepool中,那么在@ autoreleasepool块结束之前都能确保该对
+象存在。因此,在使用附有__weak修饰符的变量时就必定要使用注册到 autoreleasepool中的对象。
+<br>
+<br>
+
+
+最后一个可非显式地使用 __autoreleasing修饰符的例子,同前面讲述的dobj和 id __strong
+obj完全一样。那么id的指针id*obj又如何呢?可以由 id __strong obj的例子类推出id __strong
+obj吗?其实,推出来的是id __autoreleasing*obj。同样地,对象的指针 NSObject*obj便成为
+了 NSObject* __autoreleasing * obj。
+像这样,id的指针或对象的指针在没有显式指定时会被附加上_ __autoreleasing修饰符。
+比如,为了得到详细的错误信息,经常会在方法的参数中传递 NSError对象的指针,而不是
+函数返回值。 Cocoa框架中,大多数方法也使用这种方式,如 NSString的 stringWithContentsOfFile:encoding:eror类方法等。使用该方式的源代码如下所示。
+	</p>
+	<pre>
+		NSError *error nil:
+BOOL result = [obj performoperationWithError: &error];
+	</pre>
+	<p>
+		该方法的声明为:
+	</p>
+	<pre>
+		-(BOOL) performoperationwithError:(NSError **)error;
+	</pre>
+	<p>
+		同前面讲述的一样,id的指针或对象的指针会默认附加上__autoreleasing修饰符,所以等同
+于以下源代码。
+	</p>
+	<pre>
+		-(BOOL) performoperationwithError:(NSError __autoreleasing *)error;
+	</pre>
+	<p>
+		参数中持有 NSError对象指针的方法,虽然为响应其执行结果,需要生成 NSError类对象,
+但也必须符合内存管理的思考方式。
+作为 alloc/new/copy/mutable Copy方法返回值取得的对象是自己生成并持有的,其他情况下
+便是取得非自己生成并持有的对象。因此,使用附有 __autoreleasing修饰符的变量作为对象取得参数,与除 alloc/new/copy/mutable Copy外其他方法的返回值取得对象完全一样,都会注册到
+autoreleasepool,并取得非自己生成并持有的对象。
+比如 performOperation WithError方法的源代码就应该是下面这样:
+
+	</p>
+	<pre>
+		(BOOL) performoperationwithError:(NSError autoreleasing *)error{
+		/*
+		*错误发生
+		*/
+		*error = [[NSError alloc]
+initwithDomain: MyAppDomain code: errorCode userInfo: nil];
+return No;
+	}
+	</pre>
+	<p>
+		因为声明为 NSError* __autoreleasing*类型的eror作为·eror被赋值,所以能够返回注册
+到 autoreleasepool中的对象。
+然而,下面的源代码会产生编译器错误。
+	</p>
+	<pre>
+		NSError *error nil;
+NSError **pError = & error;
+	</pre>
+	<p>
+		赋值给对象指针时,所有权修饰符必须一致。
+	</p>
+	<img src="../img/dasdasd110234523.PNG">
+	<p>
+		此时,对象指针必须附加__strong修饰符。
+	</p>
+	<pre>
+		NSError *error nil;
+		NSError __strong *pError =&error;
+		/*
+		*编译正常
+		*/
+	</pre>
+	<p>
+		当然,对于其他所有权修饰符也是一样
+	</p>
+	<pre>
+		NSError __weak *error = nil;
+ NSError *__weak *pError = & error;
+ /*
+ *编译正常
+ */
+
+NSError __unsafe_unretained *unsafeError  = nil;
+NSError  __unsafe __unretained *pUnsafeError = & unsafeError;
+/*
+ *编译正常
+ */
+	</pre>
+	<p>
+		前面的方法参数中使用了附有 __autoreleasing修饰符的对象指针类型。
+	</p>
+	<pre>
+		-(BOOL) performOperationwithError:(NSError * __autoreleasing *)error;
+	</pre>
+	<p>
+		然而调用方却使用了附有 strong修饰符的对象指针类型。
+	</p>
+
+	<pre>
+		NSError strong *error =nil;
+BOOL result= [obj performOperationwithError: &error];
+	</pre>
+	<p>
+		对象指针型赋值时,其所有权修饰符必须一致,但为什么该源代码没有警告就顺利通过编译
+了呢?实际上,编译器自动地将该源代码转化成了下面形式
+	</p>
+	<pre>
+		NSError __strong *error = nil
+NSError __autoreleasing *tmp =error;
+BOOL result = [obj performOperationwithError: &tmp];
+error  = tmp;
+	</pre>
+	<p>
+		当然也可以显式地指定方法参数中对象指针类型的所有权修饰符。
+	</p>
+	<pre>
+		-(BOOL) performOperationwithError:(NSError * __strong *)error;
+	</pre>
+	<p>
+		像该源代码的声明一样,对象不注册到 autoreleasepool也能够传递。但是前面也说过,只有
+作为 alloc/new/copy/mutable Copy方法的返回值而取得对象时,能够自己生成并持有对象。其他
+情况即为“取得非自己生成并持有的对象”,这些务必牢记。为了在使用参数取得对象时,贯彻
+内存管理的思考方式,我们要将参数声明为附有 __autoreleasing修饰符的对象指针类型。
+另外,虽然可以非显式地指定 __autoreleasing修饰符,但在显式地指定__autoreleasing修饰
+符时,必须注意对象变量要为自动变量(包括局部变量、函数以及方法参数)。
+下面我们换个话题,详细了解一下@ autoreleasepool。如以下源代码所示,ARC无效时,可
+将 NSAutoreleasePool对象嵌套使用。
+	</p>
+	<pre>
+		/*ARC无效*
+NSAutoreleasePool *poo10 = [[NSAutoreleasePool alloc] init];
+NSAutoreleasePool *pool =[[NSAutoreleasePool alloc] init];
+NSAutoreleasePool *pool2=[[NSAutoreleasePool alloc] init];
+id obj =[[NSObject alloc] init];
+[obj autorelease];
+[pool2 drain];
+[pool1 drain];
+[pool0 drain];
+	</pre>
+	<p>
+		同样地,@autoreleasepool块也能够嵌套使用。
+	</p>
+	<pre>
+@autoreleasepool{
+	@autoreleasepool{
+		@autoreleasepool {
+			id __autoreleasing obj=[[NSObject alloc] init];
+		}
+	}	
+}
+	</pre>
+	<p>
+		比如,在OS应用程序模板中,像下面的main函数一样, @autoreleasepool块包含了全部程序。
+	</p>
+	<pre>
+int main(int argc, char *argv [1){
+	@autoreleasepool {
+		return UIApplicationMain(argc, argv, nil
+NSStringFromClass([AppDelegate class]));		
+	}	
+}
+	</pre>
+	<p>
+		NSRunLoop等实现不论ARC有效还是无效,均能够随时释放注册到 autoreleasepool中的对象。
+另外,如果编译器版本为LLMM3.0以上,即使ARC无效@ autoreleasepool块也能够使用
+如以下源代码所示
+	</p>
+	<pre>
+		/*ARC无效*/
+@autoreleasepool {
+	id ob=[[NSObject alloc] init];
+	[obj autorelease];
+}
+	</pre>
+	<p>
+		因为 autoreleasepool范围以块级源代码表示,提高了程序的可读性,所以今后在ARC无效
+时也推荐使用@ autoreleasepool块。
+另外,无论ARC是否有效,调试用的非公开函数_ objc autorelease PoolPrint()(参考1.2.7节)
+都可使用。
+	</p>
+	<pre>
+		_objc_autoreleasePoolPrint ();
+	</pre>
+	<p>
+		利用这一函数可有效地帮助我们调试注册到 autoreleasepool上的对象
+	</p>
+
+
+
+    
+</body>
+</html>

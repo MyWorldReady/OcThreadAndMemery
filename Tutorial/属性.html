@@ -56,8 +56,14 @@
 
 	<p>
 		以上各种属性赋值给指定的属性中就相当于赋值给附加各属性对应的所有权修饰符的变量
-中。只有copy属性不是简单的赋值,它赋值的是通过 NSCopying接口的 copy withZone:方法复
+中。 <br><br>
+
+<strong>
+只有copy属性不是简单的赋值,它赋值的是通过 NSCopying接口的 copy withZone:方法复
 制赋值源所生成的对象。
+</strong>
+
+<br><br>
 另外,在声明类成员变量时,如果同属性声明中的属性不一致则会引起编译错误。比如下面
 这种情况。
 	</p>
@@ -66,7 +72,7 @@
 	</pre>
 
 	<p>
-		在声明id型oj成员变量时,像下面这样,定义其属性声明为weak。
+		在声明id型obj成员变量时,像下面这样,定义其属性声明为weak。
 	</p>
 	<pre>
 		property (nonatomic, weak) id obj;
@@ -78,7 +84,7 @@
 	<img src="../img/dasdasd110234530.PNG">
 
 	<p>
-		此时,成员变量的声明中需要附加__weak修饰符。
+		<strong>此时,成员变量的声明中需要附加__weak修饰符。</strong>
 	</p>
 
 	<pre>

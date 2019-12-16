@@ -23,19 +23,25 @@
 	</pre>
 
 	<p>
-		__unsafe_unretained修饰符以外的__strong/__weak/__autoreleasing修饰符保证其指定的变量
-初始化为nil。同样地,附有__strong/__weak/__autoreleasing修饰符变量的数组也保证其初始化
-为nil。下面我们就来看看数组中使用附有 __strong修饰符变量的例子。
+		<strong>__unsafe_unretained修饰符以外的__strong/__weak/__autoreleasing修饰符保证其指定的变量
+初始化为nil。</strong><br><br>
+<strong>
+同样地,附有__strong/__weak/__autoreleasing修饰符变量的数组也保证其初始化
+为nil。</strong>
+<br>
+<br>
+
+下面我们就来看看数组中使用附有 __strong修饰符变量的例子。
 	</p>
 	<pre>
 		id objs[2];
-obis [o] =[[NSObject alloc] init];
-objs[1]=【 NSMutableArray array];
+obis [0] =[[NSObject alloc] init];
+objs[1]=[NSMutableArray array];
 	</pre>
 
 	<p>
 		数组超出其变量作用域时,数组中各个附有 __strong修饰符的变量也随之失效,其强引用消
-失,所赋值的对象也随之释放。这与不使用数组的情形完全一样。
+失,所赋值的对象也随之释放。这与不使用数组的情形完全一样。 <br><br>
 将附有 __strong修饰符的变量作为动态数组来使用时又如何呢?在这种情况下,根据不同的
 目的选择使用 NSMutableArray、 NSMutableDictionary、 NSMutableSet等 Foundation框架的容器。
 这些容器会恰当地持有追加的对象并为我们管理这些对象。
@@ -45,17 +51,19 @@ objs[1]=【 NSMutableArray array];
 	</p>
 
 	<pre>
-		id __strong *array nil
+		id __strong *array = nil
 	</pre>
 
 	<p>
-		如前所述,由于“id*类型”默认为“ id __autoreleasing*类型”,所以有必要显式指定为__strong修饰符。另外,虽然保证了附有__strong修饰符的id型变量被初始化为ni,但并不保证
-附有 __strong修饰符的id指针型变量被初始化为nil。
+		<strong>
+		如前所述,由于“id*类型”默认为“ id __autoreleasing*类型”,所以有必要显式指定为__strong修饰符。<br>另外,虽然保证了附有__strong修饰符的id型变量被初始化为ni,但并不保证
+附有 __strong修饰符的id指针型变量被初始化为nil</strong>。
+<br>
 另外,使用类名时如下记述。
 	</p>
 
 	<pre>
-		NSObject * __strong *array = nil;
+		<strong>NSObject * __strong *array = nil;</strong>
 	</pre>
 
 	<p>
@@ -67,11 +75,12 @@ objs[1]=【 NSMutableArray array];
 	</pre>
 
 	<p>
+		<strong>
 		该源代码分配了 entries个所需的内存块。由于使用附有 __strong修饰符的变量前必须先将
 其初始化为nil,所以这里使用使分配区域初始化为0的 calloc函数来分配内存。不使用 calloc函
 数,在用malc函数分配内存后可用 memset等函数将内存填充为0。
 但是,像下面的源代码这样,将n代入到 malloc函数所分配的数组各元素中来初始化是非
-常危险的。
+常危险的</strong>。
 	</p>
 
 	<pre>
@@ -92,14 +101,14 @@ __strong修饰符的并被赋值了随机地址的变量中,从而释放一个�
 	</pre>
 
 	<p>
-		但是,在动态数组中操作附有__strong修饰符的变量与静态数组有很大差异,需要自己释放
+		<strong>但是,在动态数组中操作附有__strong修饰符的变量与静态数组有很大差异,需要自己释放
 所有的元素。
 如以下源代码所示,在只是简单地用free函数废弃了数组用内存块的情况下,数组各元素所
-赋值的对象不能再次释放,从而引起内存泄漏。
+赋值的对象不能再次释放,从而引起内存泄漏</strong>。
 	</p>
 
 	<pre>
-		free(array);
+		<strong>free(array);</strong>
 	</pre>
 	<p>
 		这是因为在静态数组中,编译器能够根据变量的作用域自动插入释放赋值对象的代码,而在

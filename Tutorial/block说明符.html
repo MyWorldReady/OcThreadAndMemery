@@ -8,16 +8,16 @@
 <body style="font-family:sans-serif">
     	
     	<p>
-    		实际上,自动变量值截获只能保存执行 Block语法瞬间的值。保存后就不能改写该值。下面
+    		<strong> 实际上,自动变量值截获只能保存执行 Block语法瞬间的值。保存后就不能改写该值。</strong>
     	</p>
     	<p>
-    		我们来尝试改写截获的自动变量值,看看会出现什么结果。下面的源代码中, Block语法之前声
+    		下面我们来尝试改写截获的自动变量值,看看会出现什么结果。下面的源代码中, Block语法之前声
 明的自动变量val的值被赋予1。
     	</p>
     	<pre>
 int val = 0;
-void (^blk)(void)=^{val =l;};
-blk()\;
+void (^blk)(void)=^{val =1;};
+blk();
 printf ("val %d\n", val);
     	</pre>
 
@@ -27,12 +27,13 @@ printf ("val %d\n", val);
     	<img src="../img/dasdasd110234538.PNG">
 
     	<p>
+            <strong>
     		若想在 Block语法的表达式中将值赋给在 Block语法外声明的自动变量,需要在该自动变量
 上附加 __block说明符。该源代码中,如果给自动变量声明 int val附加 __block说明符,就能实
-现在 Block内赋值。
+现在 Block内赋值。</strong>
     	</p>
     	<pre>
-__block int val= 0
+<strong>__block</strong> int val= 0
 blk();
 printf("val = %d\n", val);
     	</pre>

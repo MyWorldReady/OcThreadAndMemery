@@ -7,6 +7,8 @@
 </head>
 <body style="font-family:sans-serif">
     
+	<h1>引用计数</h1>
+
 	<p>
 		实际上,本书为了让读者掌握引用计数式内存管理的思维方式,特地没有介绍引用计数数值
 本身(只在导入部和 Core Foundation的转换中稍有说明)。但考虑到有些读者可能极想知道引用
@@ -22,7 +24,7 @@
 	</p>
 
 	<pre>
-		id strong obj =[[NSObject alloc] init];
+		id __strong obj =[[NSObject alloc] init];
 NSLog(@"retain count - %d", _objc_rootRetaincount(obj));
 	</pre>
 
@@ -39,7 +41,7 @@ NSLog(@"retain count - %d", _objc_rootRetaincount(obj));
 	</p>
 
 	<pre>
-id strong obj =[[NSObject alloc] init]:
+id __strong obj =[[NSObject alloc] init]:
 id __weak o= obj
 NSLog(@"retain count %d", objc_rootRetaincount (ob3));
 	</pre>

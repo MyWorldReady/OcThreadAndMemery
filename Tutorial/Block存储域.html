@@ -90,16 +90,24 @@ impl.isa =&_NSConcreteGlobalBlock;
 的数据区域中。因为在使用全局变量的地方不能使用自动变量,所以不存在对自动变量进行截
 获。由此 Block用结构体实例的内容不依赖于执行时的状态,所以整个程序中只需一个实例。因
 此将 Block用结构体实例设置在与全局变量相同的数据区域中即可。
-只在截获自动变量时, Block用结构体实例截获的值才会根据执行时的状态变化。例如以下
+<br>
+<br>
+<strong> 只在截获自动变量时, Block用结构体实例截获的值才会根据执行时的状态变化。</strong>
+<br>
+<br>
+例如以下
 源代码中,虽然多次使用同一个 Block语法,但每个for循环中截获的自动变量的值都不同。
     </p>
     <pre>
-typedef int (^blk t)(int);
-for (int rate = 0; rate 10: ++rate)(
+typedef int (^blk_t)(int);
+for (int rate = 0; rate < 10: ++rate){
 	blk_t blk =^(int count){return rate * count;}
+}
     </pre>
     <p>
-    	上面 Block语法生成的 Block用结构体实例在每次for循环中截获的值都不同。但是以下源
+    	上面 Block语法生成的 Block用结构体实例在每次for循环中截获的值都不同。 <br>
+
+        但是以下源
 代码中在不截获自动变量时, Block用结构体实例每次截获的值都完全相同
     </p>
     <pre>

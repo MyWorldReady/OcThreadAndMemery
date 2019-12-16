@@ -45,9 +45,9 @@ void (^blk)(void)=^{val =1;}
 解决这个问题有两种方法。第一种:C语言中有一个变量,允许 Block改写值。具体如下:
     </p>
     <ul>
-    	<li> 静态变量</li>
-    	<li> 静态全局变量</li>
-    	<li> 全局变量</li>
+    	<li><strong> 静态变量</strong></li>
+    	<li> <strong>静态全局变量</strong></li>
+    	<li> <strong>全局变量</strong></li>
     </ul>
     <p>
     	虽然 Block语法的匿名函数部分简单地变换为了C语言函数,但从这个变换的函数中访问静

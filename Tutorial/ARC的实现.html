@@ -226,7 +226,7 @@ objc_msgSend(tmp, @selector (init));
 objc_initWeak(&obj, tmp);
 objc_release(tmp);
 objc_destroyWeak(&object);
-	</p>
+	</pre>
 	<p>
 		虽然自己生成并持有的对象通过 objc_initWeak函数被赋值给附有__weak修饰符的变量中,
 但编译器判断其没有持有者,故该对象立即通过 objc release函数被释放和废弃。

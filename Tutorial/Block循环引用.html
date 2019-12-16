@@ -7,6 +7,7 @@
 </head>
 <body style="font-family:sans-serif">
     
+    <h1>Block循环引用</h1>
 	<p>
 		如果在 Block中使用附有 __strong修饰符的对象类型自动变量,那么当 Block从栈复制到堆
 时,该对象为 Block所持有。这样容易引起循环引用。我们来看看下面的源代码:
@@ -35,11 +36,14 @@ int main (){
 }
 	</pre>
 	<p>
-		该源代码中 MyObject类的 dealloc实例方法一定没有被调用。
-MyObject类对象的Bock类型成员变量bk持有赋值为 Block的强引用。即 MyObject类对
-象持有 Block。init实例方法中执行的 Block语法使用附有 __strong修饰符的id类型变量self。并
-且由于 Block语法赋值在了成员变量blk中,因此通过 Block语法生成在栈上的 Block此时由栈
-复制到堆,并持有所使用的self。self持有 Block, Block持有self。这正是循环引用。如图2-13
+		该源代码中 MyObject类的 dealloc实例方法一定没有被调用。<br>
+MyObject类对象的Bock类型成员变量bk持有赋值为 Block的强引用。<br>
+即 MyObject类对
+象持有 Block。<br>
+init实例方法中执行的 Block语法使用附有 __strong修饰符的id类型变量self。<br>
+并且由于 Block语法赋值在了成员变量blk中,因此通过 Block语法生成在栈上的 Block此时由栈
+复制到堆,并持有所使用的self。<br>
+self持有 Block, Block持有self。这正是循环引用。如图2-13
 所示
 	</p>
 
