@@ -249,8 +249,8 @@ do
 done
 
 
-
-
+#清理html的标签的css
+sh ${filepath}''"/clearHtmlCss.sh"
 
 echo "处理完成"
 
