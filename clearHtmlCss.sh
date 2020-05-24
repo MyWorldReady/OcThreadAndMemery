@@ -54,7 +54,7 @@ globalRel2(){
 
 		#p
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<p [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<p [^>]+>' ${htmlPath} | head -n1)
 			newStr="<p>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -68,7 +68,7 @@ globalRel2(){
 
 		#^
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<div [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<div [^>]+>' ${htmlPath} | head -n1)
 			newStr="<div>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -79,10 +79,11 @@ globalRel2(){
 				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 			fi
 		done
-		
+
 		#span
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<span [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<span [^>]+>' ${htmlPath} | head -n1)
+
 			newStr="<span>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -93,10 +94,11 @@ globalRel2(){
 				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 			fi
 		done
-
+		
 		#a
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<a [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<a [^>]+>' ${htmlPath} | head -n1)
+
 			newStr="<a>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -110,7 +112,7 @@ globalRel2(){
 
 		#strong
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<strong [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<strong [^>]+>' ${htmlPath} | head -n1)
 			newStr="<strong>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -124,7 +126,7 @@ globalRel2(){
 
 		#div
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<div [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<div [^>]+>' ${htmlPath} | head -n1)
 			newStr="<div>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -138,7 +140,7 @@ globalRel2(){
 
 		#br
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<br [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<br [^>]+>' ${htmlPath} | head -n1)
 			newStr="<br>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -152,7 +154,7 @@ globalRel2(){
 
 		#pre
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<pre [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<pre [^>]+>' ${htmlPath} | head -n1)
 			newStr="<pre>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -166,7 +168,7 @@ globalRel2(){
 
 		#code
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<code [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<code [^>]+>' ${htmlPath} | head -n1)
 			newStr="<code>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -180,7 +182,7 @@ globalRel2(){
 
 		#table
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<table [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<table [^>]+>' ${htmlPath} | head -n1)
 			newStr="<table>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -194,7 +196,7 @@ globalRel2(){
 
 		#tbody
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<tbody [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<tbody [^>]+>' ${htmlPath} | head -n1)
 			newStr="<tbody>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -208,7 +210,7 @@ globalRel2(){
 
 		#tr
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<tr [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<tr [^>]+>' ${htmlPath} | head -n1)
 			newStr="<tr>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -222,7 +224,7 @@ globalRel2(){
 
 		#td
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<td [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<td [^>]+>' ${htmlPath} | head -n1)
 			newStr="<td>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -236,7 +238,7 @@ globalRel2(){
 
 		#font
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<font [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<font [^>]+>' ${htmlPath} | head -n1)
 			newStr="<font>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -250,7 +252,7 @@ globalRel2(){
 
 		#h1
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<h1 [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<h1 [^>]+>' ${htmlPath} | head -n1)
 			newStr="<h1>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -264,7 +266,7 @@ globalRel2(){
 
 		#h2
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<h2 [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<h2 [^>]+>' ${htmlPath} | head -n1)
 			newStr="<h2>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -278,7 +280,7 @@ globalRel2(){
 
 		#h3
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<h3 [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<h3 [^>]+>' ${htmlPath} | head -n1)
 			newStr="<h3>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -292,7 +294,7 @@ globalRel2(){
 
 		#h4
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<h4 [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<h4 [^>]+>' ${htmlPath} | head -n1)
 			newStr="<h4>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -306,7 +308,7 @@ globalRel2(){
 
 		#h5
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<h5 [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<h5 [^>]+>' ${htmlPath} | head -n1)
 			newStr="<h5>"
 			if [[ -z $oldStr ]]; then
 				break;
@@ -320,7 +322,7 @@ globalRel2(){
 
 		#li
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -Eoi -m 1 '<li [^>]+>' ${htmlPath} | head -n1)
+			oldStr=$(grep -a -Eoi -m 1 '<li [^>]+>' ${htmlPath} | head -n1)
 			newStr="<li>"
 			if [[ -z $oldStr ]]; then
 				break;

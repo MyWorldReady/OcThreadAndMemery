@@ -80,7 +80,11 @@ function Download(){
 	htmlContent=$(cat ${htmlPath})
 
 
-	if [[ $htmlContent == *${hasFlushHtmlMark}*  ]]
+	contailStr=$(grep ${hasFlushHtmlMark} ${htmlPath})
+	contailLen=${#contailStr}
+
+	# if [[ $htmlContent == *${hasFlushHtmlMark}*  ]]
+	if [[ "$contailLen" != "0" ]]
 	then
 		# echo "已经处理过了"
 		return
