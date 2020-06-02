@@ -30,6 +30,11 @@ newNumber=${baseStr:$newNumberFromIndex:$baseStrLen}
 
 toIndex=$newNumber
 
+if [ $toIndex -le 9 ];
+then
+	toIndex=${toIndex:1:2}
+fi
+
 for (( i = $fromIndex; i <= $toIndex; i++ )); do
 	imgName=$newBase
 	if [ $i -le 9 ];
