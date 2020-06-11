@@ -40,6 +40,8 @@ then
 	IFS=$SAVEIFS
 fi
 
+
+
 globalRel2(){
 	for f in ${fileArr[*]}
 	do
@@ -96,19 +98,19 @@ globalRel2(){
 		done
 		
 		#a
-		while [[ 1==1 ]]; do
-			oldStr=$(grep -a -Eoi -m 1 '<a [^>]+>' ${htmlPath} | head -n1)
+		# while [[ 1==1 ]]; do
+		# 	oldStr=$(grep -a -Eoi -m 1 '<a [^>]+>' ${htmlPath} | head -n1)
 
-			newStr="<a>"
-			if [[ -z $oldStr ]]; then
-				break;
-			fi
-			if [[ $os = 1 ]]; then
-				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
-			else
-				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
-			fi
-		done
+		# 	newStr="<a>"
+		# 	if [[ -z $oldStr ]]; then
+		# 		break;
+		# 	fi
+		# 	if [[ $os = 1 ]]; then
+		# 		sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		# 	else
+		# 		sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		# 	fi
+		# done
 
 		#strong
 		while [[ 1==1 ]]; do
@@ -334,6 +336,118 @@ globalRel2(){
 			fi
 		done
 
+		#ul
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<ul [^>]+>' ${htmlPath} | head -n1)
+			newStr="<ul>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		#ol
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<ol [^>]+>' ${htmlPath} | head -n1)
+			newStr="<ol>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		#article
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<article [^>]+>' ${htmlPath} | head -n1)
+			newStr="<article>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		#button
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<button [^>]+>' ${htmlPath} | head -n1)
+			newStr="<button>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		#button
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<button [^>]+>' ${htmlPath} | head -n1)
+			newStr="<button>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		#i
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<i [^>]+>' ${htmlPath} | head -n1)
+			newStr="<i>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		#path
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<path [^>]+>' ${htmlPath} | head -n1)
+			newStr="<path>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		#svg
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<svg [^>]+>' ${htmlPath} | head -n1)
+			newStr="<svg>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
 		oldStr='<span>'
 		newStr=""
 		if [[ $os = 1 ]]; then
@@ -350,7 +464,23 @@ globalRel2(){
 			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		fi
 
-		oldStr='<a>'
+		# oldStr='<a>'
+		# newStr=""
+		# if [[ $os = 1 ]]; then
+		# 	sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		# else
+		# 	sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		# fi
+
+		# oldStr='</a>'
+		# newStr=""
+		# if [[ $os = 1 ]]; then
+		# 	sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		# else
+		# 	sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		# fi
+
+		oldStr='<code>'
 		newStr=""
 		if [[ $os = 1 ]]; then
 			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
@@ -358,13 +488,119 @@ globalRel2(){
 			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		fi
 
-		oldStr='</a>'
+		oldStr='</code>'
 		newStr=""
 		if [[ $os = 1 ]]; then
 			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
 		else
 			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		fi
+
+		oldStr='<div>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</div>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<article>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</article>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='data-original-src'
+		newStr="src"
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<button>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</button>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<i>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</i>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<svg>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</svg>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<path>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</path>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+
 
 
 		htmlContent=$(cat ${htmlPath})
