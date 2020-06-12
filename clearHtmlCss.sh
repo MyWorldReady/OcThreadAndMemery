@@ -448,6 +448,34 @@ globalRel2(){
 			fi
 		done
 
+		#figure
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<figure [^>]+>' ${htmlPath} | head -n1)
+			newStr="<figure>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		#ins
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<ins [^>]+>' ${htmlPath} | head -n1)
+			newStr="<ins>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
 		oldStr='<span>'
 		newStr=""
 		if [[ $os = 1 ]]; then
@@ -479,6 +507,67 @@ globalRel2(){
 		# else
 		# 	sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		# fi
+
+
+
+		##########删除li ul ol   --start
+		oldStr='</li>'
+newStr='\
+</li>'
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</li>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<li>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<ul>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</ul>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<ol>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</ol>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+		##########删除li ul ol   --end
 
 		oldStr='<code>'
 		newStr=""
@@ -600,6 +689,37 @@ globalRel2(){
 			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		fi
 
+		oldStr='<figure>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</figure>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<ins>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</ins>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
 
 
 
