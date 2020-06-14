@@ -392,10 +392,10 @@ globalRel2(){
 			fi
 		done
 
-		#button
+		#blockquote
 		while [[ 1==1 ]]; do
-			oldStr=$(grep -a -Eoi -m 1 '<button [^>]+>' ${htmlPath} | head -n1)
-			newStr="<button>"
+			oldStr=$(grep -a -Eoi -m 1 '<blockquote [^>]+>' ${htmlPath} | head -n1)
+			newStr="<blockquote>"
 			if [[ -z $oldStr ]]; then
 				break;
 			fi
@@ -705,6 +705,14 @@ newStr='\
 			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		fi
 
+		oldStr='<hr>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
 		oldStr='<ins>'
 		newStr=""
 		if [[ $os = 1 ]]; then
@@ -721,6 +729,21 @@ newStr='\
 			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		fi
 
+		oldStr='<blockquote>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</blockquote>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
 
 
 		htmlContent=$(cat ${htmlPath})

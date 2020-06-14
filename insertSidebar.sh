@@ -51,7 +51,8 @@ else
 fi
 
 
-li="<li><a href=\"../Tutorial/${newFileNoExt}.html\" target=\"main\">${newFileNoExt}</a></li>"
+li='\
+'"<li><a href=\"../Tutorial/${newFileNoExt}.html\" target=\"main\">${newFileNoExt}</a></li>"
 
 
 delStr1='</ul>'
