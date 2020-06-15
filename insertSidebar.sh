@@ -73,6 +73,21 @@ fi
 fileContent=$(cat $copyHtmlPath) 
 echo "${fileContent}" > $newHtmlPath
 
+title='<h1>'${newFileNoExt}'</h1>'
+oldStr='</body>'
+newStr=${title}'\
+\
+\
+\
+\
+\
+'${oldStr}
+if [[ $os = 1 ]]; then
+	sed -i "s^${oldStr}^${newStr}^g" ${newHtmlPath}
+else
+	sed -i "" "s^${oldStr}^${newStr}^g" ${newHtmlPath}
+fi
+
 /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl  $newHtmlPath
 
 
