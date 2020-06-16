@@ -713,6 +713,23 @@ newStr='\
 			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		fi
 
+		#对句号换行进行整理 --start
+		oldStr='。'
+		newStr="<br>"
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+		oldStr='<br><br>'
+		newStr="<br>"
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+		#对换行进行整理 --end
+
 		oldStr='<ins>'
 		newStr=""
 		if [[ $os = 1 ]]; then

@@ -5,7 +5,7 @@
 #html文件返回到img目录路径
 html2ImgPath="../img/"
 #已经处理过的html文件的标记
-hasFlushHtmlMark="$html2ImgPath"
+hasFlushHtmlMark="../img/"
 
 
 #系统类型  0:mac 1:win 2linux
