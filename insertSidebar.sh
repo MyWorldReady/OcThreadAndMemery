@@ -89,6 +89,7 @@ else
 fi
 
 /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl  $newHtmlPath
+open $newHtmlPath
 
 
 
