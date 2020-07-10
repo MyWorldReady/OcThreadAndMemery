@@ -57,7 +57,7 @@ globalRel2(){
 		#p
 		while [[ 1==1 ]]; do
 			oldStr=$(grep -a -Eoi -m 1 '<p [^>]+>' ${htmlPath} | head -n1)
-			newStr="<p>"
+			newStr='<p>'
 			if [[ -z $oldStr ]]; then
 				break;
 			fi
@@ -143,7 +143,7 @@ globalRel2(){
 		#br
 		while [[ 1==1 ]]; do
 			oldStr=$(grep -a -Eoi -m 1 '<br [^>]+>' ${htmlPath} | head -n1)
-			newStr="<br>"
+			newStr='<br>'
 			if [[ -z $oldStr ]]; then
 				break;
 			fi
@@ -728,7 +728,38 @@ newStr='\
 		else
 			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		fi
+
+		#br换行显示
+		oldStr='<br>'
+		newStr='<br>\
+'
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
 		#对换行进行整理 --end
+
+
+		#p换行显示
+		oldStr='<p>'
+		newStr='\
+<p>'
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</p>'
+		newStr='</p>\
+'
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
 
 		oldStr='<ins>'
 		newStr=""
