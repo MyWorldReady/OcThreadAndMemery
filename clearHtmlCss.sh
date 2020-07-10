@@ -476,6 +476,36 @@ globalRel2(){
 			fi
 		done
 
+		#section
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<section [^>]+>' ${htmlPath} | head -n1)
+			newStr="<section>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		#em
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<em [^>]+>' ${htmlPath} | head -n1)
+			newStr="<em>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
+		###########################################################
+
 		oldStr='<span>'
 		newStr=""
 		if [[ $os = 1 ]]; then
@@ -786,6 +816,40 @@ newStr='\
 		fi
 
 		oldStr='</blockquote>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+
+		oldStr='<section>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</section>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+
+		oldStr='<em>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</em>'
 		newStr=""
 		if [[ $os = 1 ]]; then
 			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
