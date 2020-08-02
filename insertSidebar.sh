@@ -88,8 +88,17 @@ else
 	sed -i "" "s^${oldStr}^${newStr}^g" ${newHtmlPath}
 fi
 
-/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl  $newHtmlPath
-open $newHtmlPath
+if [[ $os = 1 ]]; then
+	subl $newHtmlPath
+else
+	/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl  $newHtmlPath
+fi
+
+if [[ $os = 1 ]]; then
+	start $newHtmlPath
+else
+	open $newHtmlPath
+fi
 
 
 
