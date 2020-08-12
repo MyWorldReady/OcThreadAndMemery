@@ -247,8 +247,52 @@ then
 fi
 
 
+
+#清理成对标签
+#比如这些标签包含了重复的图片下载地址, 需要清理掉
+function ClearTags(){
+
+
+	htmlFileName=$1
+	if  ! [ $htmlFileName  ] 
+	then
+		echo "没有放html文件!! 结束shell"
+		exit
+	fi
+
+
+	htmlPath="${rootHtmlPath}/${htmlFileName}"
+
+	
+
+
+	#<noscript></noscript>
+	while [[ 1==1 ]]; do
+		oldStr=$(grep -a -Eoi -m 1 '<noscript([!]|[^!])+?</noscript>' ${htmlPath} | head -n1)
+		newStr=''
+		if [[ -z $oldStr ]]; then
+			break;
+		fi
+
+
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i '' "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+		
+		
+
+	done
+
+}
+
+
+
+
 for f in ${fileArr[*]}
 do
+	ClearTags $f
 	Download $f
 done
 
