@@ -857,6 +857,22 @@ newStr='\
 			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
 		fi
 
+		oldStr='<font>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</font>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
 
 		htmlContent=$(cat ${htmlPath})
 		newContent=$hasFlushHtmlMark$htmlContent
