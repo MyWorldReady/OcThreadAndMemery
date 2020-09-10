@@ -95,7 +95,8 @@ else
 fi
 
 if [[ $os = 1 ]]; then
-	start $newHtmlPath
+	# start $newHtmlPath
+	"/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" -incognito $newHtmlPath
 else
 	open $newHtmlPath
 fi

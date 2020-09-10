@@ -504,6 +504,20 @@ globalRel2(){
 			fi
 		done
 
+		#ignore_js_op
+		while [[ 1==1 ]]; do
+			oldStr=$(grep -a -Eoi -m 1 '<ignore_js_op [^>]+>' ${htmlPath} | head -n1)
+			newStr="<ignore_js_op>"
+			if [[ -z $oldStr ]]; then
+				break;
+			fi
+			if [[ $os = 1 ]]; then
+				sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+			else
+				sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+			fi
+		done
+
 		###########################################################
 
 		oldStr='<span>'
@@ -866,6 +880,22 @@ newStr='\
 		fi
 
 		oldStr='</font>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='<ignore_js_op>'
+		newStr=""
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i "" "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+
+		oldStr='</ignore_js_op>'
 		newStr=""
 		if [[ $os = 1 ]]; then
 			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
