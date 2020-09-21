@@ -38,6 +38,51 @@ imgPath="${filepath}/img"
 rootHtmlPath="${filepath}/Tutorial"
 
 
+
+
+
+#清理成对标签
+#比如这些标签包含了重复的图片下载地址, 需要清理掉
+function ClearTags(){
+
+
+	htmlFileName=$1
+	if  ! [ $htmlFileName  ] 
+	then
+		echo "没有放html文件!! 结束shell"
+		exit
+	fi
+
+
+	htmlPath="${rootHtmlPath}/${htmlFileName}"
+
+	
+
+
+	#<noscript></noscript>
+	while [[ 1==1 ]]; do
+		oldStr=$(grep -a -Eoi -m 1 '<noscript([!]|[^!])+?</noscript>' ${htmlPath} | head -n1)
+		newStr=''
+		if [[ -z $oldStr ]]; then
+			break;
+		fi
+
+
+		if [[ $os = 1 ]]; then
+			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
+		else
+			sed -i '' "s^${oldStr}^${newStr}^g" ${htmlPath}
+		fi
+		
+		
+
+	done
+
+}
+
+
+
+
  #下载png
  #刷新html文件
 function Download(){
@@ -46,29 +91,25 @@ function Download(){
 	htmlFileName=$1
 	if  ! [ $htmlFileName  ] 
 	then
-	echo "没有放html文件!! 结束shell"
+		echo "没有放html文件!! 结束shell"
 		exit
 	fi
 
 
 	htmlPath="${rootHtmlPath}/${htmlFileName}"
 
-
-	#过滤  <img src   和   img data-src 类型的http
-	# strExPatten='<img src='
-	# strExPatten1='<img data-src='
-	# str="${strExPatten}\"http\S*\""
-	# str="${strExPatten1}\"http\S*\""
-
-	# strSearchHttp="\"http\S*\""
-	# strSearchHttp="<img.*src.*http*\>"
 	strSearchHttp="<img.*src.*"
 
-	# str="\"http\S*\""
-	# grep -o "${str}" ${htmlPath}
+	contailStr=$(grep ${hasFlushHtmlMark} ${htmlPath})
+	
+	contailLen=${#contailStr}
 
-	# if [  $os = 1 ]
-	# then
+	if [[ "$contailLen" != "0" ]]
+	then
+		# echo "已经处理过了 ${htmlPath}"
+		return
+	fi
+
 
 
 	currentTimeStamp=$(($(date +%s)*1000000))
@@ -80,16 +121,7 @@ function Download(){
 	htmlContent=$(cat ${htmlPath})
 
 
-	contailStr=$(grep ${hasFlushHtmlMark} ${htmlPath})
-	contailLen=${#contailStr}
-
-	# if [[ $htmlContent == *${hasFlushHtmlMark}*  ]]
-	if [[ "$contailLen" != "0" ]]
-	then
-		# echo "已经处理过了"
-		return
-	fi
-
+	
 
 
 	echo "${htmlFileName}  正在下载img, 请稍后"
@@ -205,6 +237,7 @@ function Download(){
 	fi
 
 	
+	ClearTags $1
 
 }
 
@@ -248,51 +281,11 @@ fi
 
 
 
-#清理成对标签
-#比如这些标签包含了重复的图片下载地址, 需要清理掉
-function ClearTags(){
-
-
-	htmlFileName=$1
-	if  ! [ $htmlFileName  ] 
-	then
-		echo "没有放html文件!! 结束shell"
-		exit
-	fi
-
-
-	htmlPath="${rootHtmlPath}/${htmlFileName}"
-
-	
-
-
-	#<noscript></noscript>
-	while [[ 1==1 ]]; do
-		oldStr=$(grep -a -Eoi -m 1 '<noscript([!]|[^!])+?</noscript>' ${htmlPath} | head -n1)
-		newStr=''
-		if [[ -z $oldStr ]]; then
-			break;
-		fi
-
-
-		if [[ $os = 1 ]]; then
-			sed -i "s^${oldStr}^${newStr}^g" ${htmlPath}
-		else
-			sed -i '' "s^${oldStr}^${newStr}^g" ${htmlPath}
-		fi
-		
-		
-
-	done
-
-}
-
 
 
 
 for f in ${fileArr[*]}
 do
-	ClearTags $f
 	Download $f
 done
 
