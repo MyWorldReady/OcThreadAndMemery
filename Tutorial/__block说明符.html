@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--clear--clear--clear--><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -7,15 +7,19 @@
 </head>
 <body style="font-family:sans-serif">
     	
-    <p>
-    	我们再来回顾前面截获自动变量值的例子。
+    
+<p>
+    	我们再来回顾前面截获自动变量值的例子<br><br>
     </p>
+
     <pre>
     	^{Printf(fmt, val)}
     </pre>
-    <p>
+    
+<p>
     	该源代码转换结果如下:
     </p>
+
     <pre>
 static void __main_block_func_o(struct __main_block_impl_0* __cself){
 	const char *fmt = __cself->fmt:
@@ -23,39 +27,47 @@ static void __main_block_func_o(struct __main_block_impl_0* __cself){
 	printf(fmt, val);
 }
     </pre>
-    <p>
+    
+<p>
     	看完转换后的源代码,有没有什么发现呢? Block中所使用的被截获自动变量就如“带有自
-动变量值的匿名函数”所说,仅截获自动变量的值。 Block中使用自动变量后,在 Block的结构
-体实例中重写该自动变量也不会改变原先截获的自动变量。
+动变量值的匿名函数”所说,仅截获自动变量的值<br><br> Block中使用自动变量后,在 Block的结构
+体实例中重写该自动变量也不会改变原先截获的自动变量<br><br>
 以下源代码试图改变 Block中的自动变量val
     </p>
+
     <pre>
 int val =0:
 void (^blk)(void)=^{val =1;}
     </pre>
-    <p>
+    
+<p>
 该源代码会产生以下编译错误:
     </p>
+
     <img src="../img/dasdasd110234543.PNG">
 
-    <p>
+    
+<p>
     	如前所述,因为在实现上不能改写被截获自动变量的值,所以当编译器在编译过程中检出给
-被截获自动变量赋值的操作时,便产生编译错误。
+被截获自动变量赋值的操作时,便产生编译错误<br><br>
 不过这样一来就无法在 Block中保存值了,极为不便
-解决这个问题有两种方法。第一种:C语言中有一个变量,允许 Block改写值。具体如下:
+解决这个问题有两种方法<br><br>第一种:C语言中有一个变量,允许 Block改写值<br><br>具体如下:
     </p>
-    <ul>
-    	<li><strong> 静态变量</strong></li>
-    	<li> <strong>静态全局变量</strong></li>
-    	<li> <strong>全局变量</strong></li>
-    </ul>
-    <p>
+
+    
+    	<strong> 静态变量</strong>
+    	 <strong>静态全局变量</strong>
+    	 <strong>全局变量</strong>
+    
+    
+<p>
     	虽然 Block语法的匿名函数部分简单地变换为了C语言函数,但从这个变换的函数中访问静
-态全局变量/全局变量并没有任何改变,可直接使用。
+态全局变量/全局变量并没有任何改变,可直接使用<br><br>
 但是静态变量的情况下,转换后的函数原本就设置在含有 Block语法的函数外,所以无法从
-变量作用域访问。
-我们来看看下面这段源代码。
+变量作用域访问<br><br>
+我们来看看下面这段源代码<br><br>
     </p>
+
     <pre>
 int global_val =1;
 static int static_global_val =2;
@@ -69,10 +81,12 @@ int main(){
 	return o	
 }
     </pre>
-    <p>
+    
+<p>
     	该源代码使用了 Block改写静态变量 static_val、静态全局变量 static_global_val和全局变量
-global_val。该源代码转换后如下:
+global_val<br><br>该源代码转换后如下:
     </p>
+
 
     <pre>
 int global_val = 1;
@@ -112,49 +126,57 @@ struct __main_block_impl_0{
 	
 }
     </pre>
-    <p>
+    
+<p>
     	这个结果是大家很熟悉的,对静态全局变量 static_global_val和全局变量 global_val的访问
-与转换前完全相同。静态变量 static_val又要如何转换的呢?以下摘出 Block中使用该变量的
-部分。
+与转换前完全相同<br><br>静态变量 static_val又要如何转换的呢?以下摘出 Block中使用该变量的
+部分<br><br>
     </p>
+
     <pre>
 static void __main_block_func_o(struct __main_block_impl_0* __cself){
 	int *staticvval  = __cself->static_val;
 	(*static_val)*= 3	
 }
     </pre>
-    <p>
-    	使用静态变量 static_val的指针对其进行访问。将静态变量 static_val的指针传递给__main_block_impl_0结构体的构造函数并保存。这是超出作用域使用变量的最简单方法。
-静态变量的这种方法似乎也适用于自动变量的访问。但是我们为什么没有这么做呢?
+    
+<p>
+    	使用静态变量 static_val的指针对其进行访问<br><br>将静态变量 static_val的指针传递给__main_block_impl_0结构体的构造函数并保存<br><br>这是超出作用域使用变量的最简单方法<br><br>
+静态变量的这种方法似乎也适用于自动变量的访问<br><br>但是我们为什么没有这么做呢?
 实际上,在由 Block语法生成的值 Block上,可以存有超过其变量作用域的被截获对象的自
-动变量。变量作用域结束的同时,原来的自动变量被废弃,因此 Block中超过变量作用域而存在
-的变量同静态变量一样,将不能通过指针访问原来的自动变量。这些在下节详细说明。
-解决 Block中不能保存值这一问题的第二种方法是使用“ __block说明符”。更准确的表述
-方式为“__block存储域类说明符”(__block storage-class-specifier)。C语言中有以下存储域类
+动变量<br><br>变量作用域结束的同时,原来的自动变量被废弃,因此 Block中超过变量作用域而存在
+的变量同静态变量一样,将不能通过指针访问原来的自动变量<br><br>这些在下节详细说明<br><br>
+解决 Block中不能保存值这一问题的第二种方法是使用“ __block说明符”<br><br>更准确的表述
+方式为“__block存储域类说明符”(__block storage-class-specifier)<br><br>C语言中有以下存储域类
 说明符:
     </p>
-    <ul>
-    	<li> typedef</li>
-    	<li> extern</li>
-    	<li> statIc</li>
-    	<li> auto</li>
-    	<li> register</li>
-    </ul>
 
-    <p>
+    
+    	 typedef
+    	 extern
+    	 statIc
+    	 auto
+    	 register
+    
+
+    
+<p>
     	__block说明符类似于 static、auto和 register说明符,它们用于指定将变量值设置到哪个存
-储域中。例如,auto表示作为自动变量存储在栈中, statIc表示作为静态变量存储在数据区中。
-下面我们来实际使用 __block说明符,用它来指定 Block中想变更值的自动变量。我们在前
-面编译错误的源代码的自动变量声明上追加__block说明符。
+储域中<br><br>例如,auto表示作为自动变量存储在栈中, statIc表示作为静态变量存储在数据区中<br><br>
+下面我们来实际使用 __block说明符,用它来指定 Block中想变更值的自动变量<br><br>我们在前
+面编译错误的源代码的自动变量声明上追加__block说明符<br><br>
     </p>
+
 
     <pre>
 __block int val= 10:
 void (^blk)(void)=^{val =l;}
     </pre>
-    <p>
-    	该源代码可进行编译。变换后如下:
+    
+<p>
+    	该源代码可进行编译<br><br>变换后如下:
     </p>
+
     <pre>
 
 
@@ -219,15 +241,19 @@ int main(){
 }
 
     </pre>
-    <p>
-    	只是在自动变量上附加了 __block说明符,源代码量就急剧增加。
+    
+<p>
+    	只是在自动变量上附加了 __block说明符,源代码量就急剧增加<br><br>
     </p>
+
     <pre>
     	__block int val = 10:
     </pre>
-    <p>
+    
+<p>
     	这个 __block变量val是怎样转换过来的呢?
     </p>
+
     <pre>
 __Block_byref_val_o val = {
 	0,
@@ -236,11 +262,13 @@ __Block_byref_val_o val = {
 	10
 };
     </pre>
-    <p>
-    	我们发现,它竟然变为了结构体实例。__block变量也同Bock一样变成__Block_byref_val0
-结构体类型的自动变量,即栈上生成的__Block_byref_val0结构体实例。该变量初始化为10,且这个值也出现在结构体实例的初始化中,这意味着该结构体持有相当于原自动变量的成员变量。
+    
+<p>
+    	我们发现,它竟然变为了结构体实例<br><br>__block变量也同Bock一样变成__Block_byref_val0
+结构体类型的自动变量,即栈上生成的__Block_byref_val0结构体实例<br><br>该变量初始化为10,且这个值也出现在结构体实例的初始化中,这意味着该结构体持有相当于原自动变量的成员变量<br><br>
 该结构体声明如下:
     </p>
+
     <pre>
 struct __Block_byref_val_0{
 	void*  __isa:
@@ -251,17 +279,21 @@ struct __Block_byref_val_0{
 };
     </pre>
 
-    <p>
+    
+<p>
     	如同初始化时的源代码,该结构体中最后的成员变量va是相当于原自动变量的成员变量,
-我们从它的名称也能看出来这一点。
+我们从它的名称也能看出来这一点<br><br>
 下面这段给 block变量赋值的代码又如何呢?
     </p>
+
     <pre>
 ^{va1=1;}
     </pre>
-    <p>
+    
+<p>
     	该源代码转换如下:
     </p>
+
     <pre>
 static void __main_block_func_o(struct __main_block_impl 0* __cself){
 void * __isa;
@@ -269,41 +301,49 @@ void * __isa;
 	(val-> __forwarding->val)= 1;
 }
     </pre>
-    <p>
-    	刚刚在 Block中向静态变量赋值时,使用了指向该静态变量的指针。而向 __block变量赋值
-要比这个更为复杂。 Block的 __main_block_impl_0结构体实例持有指向__block变量的__Block_byref_val_0结构体实例的指针。
-__Block_byref_val_0结构体实例的成员变量__forwarding持有指向该实例自身的指针。通过
-成员变量__forwarding访问成员变量vl。(成员变量val是该实例自身持有的变量,它相当于原
-自动变量。)如图25所示。
+    
+<p>
+    	刚刚在 Block中向静态变量赋值时,使用了指向该静态变量的指针<br><br>而向 __block变量赋值
+要比这个更为复杂<br><br> Block的 __main_block_impl_0结构体实例持有指向__block变量的__Block_byref_val_0结构体实例的指针<br><br>
+__Block_byref_val_0结构体实例的成员变量__forwarding持有指向该实例自身的指针<br><br>通过
+成员变量__forwarding访问成员变量vl<br><br>(成员变量val是该实例自身持有的变量,它相当于原
+自动变量<br><br>)如图25所示<br><br>
     </p>
+
     <img src="../img/dasdasd110234544.PNG">
-    <p>
-    	究竟为什么会有成员变量__forwarding呢?这个问题,我们留到下节详细说明。
+    
+<p>
+    	究竟为什么会有成员变量__forwarding呢?这个问题,我们留到下节详细说明<br><br>
 另外, _block变量的__Block_byref_sval0结构体并不在 Block用 __main_blockvimpl_0结
-构体中,这样做是为了在多个 Block中使用 __block变量。我们看一下下面的源代码。
+构体中,这样做是为了在多个 Block中使用 __block变量<br><br>我们看一下下面的源代码<br><br>
     </p>
+
     <pre>
 __block int val =10;
 void (^blk)(void)=^{val=0;}
 void (^bll)(void)=^{val =1;}
     </pre>
-    <p>
-    	Block类型变量bk0和blkl访问 __block变量val。我们把这两部分源代码的转换结果摘录
-出来。
+    
+<p>
+    	Block类型变量bk0和blkl访问 __block变量val<br><br>我们把这两部分源代码的转换结果摘录
+出来<br><br>
     </p>
+
     <img src="../img/dasdasd110234545.PNG">
 
-    <p>
-    	两个 Block都使用了 __Block_byref_val_0结构体实例val的指针。这样一来就可以从多个
-Bock中使用同一个 __block变量。当然,反过来从一个Blck中使用多个__block变量也是可以
-的。只要增加 Block的结构体成员变量与构造函数的参数,便可对应使用多个 block变量。
-到此大概能够理解__block变量了。下节主要说明之前跳过部分的内容:
-<ul>
-	<li> Block超出变量作用域可存在的理由</li>
-	<li> __block变量的结构体成员变量__forwarding存在的理由</li>
-</ul>
-另外,将在2.3.6节中详细说明__main_block_desc_0结构体中增加的成员变量copy和dispose。
+    
+<p>
+    	两个 Block都使用了 __Block_byref_val_0结构体实例val的指针<br><br>这样一来就可以从多个
+Bock中使用同一个 __block变量<br><br>当然,反过来从一个Blck中使用多个__block变量也是可以
+的<br><br>只要增加 Block的结构体成员变量与构造函数的参数,便可对应使用多个 block变量<br><br>
+到此大概能够理解__block变量了<br><br>下节主要说明之前跳过部分的内容:
+
+	 Block超出变量作用域可存在的理由
+	 __block变量的结构体成员变量__forwarding存在的理由
+
+另外,将在2.3.6节中详细说明__main_block_desc_0结构体中增加的成员变量copy和dispose<br><br>
     </p>
+
 
 
 

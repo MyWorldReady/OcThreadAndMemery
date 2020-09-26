@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--clear--clear--clear--><!--../img/--><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -10,100 +10,122 @@
 
 
 	<h1>__strong修饰符</h1>
-	<p>
-		<strong>__strong修饰符是d类型和对象类型默认的所有权修饰符</strong>。也就是说,以下源代码中的id
-变量,实际上被附加了所有权修饰符。
+	
+<p>
+		<strong>__strong修饰符是d类型和对象类型默认的所有权修饰符</strong><br><br>也就是说,以下源代码中的id
+变量,实际上被附加了所有权修饰符<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id obj =[[NSObject alloc] init]:
-	</pre>
-	<p>
-		<strong>id和对象类型在没有明确指定所有权修饰符时,默认为__strong修饰符</strong>。上面的源代码与以
-下相同。
+	</pre><!--rnrnrn-->
+	
+<p>
+		<strong>id和对象类型在没有明确指定所有权修饰符时,默认为__strong修饰符</strong><br><br>上面的源代码与以
+下相同<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id <strong>__strong</strong> obj= [[NSObject alloc] init]
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		该源代码在ARC无效时又该如何表述呢?
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		/*ARC无效*
 id obj=[[NSObject alloc] init];
-	</pre>
-	<p>
-		该源代码一看则明,目前在表面上并没有任何变化。再看看下面的代码。
+	</pre><!--rnrnrn-->
+	
+<p>
+		该源代码一看则明,目前在表面上并没有任何变化<br><br>再看看下面的代码<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id __strong obj=[ [NSObject alloc] init];
-	</pre>
-	<p>
-		此源代码明确指定了C语言的变量的作用域。ARC无效时,该源代码可记述如下:
+	</pre><!--rnrnrn-->
+	
+<p>
+		此源代码明确指定了C语言的变量的作用域<br><br>ARC无效时,该源代码可记述如下:
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		/*ARC无效*/
 		{
 	id ob]=[ [NSObject alloc] initl:
 	[ob] releaser
 }
-	</pre>
-	<p>
-		为了释放生成并持有的对象,增加了调用 release方法的代码。该源代码进行的动作同先前
-ARC有效时的动作完全一样。
+	</pre><!--rnrnrn-->
+	
+<p>
+		为了释放生成并持有的对象,增加了调用 release方法的代码<br><br>该源代码进行的动作同先前
+ARC有效时的动作完全一样<br><br>
 如此源代码所示,附有 strong修饰符的变量obj在超出其变量作用域时,即在该变量被废
-弃时,会释放其被赋予的对象。
-如“ strong”这个名称所示, strong修饰符表示对对象的“强引用”。持有强引用的变量在
-超出其作用域时被废弃,随着强引用的失效,引用的对象会随之释放。
-下面关注一下源代码中关于对象的所有者的部分。
+弃时,会释放其被赋予的对象<br><br>
+如“ strong”这个名称所示, strong修饰符表示对对象的“强引用”<br><br>持有强引用的变量在
+超出其作用域时被废弃,随着强引用的失效,引用的对象会随之释放<br><br>
+下面关注一下源代码中关于对象的所有者的部分<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id __strong ob=[[NSObject alloc] init]
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		此源代码就是之前自己生成并持有对象的源代码,该对象的所有者如下:
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		/*自己生成并持有对象*/
 		id __strong ob] =[[NSObject alloc] init];
 		//所以自己持有对我引用,
 		//因为变量ob为强引
 		//因为变量ob超出其作用域,强引用失效,
-		//所以自动地释放自己持有的对象。
-		//对象的所有者不存在,因此废弃该对象。
-	</pre>
-	<p>
-		此处,对象的所有者和对象的生存周期是明确的。那么,在取得非自己生成并持有的对象时
+		//所以自动地释放自己持有的对象<br><br>
+		//对象的所有者不存在,因此废弃该对象<br><br>
+	</pre><!--rnrnrn-->
+	
+<p>
+		此处,对象的所有者和对象的生存周期是明确的<br><br>那么,在取得非自己生成并持有的对象时
 又会如何呢?
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		{
 			id __strong obj=[NSMutableArray array];
 		}
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		在 NSMutableArray类的aray类方法的源代码中取得非自己生成并持有的对象,具体如下
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		取得非自己生成并持有的对象
 id __strong ob]= [NSMutableArray array];
 /*因为变量obj为强引用,
 所以自己持有对象
 因为变量obj超出其作用域,强引用失效,
 所以自动地释放自己持有的对象*/
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		在这里对象的所有者和对象的生存周期也是明确的
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		自己生成并持有对象
 id __strong ob]=[[NSObject alloc] init]
 //因为变量obj为强引用,
 //因为变量ob超出其作用域,强引用失效,
-	</pre>
-	<p>
-		当然,附有 __strong修饰符的变量之间可以相互赋值。
+	</pre><!--rnrnrn-->
+	
+<p>
+		当然,附有 __strong修饰符的变量之间可以相互赋值<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id __strong obj =[[NSObject alloc] init];
 id __strong objl =[[NSObject alloc] init];
 id __strong obj2 = nil;
@@ -112,11 +134,13 @@ obj2 = obj0;
 obj1 = nil;
 obj0 = nil;
 obj2 = nil;
-	</pre>
-	<p>
-		下面来看一下生成并持有对象的强引用。
+	</pre><!--rnrnrn-->
+	
+<p>
+		下面来看一下生成并持有对象的强引用<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id __strong obj=[[NSObject alloc] init]; / RA*/
 	//obj0持有对象A的强引用
 
@@ -128,35 +152,37 @@ id __strong obj2= nili
 
 obj0 = objl;
 //obj0持有由obj1赋值的对象B的强引用
-//因为obj0被赋值,所以原先持有的对对象A的强引用失效。
-//*对象A的所有者不存在,因此废弃对象A。
+//因为obj0被赋值,所以原先持有的对对象A的强引用失效<br><br>
+//*对象A的所有者不存在,因此废弃对象A<br><br>
 //此时,持有对象B的强引用的变量为
-//ob0和obj1。
+//ob0和obj1<br><br>
 
 obj2 = obj0;
 //obj2持有由obj0赋值的对象B的强引用
-//obj0,obj1和obj2。
+//obj0,obj1和obj2<br><br>
 
 obj1 = nil
-//因为ni1被赋予了ob1,所以对对象B的强引用失效。
-//此时,持有对象B的强引用的变量为obj0和obj2。
+//因为ni1被赋予了ob1,所以对对象B的强引用失效<br><br>
+//此时,持有对象B的强引用的变量为obj0和obj2<br><br>
 
 objo = nil;
 //*因为ni1被赋予obj0,所以对对象B的强引用失效
-//此时,持有对象B的强引用的变量为obj2。
+//此时,持有对象B的强引用的变量为obj2<br><br>
 
 obj2 = nil
-//因为nil被赋予obj2,所以对对象B的强引用失效。
-//对象B的所有者不存在,因此废弃对象B。
+//因为nil被赋予obj2,所以对对象B的强引用失效<br><br>
+//对象B的所有者不存在,因此废弃对象B<br><br>
 
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		通过上面这些不难发现, __strong修饰符的变量,不仅只在变量作用域中,在赋值上也能够
-正确地管理其对象的所有者。
+正确地管理其对象的所有者<br><br>
 当然,即便是 Objective-C类成员变量,也可以在方法参数上,使用附有__strong修饰符的
-变量。
+变量<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 @interface Test : NSobject{
 	id __strong obj_;
 }
@@ -170,74 +196,88 @@ obj2 = nil
 -(void)setobject:(id __strong)obj
 	obj_ = obj;
 @end
-	</pre>
-	<p>
-		下面试着使用该类。
+	</pre><!--rnrnrn-->
+	
+<p>
+		下面试着使用该类<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id __strong test =[[Test alloc] init]
 	[test setobject: [[NSObject alloc] init]];
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		该例中生成并持有对象的状态记录如下:
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 {
 		id __strong test =[[Test alloc] init];
 	//test持有Test对象的强引用
 
 	[test setobject: [[NSObject alloc] init]];
-	//Test对象的ob成员,持有 NSObject对象的强引用。
+	//Test对象的ob成员,持有 NSObject对象的强引用<br><br>
 }
 /*
 *因为test变量超出其作用域,强引用失效,
-*所以自动释放Test对象。
-*Test对象的所有者不存在,因此废弃该对象。
+*所以自动释放Test对象<br><br>
+*Test对象的所有者不存在,因此废弃该对象<br><br>
 *废弃Test对象的同时,
 *Test对象的obj成员也被废弃
 *NSObject对象的强引用失效,
-*自动释放 NSObject对象。
-*NSObject对象的所有者不存在,因此废弃该对象。
+*自动释放 NSObject对象<br><br>
+*NSObject对象的所有者不存在,因此废弃该对象<br><br>
 */
-	</pre>
-	<p>
-		像这样,无需额外工作便可以使用于类成员变量以及方法参数中。关于类属性,会在后面详细说明
+	</pre><!--rnrnrn-->
+	
+<p>
+		像这样,无需额外工作便可以使用于类成员变量以及方法参数中<br><br>关于类属性,会在后面详细说明
 	</p>
-	<p>
+
+	
+<p>
 		另外, __strong修饰符同后面要讲的__weak修饰符和__autoreleasing修饰符一起,可以保证将附有这些修饰符的自动变量初始化为nil
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id __strong obj;
 id __weak objl
 id __autoreleasing obj2;
-	</pre>
-	<p>
-		以下源代码与上相同。
+	</pre><!--rnrnrn-->
+	
+<p>
+		以下源代码与上相同<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id __strong obj= nil
 id __weak obj1 = nil
 id __autoreleasing obj2=nil;
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		正如苹果宣称的那样,通过__strong修饰符,不必再次键入 retain或者 release,完美地满足
 了“引用计数式内存管理的思考方式”:
 	</p>
-	<ul>
-		<li>自己生成的对象,自己所持有 </li>
-		<li>非自己生成的对象,自己也能持有 </li>
-		<li>不再需要自己持有的对象时释放 </li>
-		<li>非自己持有的对象无法释放 </li>
-	</ul>
-	<p>
+
+	
+		自己生成的对象,自己所持有 
+		非自己生成的对象,自己也能持有 
+		不再需要自己持有的对象时释放 
+		非自己持有的对象无法释放 
+	
+	
+<p>
 		前两项“自己生成的对象,自己持有”和“非自己生成的对象,自己也能持有”只需通过对
-带 __strong修饰符的变量赋值便可达成。通过废弃带 __strong修饰符的变量(变量作用域结束或
-是成员变量所属对象废弃)或者对变量赋值,都可以做到“不再需要自己持有的对象时释放”。
-最后一项“非自己持有的对象无法释放”,由于不必再次键入 release,所以原本就不会执行。这
-些都满足于引用计数式内存管理的思考方式。
+带 __strong修饰符的变量赋值便可达成<br><br>通过废弃带 __strong修饰符的变量(变量作用域结束或
+是成员变量所属对象废弃)或者对变量赋值,都可以做到“不再需要自己持有的对象时释放”<br><br>
+最后一项“非自己持有的对象无法释放”,由于不必再次键入 release,所以原本就不会执行<br><br>这
+些都满足于引用计数式内存管理的思考方式<br><br>
 因为id类型和对象类型的所有权修饰符默认为 __strong修饰符,所以不需要写上“
-__strong”。使ARC有效及简单的编程遵循了 Objective-C内存管理的思考方式。
+__strong”<br><br>使ARC有效及简单的编程遵循了 Objective-C内存管理的思考方式<br><br>
 	</p>
+
 
 
     

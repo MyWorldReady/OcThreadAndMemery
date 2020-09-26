@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--clear--clear--clear--><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -8,18 +8,22 @@
 <body style="font-family:sans-serif">
     
 
-	<p>
+	
+<p>
 		当ARC有效时, Objective-C类的属性也会发生变化
 	</p>
+
 
 	<pre>
 		property (nonatomic, strong) NSString *name;
 	</pre>
 
-	<p>
-		当ARC有效时,以下可作为这种属性声明中使用的属性来用。如表1-3所示。
+	
+<p>
+		当ARC有效时,以下可作为这种属性声明中使用的属性来用<br><br>如表1-3所示<br><br>
 表1-3属性声明的属性与所有权修饰符的对应关系
 	</p>
+
 
 	<table>
 		<tbody>
@@ -54,46 +58,56 @@
 		</tbody>
 	</table>
 
-	<p>
+	
+<p>
 		以上各种属性赋值给指定的属性中就相当于赋值给附加各属性对应的所有权修饰符的变量
-中。 <br><br>
+中<br><br> <br><br>
 
 <strong>
 只有copy属性不是简单的赋值,它赋值的是通过 NSCopying接口的 copy withZone:方法复
-制赋值源所生成的对象。
+制赋值源所生成的对象<br><br>
 </strong>
 
 <br><br>
-另外,在声明类成员变量时,如果同属性声明中的属性不一致则会引起编译错误。比如下面
-这种情况。
+另外,在声明类成员变量时,如果同属性声明中的属性不一致则会引起编译错误<br><br>比如下面
+这种情况<br><br>
 	</p>
+
 	<pre>
 		id obj;
 	</pre>
 
-	<p>
-		在声明id型obj成员变量时,像下面这样,定义其属性声明为weak。
+	
+<p>
+		在声明id型obj成员变量时,像下面这样,定义其属性声明为weak<br><br>
 	</p>
+
 	<pre>
 		property (nonatomic, weak) id obj;
 	</pre>
 
-	<p>
+	
+<p>
 		编译器出现如下错误
 	</p>
+
 	<img src="../img/dasdasd110234530.PNG">
 
-	<p>
-		<strong>此时,成员变量的声明中需要附加__weak修饰符。</strong>
+	
+<p>
+		<strong>此时,成员变量的声明中需要附加__weak修饰符<br><br></strong>
 	</p>
+
 
 	<pre>
 		id __weak obj
 	</pre>
 
-	<p>
-		或者使用 strong属性替代weak属性。
+	
+<p>
+		或者使用 strong属性替代weak属性<br><br>
 	</p>
+
 	<pre>
 		@property (nonatomic, strong) id obj
 	</pre>

@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--clear--clear--clear--><!--../img/--><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -7,51 +7,63 @@
 </head>
 <body style="font-family:sans-serif">
     	
-	<p>
-		ARC无效时,一般需要手动将 Block从栈复制到堆。另外,由于ARC无效,所以肯定要释
-放复制的 Block。这时我们用copy实例方法用来复制,用 release实例方法来释放。
-	</p>
-	<pre>
-void (^blk_on_heap)(void)= [blk_on_stack_copy];
-[blk_on_heap_release];
-	</pre>
-	<p>
-		只要 Block有一次复制并配置在堆上,就可通过 retain实例方法持有。
-	</p>
-	<pre>
-		[blk_on_heap retain];
-	</pre>
-	<p>
-		但是对于配置在栈上的 Block调用 retain实例方法则不起任何作用。
-	</p>
-	<pre>
-		[blk_on_stack retain];
-	</pre>
-	<p>
-		该源代码中,虽然对赋值给 blk on stack的栈上的 Block调用了 retain实例方法,但实际上
-对此源代码不起任何作用。因此推荐使用copy实例方法来持有 Block
-另外,由于 Blocks是C语言的扩展,所以在C语言中也可以使用 Block语法。此时使用
-“ Block c
-py函数”和“ Block release函数”代替 copy/release实例方法。使用方法以及引用计数
-的思考方式与 Objective-C中的 copy/release实例方法相同。
-	</p>
-	<pre>
-void (^blk_on_heap)(void)=Block_copy(blk_on_stack);
-Block_release(blk_on_heap);
-	</pre>
-	<p>
-		Block_copy函数就是之前出现过的_Block_copy函数,即 Objective-C运行时库所使用的为
-C语言而准备的函数。释放堆上的 Block时也同样调用 Objective-C运行时库的 Block_release函数。
-	</p>
-	<p>
-		另外,ARC无效时,__block说明符被用来避免 Block中的循环引用。这是由于当 Block从
-栈复制到堆时,若 Block使用的变量为附有__block说明符的i类型或对象类型的自动变量,不
-会被 retain;若 Block使用的变量为没有__block说明符的id类型或对象类型的自动变量,则被
-retain。例如下面的源代码中,不管ARC有效无效都会引起循环引用, Block持有self,且self持
-有 Block。
+	
+<p>
+		ARC无效时,一般需要手动将 Block从栈复制到堆<br><br>另外,由于ARC无效,所以肯定要释
+放复制的 Block<br><br>这时我们用copy实例方法用来复制,用 release实例方法来释放<br><br>
 	</p>
 
-	<pre>
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
+void (^blk_on_heap)(void)= [blk_on_stack_copy];
+[blk_on_heap_release];
+	</pre><!--rnrnrn-->
+	
+<p>
+		只要 Block有一次复制并配置在堆上,就可通过 retain实例方法持有<br><br>
+	</p>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
+		[blk_on_heap retain];
+	</pre><!--rnrnrn-->
+	
+<p>
+		但是对于配置在栈上的 Block调用 retain实例方法则不起任何作用<br><br>
+	</p>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
+		[blk_on_stack retain];
+	</pre><!--rnrnrn-->
+	
+<p>
+		该源代码中,虽然对赋值给 blk on stack的栈上的 Block调用了 retain实例方法,但实际上
+对此源代码不起任何作用<br><br>因此推荐使用copy实例方法来持有 Block
+另外,由于 Blocks是C语言的扩展,所以在C语言中也可以使用 Block语法<br><br>此时使用
+“ Block c
+py函数”和“ Block release函数”代替 copy/release实例方法<br><br>使用方法以及引用计数
+的思考方式与 Objective-C中的 copy/release实例方法相同<br><br>
+	</p>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
+void (^blk_on_heap)(void)=Block_copy(blk_on_stack);
+Block_release(blk_on_heap);
+	</pre><!--rnrnrn-->
+	
+<p>
+		Block_copy函数就是之前出现过的_Block_copy函数,即 Objective-C运行时库所使用的为
+C语言而准备的函数<br><br>释放堆上的 Block时也同样调用 Objective-C运行时库的 Block_release函数<br><br>
+	</p>
+
+	
+<p>
+		另外,ARC无效时,__block说明符被用来避免 Block中的循环引用<br><br>这是由于当 Block从
+栈复制到堆时,若 Block使用的变量为附有__block说明符的i类型或对象类型的自动变量,不
+会被 retain;若 Block使用的变量为没有__block说明符的id类型或对象类型的自动变量,则被
+retain<br><br>例如下面的源代码中,不管ARC有效无效都会引起循环引用, Block持有self,且self持
+有 Block<br><br>
+	</p>
+
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 typedef void (^blk_t)(void);
 @interface Myobject:NSobject{
 	blk_t blk_;	
@@ -75,24 +87,28 @@ int main (){
 	return 0;	
 }
 
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		这时我们使用 __block变量来避免该问题
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 -(id)init{
 	self = [super init];
 	__block id tmp = self;
 	blk_ =^{NSLog (@"self=%@",tmp);}
 	return self;
 }
-	</pre>
+	</pre><!--rnrnrn-->
 
-	<p>
-		正好在ARC有效时能够同__unsafe_unretained修饰符一样来使用。由于ARC有效时和无效
+	
+<p>
+		正好在ARC有效时能够同__unsafe_unretained修饰符一样来使用<br><br>由于ARC有效时和无效
 时 __block说明符的用途有很大的区别,因此在编写源代码时,必须知道该源代码是在ARC有
-效情况下编译还是在ARC无效情况下编译。这一点请大家注意。
+效情况下编译还是在ARC无效情况下编译<br><br>这一点请大家注意<br><br>
 	</p>
+
 
 
 

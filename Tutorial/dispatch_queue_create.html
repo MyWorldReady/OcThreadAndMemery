@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--clear--clear--clear--><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -7,67 +7,79 @@
 </head>
 <body style="font-family:sans-serif">
     
-	<p>
+	
+<p>
 		第一种方法是通过GCD的API生成 Dispatch Queue
-通过 dispatch queue create函数可生成 Dispatch Queue。以下源代码生成了 Serial Dispatch
+通过 dispatch queue create函数可生成 Dispatch Queue<br><br>以下源代码生成了 Serial Dispatch
 Q
-ueue。
+ueue<br><br>
 	</p>
+
 	<pre>
 		dispatch_queue_t mySerialDispatchQueue =
 dispatch_queue_create("com.example.gcd.My SerialDispatchQueue", NULL);
 	</pre>
 
-	<p>
-		在说明 dispatch queue create函数之前,先讲一下关于 Serial Dispatch Queue生成个数的注意事项。
+	
+<p>
+		在说明 dispatch queue create函数之前,先讲一下关于 Serial Dispatch Queue生成个数的注意事项<br><br>
 如前所述, Concurrent Dispatch Queue并行执行多个追加处理,而 Serial Dispatch Queue同时
-只能执行1个追加处理。虽然 Serial Dispatch Queue和 Concurrent Dispatch Queue受到系统资源
+只能执行1个追加处理<br><br>虽然 Serial Dispatch Queue和 Concurrent Dispatch Queue受到系统资源
 的限制,但用 dispatch queue create函数可生成任意多个 Dispatch Queue
-当生成多个 Serial Dispatch Queue时,各个 Serial Dispatch Queue将并行执行。虽然在1
+当生成多个 Serial Dispatch Queue时,各个 Serial Dispatch Queue将并行执行<br><br>虽然在1
 个 Serial Dispatch Queue中同时只能执行一个追加处理,但如果将处理分别追加到4个 Serial
-Dispatch Queue中,各个 Serial Dispatch Queue执行1个,即为同时执行4个处理。如图3-8所示。
+Dispatch Queue中,各个 Serial Dispatch Queue执行1个,即为同时执行4个处理<br><br>如图3-8所示<br><br>
 	</p>
 
+
 	<img src="../img/dasdasd110234568.PNG">
-	<p>
-		以上是关于 Serial Dispatch Queue生成个数注意事项的说明。一旦生成 Serial Dispatch Queue
-并追加处理,系统对于一个 Serial Dispatch Queue就只生成并使用一个线程。如果生成2000个
-Serial Dispatch Queue,那么就生成2000个线程。
+	
+<p>
+		以上是关于 Serial Dispatch Queue生成个数注意事项的说明<br><br>一旦生成 Serial Dispatch Queue
+并追加处理,系统对于一个 Serial Dispatch Queue就只生成并使用一个线程<br><br>如果生成2000个
+Serial Dispatch Queue,那么就生成2000个线程<br><br>
 像之前列举的多线程编程问题一样,如果过多使用多线程,就会消耗大量内存,引起大量的
-上下文切换,大幅度降低系统的响应性能。如图3-9所示。
+上下文切换,大幅度降低系统的响应性能<br><br>如图3-9所示<br><br>
 	</p>
+
 	<img src="../img/dasdasd110234569.PNG">
-	<p>
+	
+<p>
 		只在为了避免多线程编程问题之一——多个线程更新相同资源导致数据竞争时使用 Serial
-Dispatch Queue。如图3-10所示
+Dispatch Queue<br><br>如图3-10所示
 	</p>
+
 	<img src="../img/dasdasd110234570.PNG">
-	<p>
-		但是 Serial Dispatch Queue的生成个数应当仅限所必需的数量。例如更新数据库时1个表生
+	
+<p>
+		但是 Serial Dispatch Queue的生成个数应当仅限所必需的数量<br><br>例如更新数据库时1个表生
 成1个 Serial Dispatch Queue,更新文件时1个文件或是可以分割的1个文件块生成1个 Serial
-Dispatch Queue。虽然“ Serial Dispatch Queue比 Concurrent Dispatch Queue能生成更多的线程”
+Dispatch Queue<br><br>虽然“ Serial Dispatch Queue比 Concurrent Dispatch Queue能生成更多的线程”
 但绝不能激动之下大量生成 Serial Dispatch Queue
-当想并行执行不发生数据竞争等问题的处理时,使用 Concurrent Dispatch Queue。而且对于
+当想并行执行不发生数据竞争等问题的处理时,使用 Concurrent Dispatch Queue<br><br>而且对于
 Concurrent Dispatch Queue来说,不管生成多少,由于XNU内核只使用有效管理的线程,因此不
-会发生 Serial Dispatch Queue的那些问题。
-下面我们回来继续讲 dispatch queue create函数。该函数的第一个参数指定 Serial Dispatch
-Queue的名称。像此源代码这样, Dispatch Queue的名称推荐使用应用程序ID这种逆序全程域名
-(FQDN, fully qualified domain name)。该名称在 Xcode和 Instruments的调试器中作为 Dispatch
-Queue名称表示。另外,该名称也出现在应用程序崩溃时所生成的 CrashLog中。我们命名时应
-遵循这样的原则:对我们编程人员来说简单易懂,对用户来说也要易懂。如果嫌命名麻烦设为
-NULL也可以,但你在调试中一定会后悔没有为 Dispatch Queue署名。
-生成 Serial Dispatch Queue时,像该源代码这样,将第二个参数指定为NULL。生成
-Concurrent Dispatch Queue时,像下面源代码一样,指定为 DISPATCH QUEUE CONCURRENT。
+会发生 Serial Dispatch Queue的那些问题<br><br>
+下面我们回来继续讲 dispatch queue create函数<br><br>该函数的第一个参数指定 Serial Dispatch
+Queue的名称<br><br>像此源代码这样, Dispatch Queue的名称推荐使用应用程序ID这种逆序全程域名
+(FQDN, fully qualified domain name)<br><br>该名称在 Xcode和 Instruments的调试器中作为 Dispatch
+Queue名称表示<br><br>另外,该名称也出现在应用程序崩溃时所生成的 CrashLog中<br><br>我们命名时应
+遵循这样的原则:对我们编程人员来说简单易懂,对用户来说也要易懂<br><br>如果嫌命名麻烦设为
+NULL也可以,但你在调试中一定会后悔没有为 Dispatch Queue署名<br><br>
+生成 Serial Dispatch Queue时,像该源代码这样,将第二个参数指定为NULL<br><br>生成
+Concurrent Dispatch Queue时,像下面源代码一样,指定为 DISPATCH QUEUE CONCURRENT<br><br>
 	</p>
+
 	<pre>
 dispatch_queue_t myConcurrentDispatchQueue = dispatch_queue_create(
 com.example.gcd.MyConcurrentDispatchQueue", DISPATCH_QUEUE_CONCURRENT);
 	</pre>
 
-	<p>
-		dispatch_queue_create函数的返回值为表示 Dispatch_Queue的“ dispatch_queue_t类型”。在之
-前源代码中所出现的变量 queue均为 dispatch_queue_t类型变量。
+	
+<p>
+		dispatch_queue_create函数的返回值为表示 Dispatch_Queue的“ dispatch_queue_t类型”<br><br>在之
+前源代码中所出现的变量 queue均为 dispatch_queue_t类型变量<br><br>
 	</p>
+
 
 	<pre>
 dispatch_queue_t myConcurrentDispatchQueue = dispatch_queue_create(
@@ -77,29 +89,35 @@ dispatch_async (myConcurrentDispatchQueue,
 ^{NSLog(e"block on my ConcurrentDispatchQueue");});
 	</pre>
 
-	<p>
-		该源代码在 Concurrent Dispatch Queue中执行指定的 Block。
+	
+<p>
+		该源代码在 Concurrent Dispatch Queue中执行指定的 Block<br><br>
 另外,遗憾的是尽管有ARC这一通过编译器自动管理内存的优秀技术,但生成的 Dispatch
-Queue必须由程序员负责释放。这是因为 Dispatch Queue并没有像 Block那样具有作为
-Objective-C对象来处理的技术。
+Queue必须由程序员负责释放<br><br>这是因为 Dispatch Queue并没有像 Block那样具有作为
+Objective-C对象来处理的技术<br><br>
 通过 dispatch queue create I函数生成的 Dispatch Queue在使用结束后通过 dispatch release函
-数释放。
+数释放<br><br>
 	</p>
+
 
 	<pre>
 dispatch_release(mySerialDispatchQueue);
 	</pre>
-	<p>
-		该名称中含有 release,由此可以推测出相应地也存在 dispatch_retain_i函数。
+	
+<p>
+		该名称中含有 release,由此可以推测出相应地也存在 dispatch_retain_i函数<br><br>
 	</p>
+
 	<pre>
 		dispatch_retain(myConcurrentDispatchQueue);
 	</pre>
 
-	<p>
+	
+<p>
 		即 Dispatch Queue也像 Objective-C的引用计数式内存管理一样,需要通过 dispatch retain函
-数和 dispatch_release函数的引用计数来管理内存。在前面的源代码中,需要释放通过 dispatch_queue_create函数生成并赋值给变量 my Concurrent DispatchQueue中的 Concurrent Dispatch Queue
+数和 dispatch_release函数的引用计数来管理内存<br><br>在前面的源代码中,需要释放通过 dispatch_queue_create函数生成并赋值给变量 my Concurrent DispatchQueue中的 Concurrent Dispatch Queue
 	</p>
+
 	<pre>
 dispatch_queue_t myConcurrentDispatchQueue = dispatch_queue_create(
 "com.example.gcd.MyConcurrentDispatchQueue, DISPATCH_QUEUE_CONCURRENT);
@@ -109,54 +127,62 @@ dispatch_async(queue, ^{(NSLog(@"block on myConcurrentDispatchQueue");});
 dispatch_release(myConcurrentDispatchQueue);
 	</pre>
 
-	<p>
+	
+<p>
 		虽然 Concurrent Dispatch Queue是使用多线程执行追加的处理,但像该例这样,在 dispatch
 async函数中追加Bck到 Concurrent Dispatch Queue,并立即通过 dispatch release函数进行释放
 是否可以呢?
-该源代码完全没有问题。在 dispatch async函数中追加 Block到 Dispatch Queue,换言之,该
-Block通过 dispatch retain函数持有 Dispatch Queue。无论 Dispatch Queue是 Serial Dispatch Queue
-还是 Concurrent Dispatch Queue都一样。一旦 Block执行结束,就通过 dispatch release函数释放
+该源代码完全没有问题<br><br>在 dispatch async函数中追加 Block到 Dispatch Queue,换言之,该
+Block通过 dispatch retain函数持有 Dispatch Queue<br><br>无论 Dispatch Queue是 Serial Dispatch Queue
+还是 Concurrent Dispatch Queue都一样<br><br>一旦 Block执行结束,就通过 dispatch release函数释放
 该 Block持有的 Dispatch Queue
 也就是说,在 dispatch asyn函数中追加 Block到 Dispatch Queue后,即使立即释放 Dispatch
-Queue,该 Dispatch Queue由于被 Block所持有也不会被废弃,因而 Block能够执行。 Block执行
+Queue,该 Dispatch Queue由于被 Block所持有也不会被废弃,因而 Block能够执行<br><br> Block执行
 结束后会释放 Dispatch Queue,这时谁都不持有 Dispatch Queue,因此它会被废弃
 另外,能够使用 dispatch retain函数和 dispatch release函数的地方不仅是在 Dispatch Queue
-中。在之后介绍的几个GCD的API中,名称中含有“ create”的API在不需要其生成的对象时,
-有必要通过 dispatch release函数进行释放。在通过函数或方法获取 Dispatch Queue以及其他名
+中<br><br>在之后介绍的几个GCD的API中,名称中含有“ create”的API在不需要其生成的对象时,
+有必要通过 dispatch release函数进行释放<br><br>在通过函数或方法获取 Dispatch Queue以及其他名
 称中含有 create的API生成的对象时,有必要通过 dispatch retain函数持有,并在不需要时通过
-dispatch release函数释放。
+dispatch release函数释放<br><br>
 	</p>
+
 	<h1>Main Dispatch Queue/Global Dispatch Queue</h1>
-	<p>
-		第二种方法是获取系统标准提供的 Dispatch Queue。
-实际上不用特意生成 Dispatch Queue系统也会给我们提供几个。那就是 Main Dispatch Queue
+	
+<p>
+		第二种方法是获取系统标准提供的 Dispatch Queue<br><br>
+实际上不用特意生成 Dispatch Queue系统也会给我们提供几个<br><br>那就是 Main Dispatch Queue
 Fl Global Dispatch Queue
 Main Dispatch Queue正如其名称中含有的“Main”一样,是在主线程中执行的 Dispatch
-Queue。因为主线程只有1个,所以 Main Dispatch Queue自然就是 Serial Dispatch Queue
-追加到 Main Dispatch Queue的处理在主线程的 RunLoop中执行。由于在主线程中执行,因
-此要将用户界面的界面更新等一些必须在主线程中执行的处理追加到 Main Dispatch Queue使用。
-这正好与 NSObject类的 performSelectorOn Main Thread实例方法这一执行方法相同。如图3-11
-所示。
+Queue<br><br>因为主线程只有1个,所以 Main Dispatch Queue自然就是 Serial Dispatch Queue
+追加到 Main Dispatch Queue的处理在主线程的 RunLoop中执行<br><br>由于在主线程中执行,因
+此要将用户界面的界面更新等一些必须在主线程中执行的处理追加到 Main Dispatch Queue使用<br><br>
+这正好与 NSObject类的 performSelectorOn Main Thread实例方法这一执行方法相同<br><br>如图3-11
+所示<br><br>
 	</p>
+
 	<img src="../img/dasdasd110234571.PNG">
-	<p>
-		另一个 Global Dispatch Queue是所有应用程序都能够使用的 Concurrent Dispatch Queue。没
-有必要通过 dispatch queue create函数逐个生成 Concurrent Dispatch Queue。只要获取 Global
-Dispatch Queue使用即可。
+	
+<p>
+		另一个 Global Dispatch Queue是所有应用程序都能够使用的 Concurrent Dispatch Queue<br><br>没
+有必要通过 dispatch queue create函数逐个生成 Concurrent Dispatch Queue<br><br>只要获取 Global
+Dispatch Queue使用即可<br><br>
 另外, Global Dispatch Queue有4个执行优先级,分别是高优先级( High Priority)、默认优
-先级( Default Priority)、低优先级( Low Priority)和后台优先级( Background Priority)。通过
+先级( Default Priority)、低优先级( Low Priority)和后台优先级( Background Priority)<br><br>通过
 XNU内核管理的用于 Global Dispatch Queue的线程,将各自使用的 Global Dispatch Queue的执
-行优先级作为线程的执行优先级使用。在向 Global Dispatch Queue追加处理时,应选择与处理内
+行优先级作为线程的执行优先级使用<br><br>在向 Global Dispatch Queue追加处理时,应选择与处理内
 容对应的执行优先级的 Global Dispatch Queue
 但是通过XNU内核用于 Global Dispatch Queue的线程并不能保证实时性,因此执行优先级
-只是大致的判断。例如在处理内容的执行可有可无时,使用后台优先级的 Global Dispatch Queue
+只是大致的判断<br><br>例如在处理内容的执行可有可无时,使用后台优先级的 Global Dispatch Queue
 等,只能进行这种程度的区分
-系统提供的 Dispatch Queue总结如表3-3所示。
+系统提供的 Dispatch Queue总结如表3-3所示<br><br>
 	</p>
+
 	<img src="../img/dasdasd110234572.PNG">
-	<p>
+	
+<p>
 		各种 Dispatch Queue的获取方法如下
 	</p>
+
 	<pre>
 /*
 *Main Dispatch Queue的获取方法
@@ -188,15 +214,17 @@ dispatch_queue_t globalDispatchQueueBackground=
 dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
 	</pre>
 
-	<p>
+	
+<p>
 		另外,对于 Main Dispatch Queue和 Global Dispatch Queue执行 dispatch retain函数和 dispatch
-release函数不会引起任何变化,也不会有任何问题。这也是获取并使用 Global Dispatch Queue比
-生成、使用、释放 Concurrent Dispatch Queue更轻松的原因。
+release函数不会引起任何变化,也不会有任何问题<br><br>这也是获取并使用 Global Dispatch Queue比
+生成、使用、释放 Concurrent Dispatch Queue更轻松的原因<br><br>
 当然,源代码上在进行类似通过 dispatch queue create函数生成 Dispatch Queue的处理要更
 轻松时,可参照引用计数式内存管理的思考方式,直接在 Main Dispatch Queue和 Global Dispatch
-Queue中执行 dispatch retain函数和 dispatch release函数。
+Queue中执行 dispatch retain函数和 dispatch release函数<br><br>
 以下列举使用了 Main Dispatch Queue和 Global Dispatch Queue的源代码:
 	</p>
+
 	<pre>
 /*
 *在默认优先级的G1 obal Dispatch Queue中执行 Block

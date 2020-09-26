@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--clear--clear--clear--><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -9,74 +9,86 @@
     
 
 	<h1>什么是自动引用计数</h1>
-	<p>
+	
+<p>
 		顾名思义,自动引用计数(ARC, Automatic Reference Counting)是指内存管理中对引用采
-取自动计数的技术。以下摘自苹果的官方说明
+取自动计数的技术<br><br>以下摘自苹果的官方说明
 	</p>
-	<p>
+
+	
+<p>
 		在 Objective-C中采用 Automatic Reference Counting(ARC)机制,让编译器来进行内
-存管理。在新一代 Apple LLVm编译器中设置ARC为有效状态,就无需再次键入 retain或
+存管理<br><br>在新一代 Apple LLVm编译器中设置ARC为有效状态,就无需再次键入 retain或
 者 release代码,这在降低程序崩溃、内存泄漏等风险的同时,很大程度上减少了开发程序
-的工作量。编译器完全清楚目标对象,并能立刻释放那些不再被使用的对象。如此一来,应
-用程序将具有可预测性,且能流畅运行,速度也将大幅提升。
+的工作量<br><br>编译器完全清楚目标对象,并能立刻释放那些不再被使用的对象<br><br>如此一来,应
+用程序将具有可预测性,且能流畅运行,速度也将大幅提升<br><br>
 这些优点无疑极具吸引力,但关于ARC技术,最重要的还是下面这一点:
 	</p>
-	<p>
-		“在LLVM编译器中设置ARc为有效状态,就无需再次键入 retain或者是 release代码。”
+
+	
+<p>
+		“在LLVM编译器中设置ARc为有效状态,就无需再次键入 retain或者是 release代码<br><br>”
 换言之,若满足以下条件,就无需手工输入 retain和 release代码了
-<ul>
-	<li>使用 Xcode4.2或以上版本</li>
-	<li> 使用LLM编译器3.0或以上版本。</li>
-	<li>编译器选项中设置ARC为有效。</li>
-</ul>
+
+	使用 Xcode4.2或以上版本
+	 使用LLM编译器3.0或以上版本<br><br>
+	编译器选项中设置ARC为有效<br><br>
+
 
 在以上条件下编译源代码时,编译器将自动进行内存管理,这正是每个程序员都梦寐以求
-的。在正式讲解精彩的ARC技术之前,我们先来了解一下,在此之前,程序员在代码中是如何
-手工进行内存管理的。
+的<br><br>在正式讲解精彩的ARC技术之前,我们先来了解一下,在此之前,程序员在代码中是如何
+手工进行内存管理的<br><br>
 12内存管理/引用计数
 121概要
-Objective-C中的内存管理,也就是引用计数。可以用开关房间的灯为例来说明引用计数的
-机制,如图1-1所示。
+Objective-C中的内存管理,也就是引用计数<br><br>可以用开关房间的灯为例来说明引用计数的
+机制,如图1-1所示<br><br>
 	</p>
+
 
 	<img src="../img/dasdasd110234500.PNG">
-	<p>
-		假设办公室里的照明设备只有一个。上班进入办公室的人需要照明,所以要把灯打开。而对
-于下班离开办公室的人来说,已经不需要照明了,所以要把灯关掉。若是很多人上下班,每个人
+	
+<p>
+		假设办公室里的照明设备只有一个<br><br>上班进入办公室的人需要照明,所以要把灯打开<br><br>而对
+于下班离开办公室的人来说,已经不需要照明了,所以要把灯关掉<br><br>若是很多人上下班,每个人
 都开灯或是关灯,那么办公室的情况又将如何呢?最早下班离开的人如果关了灯,那就会像图
-1-2那样,办公室里还没走的所有人都将处于一片黑暗之中。
+1-2那样,办公室里还没走的所有人都将处于一片黑暗之中<br><br>
 	</p>
+
 	<img src="../img/dasdasd110234501.PNG">
-    <p>
-    	解决这一问题的办法是使办公室在还有至少1人的情况下保持开灯状态,而在无人时保持关灯状态。
-    	<ol>
-    		<li>最早进入办公室的人开灯 </li>
-    		<li> 之后进入办公室的人,需要照明</li>
-    		<li> 下班离开办公室的人,不需要照明</li>
-    		<li> 最后离开办公室的人关灯(此时已无人需要照明)</li>
-    	</ol>
-为判断是否还有人在办公室里,这里导入计数功能来计算“需要照明的人数”。下面让我们
-来看看这一功能是如何运作的吧。
-		<ol>
-			<li> 第一个人进入办公室,“需要照明的人数”加1。计数值从0变成了1,因此要开灯。</li>
-			<li> 之后每当有人进入办公室,“需要照明的人数”就加1。如计数值从1变成2。</li>
-			<li> 每当有人下班离开办公室,“需要照明的人数”就减1。如计数值从2变成1。</li>
-			<li> 最后一个人下班离开办公室时,“需要照明的人数”减1。计数值从1变成了0,因此要关灯。</li>
-		</ol>
+    
+<p>
+    	解决这一问题的办法是使办公室在还有至少1人的情况下保持开灯状态,而在无人时保持关灯状态<br><br>
+    	
+    		最早进入办公室的人开灯 
+    		 之后进入办公室的人,需要照明
+    		 下班离开办公室的人,不需要照明
+    		 最后离开办公室的人关灯(此时已无人需要照明)
+    	
+为判断是否还有人在办公室里,这里导入计数功能来计算“需要照明的人数”<br><br>下面让我们
+来看看这一功能是如何运作的吧<br><br>
+		
+			 第一个人进入办公室,“需要照明的人数”加1<br><br>计数值从0变成了1,因此要开灯<br><br>
+			 之后每当有人进入办公室,“需要照明的人数”就加1<br><br>如计数值从1变成2<br><br>
+			 每当有人下班离开办公室,“需要照明的人数”就减1<br><br>如计数值从2变成1<br><br>
+			 最后一个人下班离开办公室时,“需要照明的人数”减1<br><br>计数值从1变成了0,因此要关灯<br><br>
+		
 		<br>
-		这样就能在不需要照明的时候保持关灯状态。办公室中仅有的照明设备得到了很好的管理,
+		这样就能在不需要照明的时候保持关灯状态<br><br>办公室中仅有的照明设备得到了很好的管理,
 如图1-3所示
     </p>
+
     <img src="../img/dasdasd110234502.PNG">
-    <p>
-    	在 Objective-C中,“对象”相当于办公室的照明设备。在现实世界中办公室的照明设备只有
+    
+<p>
+    	在 Objective-C中,“对象”相当于办公室的照明设备<br><br>在现实世界中办公室的照明设备只有
 一个,但在 Objective-C的世界里,虽然计算机资源有限,但一台计算机可以同时处理好几个
-对象。
-此外,“对象的使用环境”相当于上班进入办公室的人。虽然这里的“环境”有时也指在运
-行中的程序代码、变量、变量作用域、对象等,但在概念上就是使用对象的环境。上班进入办公
-室的人对办公室照明设备发出的动作,与 Objective-C中的对应关系则如表1-1所示。
+对象<br><br>
+此外,“对象的使用环境”相当于上班进入办公室的人<br><br>虽然这里的“环境”有时也指在运
+行中的程序代码、变量、变量作用域、对象等,但在概念上就是使用对象的环境<br><br>上班进入办公
+室的人对办公室照明设备发出的动作,与 Objective-C中的对应关系则如表1-1所示<br><br>
 
     </p>
+
 
     <table>
     	<tbody>
@@ -102,32 +114,40 @@ Objective-C中的内存管理,也就是引用计数。可以用开关房间的�
     		</tr>
     	</tbody>
     </table>
-    <p>
-    	使用计数功能计算需要照明的人数,使办公室的照明得到了很好的管理。同样,使用引用计
-数功能,对象也就能够得到很好的管理,这就是 Objective-C的内存管理。如图1-4所示。
+    
+<p>
+    	使用计数功能计算需要照明的人数,使办公室的照明得到了很好的管理<br><br>同样,使用引用计
+数功能,对象也就能够得到很好的管理,这就是 Objective-C的内存管理<br><br>如图1-4所示<br><br>
     </p>
+
     <img src="../img/dasdasd110234503.PNG">
-    <p>
-    	现在对 Objective-C的内存管理多少理解一些了吧。下面,我们将学习“引用计数式内存管
-理”的思考方式,并在此基于实现进一步加深理解。
+    
+<p>
+    	现在对 Objective-C的内存管理多少理解一些了吧<br><br>下面,我们将学习“引用计数式内存管
+理”的思考方式,并在此基于实现进一步加深理解<br><br>
     </p>
+
     <h1>内存管理的思考方式</h1>
-    <p>
-    	首先来学习引用计数式内存管理的思考方式。看到“引用计数”这个名称,我们便会不自觉
-地联想到“某处有某物多少多少”而将注意力放到计数上。但其实,更加客观、正确的思考方
+    
+<p>
+    	首先来学习引用计数式内存管理的思考方式<br><br>看到“引用计数”这个名称,我们便会不自觉
+地联想到“某处有某物多少多少”而将注意力放到计数上<br><br>但其实,更加客观、正确的思考方
 式是:
     </p>
-    <ul>
-    	<li> 自己生成的对象,自己所持有</li>
-    	<li> 非自己生成的对象,自己也能持有</li>
-    	<li> 不再需要自己持有的对象时释放</li>
-    	<li> 非自己持有的对象无法释放</li>
-    </ul>
-    <p>
-    	引用计数式内存管理的思考方式仅此而已。按照这个思路,完全不必考虑引用计数。
-上文出现了“生成”、“持有”“释放”三个词。而在 Objective-C内存管理中还要加上“废弃”
-词,这四个词将在本书中频繁出现。各个词表示的 Objective-C方法如表1-2。
+
+    
+    	 自己生成的对象,自己所持有
+    	 非自己生成的对象,自己也能持有
+    	 不再需要自己持有的对象时释放
+    	 非自己持有的对象无法释放
+    
+    
+<p>
+    	引用计数式内存管理的思考方式仅此而已<br><br>按照这个思路,完全不必考虑引用计数<br><br>
+上文出现了“生成”、“持有”“释放”三个词<br><br>而在 Objective-C内存管理中还要加上“废弃”
+词,这四个词将在本书中频繁出现<br><br>各个词表示的 Objective-C方法如表1-2<br><br>
     </p>
+
     <table>
     	<tbody>
     		<tr>
@@ -153,87 +173,105 @@ Objective-C中的内存管理,也就是引用计数。可以用开关房间的�
 
     	</tbody>
     </table>
-    <p>
+    
+<p>
     	
 这些有关 Objective-C内存管理的方法,实际上不包括在该语言中,而是包含在 Cocoa框架
-中用于Osx、ios应用开发。 Cocoa框架中 Foundation框架类库的 NSObject类担负内存管理的
-职责。 Objective-C内存管理中的 alloc/retain/release/dealloc方法分别指代 NSObject类的aloc类
-方法、 retain实例方法、 release实例方法和 dealloc实例方法。
+中用于Osx、ios应用开发<br><br> Cocoa框架中 Foundation框架类库的 NSObject类担负内存管理的
+职责<br><br> Objective-C内存管理中的 alloc/retain/release/dealloc方法分别指代 NSObject类的aloc类
+方法、 retain实例方法、 release实例方法和 dealloc实例方法<br><br>
     </p>
+
     <img src="../img/dasdasd110234504.PNG">
     <h1>自己生成的对象,自己所持有</h1>
-    <p>
+    
+<p>
     	使用以下名称开头的方法名意味着自己生成的对象只有自己持有:
-    	<ul>
-    		<li>alloc </li>
-    		<li>new </li>
-    		<li>copy </li>
-    		<li>mutableCopy </li>
-    	</ul>
+    	
+    		alloc 
+    		new 
+    		copy 
+    		mutableCopy 
+    	
     </p>
-    <p>
-    	上文出现了很多“自己”一词。本书所说的“自己”固然对应前文提到的“对象的使用环
-境”,但将之理解为编程人员“自身”也是没错的。下面写出了自己生成并持有对象的源代码
-为生成并持有对象,我们使用aloc方法。
+
+    
+<p>
+    	上文出现了很多“自己”一词<br><br>本书所说的“自己”固然对应前文提到的“对象的使用环
+境”,但将之理解为编程人员“自身”也是没错的<br><br>下面写出了自己生成并持有对象的源代码
+为生成并持有对象,我们使用aloc方法<br><br>
     </p>
+
     <pre>
     	//自己生成并持有对象
     	id obj= [[NSObject alloc] init]
     	//自己持有对象
     </pre>
-    <p>
-    	使用 NSObject类的aloc类方法就能自己生成并持有对象。指向生成并持有对象的指针被
-赋给变量obj。另外,使用如下new类方法也能生成并持有对象。 INSObject new]与[ NSObject
-alloc] init是完全一致的。
+    
+<p>
+    	使用 NSObject类的aloc类方法就能自己生成并持有对象<br><br>指向生成并持有对象的指针被
+赋给变量obj<br><br>另外,使用如下new类方法也能生成并持有对象<br><br> INSObject new]与[ NSObject
+alloc] init是完全一致的<br><br>
     </p>
+
     <pre>
     	//自己生成并持有对象
     	id obj= [[NSObject new];
     	//自己持有对象
     </pre>
-    <p>
+    
+<p>
     	copy方法利用基于 NSCopying方法约定,由各类实现的 copy WithZone;方法生成并持有
-对象的副本。与copy方法类似, mutable Copy方法利用基于 NSMutable Copying方法约定,由
-各类实现的 mutable Copy withZone:方法生成并持有对象的副本。两者的区别在于,copy方法
-生成不可变更的对象,而 mutable Copy方法生成可变更的对象。这类似于 NSArray类对象与
-NSMutableArray类对象的差异。用这些方法生成的对象,虽然是对象的副本,但同 alloc、new
+对象的副本<br><br>与copy方法类似, mutable Copy方法利用基于 NSMutable Copying方法约定,由
+各类实现的 mutable Copy withZone:方法生成并持有对象的副本<br><br>两者的区别在于,copy方法
+生成不可变更的对象,而 mutable Copy方法生成可变更的对象<br><br>这类似于 NSArray类对象与
+NSMutableArray类对象的差异<br><br>用这些方法生成的对象,虽然是对象的副本,但同 alloc、new
 方法一样,在“自己生成并持有对象”这点上没有改变
-另外,根据上述“使用以下名称开头的方法名”,下列名称也意味着自己生成并持有对象。
+另外,根据上述“使用以下名称开头的方法名”,下列名称也意味着自己生成并持有对象<br><br>
     </p>
-    <ul>
-    	<li>allocMyObject</li>
-    	<li>newThatobject </li>
-    	<li>copyThis </li>
-    	<li>mutableCopyYourObject </li>
-    </ul>
-    <p>
+
+    
+    	allocMyObject
+    	newThatobject 
+    	copyThis 
+    	mutableCopyYourObject 
+    
+    
+<p>
     	但是对于以下名称,即使用 alloc/new/copy/mutable Copy名称开头,并不属于同一类别的方法
     </p>
-    <ul>
-    	<li> allocate</li>
-    	<li> newer</li>
-    	<li> copying</li>
-    	<li> mutableCopyed</li>
-    </ul>
-    <p>
-    	这里用驼峰拼写法( Camelcased)来命名。
+
+    
+    	 allocate
+    	 newer
+    	 copying
+    	 mutableCopyed
+    
+    
+<p>
+    	这里用驼峰拼写法( Camelcased)来命名<br><br>
     </p>
+
     <h1>非自己生成的对象,自己也能持有</h1>
-    <p>
+    
+<p>
     	
 用上述项目之外的方法取得的对象,即用 alloc/new/copy/mutable Copy以外的方法取得的
-对象,因为非自己生成并持有,所以自己不是该对象的持有者。我们来使用 alloc/new/copy
-mutable Copy以外的方法看看。这里试用一下 NSMutableArray类的aray类方法。
+对象,因为非自己生成并持有,所以自己不是该对象的持有者<br><br>我们来使用 alloc/new/copy
+mutable Copy以外的方法看看<br><br>这里试用一下 NSMutableArray类的aray类方法<br><br>
     </p>
+
     <pre>
     	//*取得非自己生成并持有的对象
     	id ob]=[NSMutableArray array]
     	//*取得的对象存在,但自己不持有对象
     </pre>
-    <p>
-    	源代码中, NSMutableArray类对象被赋给变量obj,但变量obij自己并不持有该对象。使用
-retain方法可以持有对象。
+    
+<p>
+    	源代码中, NSMutableArray类对象被赋给变量obj,但变量obij自己并不持有该对象<br><br>使用
+retain方法可以持有对象<br><br>
     </p>
+
     <pre>
     	//取得非自己生成并持有的对象
     	id obj= [NSMutableArray array];
@@ -241,14 +279,18 @@ retain方法可以持有对象。
     	[obj retain];
     	//自己持有对象
     </pre>
-    <p>
+    
+<p>
     	通过 retaIn方法,非自己生成的对象跟用 alloc/new/copy/mutable Copy方法生成并持有的对象
-一样,成为了自己所持有的。
+一样,成为了自己所持有的<br><br>
     </p>
+
     <h1> 不再需要自己持有的对象时释放</h1>
-    <p>
-    	自己持有的对象,一旦不再需要,持有者有义务释放该对象。释放使用 release方法。
+    
+<p>
+    	自己持有的对象,一旦不再需要,持有者有义务释放该对象<br><br>释放使用 release方法<br><br>
     </p>
+
     <pre>
     	
 		//自己生成并持有对象
@@ -257,12 +299,14 @@ retain方法可以持有对象。
 		[obj release];
 		/*释放对象
 		指向对象的指针仍然被保留在变量ob中,貌似能够访问,
-		但对象一经释放绝对不可访问。*/
+		但对象一经释放绝对不可访问<br><br>*/
     </pre>
-    <p>
-    	如此,用aloc方法由自己生成并持有的对象就通过 release方法释放了。自己生成而非自己
+    
+<p>
+    	如此,用aloc方法由自己生成并持有的对象就通过 release方法释放了<br><br>自己生成而非自己
 所持有的对象,若用 retain方法变为自己持有,也同样可以用 release方法释放
     </p>
+
     <pre>
     	取得非自己生成并持有的对象
 id ob]= [NSMutableArray array]:
@@ -272,36 +316,42 @@ id ob]= [NSMutableArray array]:
 [ob] release];
 对象不可再被访问
     </pre>
-    <p>
+    
+<p>
     	用 alloc/new/copy/mutable Copy方法生成并持有的对象,或者用 retain方法持有的对象,一旦
 不再需要,务必要用
 release
-方法进行释放。
+方法进行释放<br><br>
 如果要用某个方法生成对象,并将其返还给该方法的调用方,那么它的源代码又是怎样的呢?
     </p>
+
     <pre>
     	( id)allocobject
 id obj= [[NSObject allocl init]i
 自己持有对象
 return obj
     </pre>
-    <p>
-    	如上例所示,原封不动地返回用aloc方法生成并持有的对象,就能让调用方也持有该对象。
+    
+<p>
+    	如上例所示,原封不动地返回用aloc方法生成并持有的对象,就能让调用方也持有该对象<br><br>
 请注意 allocObject这个名称是符合前文命名规则的
     </p>
+
     <pre>
     	取得非自己生成并持有的对象
 id obj1= [obj allocobject];
 //自己持有对象
     </pre>
-    <p>
+    
+<p>
     	
 allocObject名称符合前文的命名规则,因此它与用allc方法生成并持有对象的情况完全相
 同,所以使用 allocObject方法也就意味着“自己生成并持有对象”
 那么,调用 INSMutable Array array]方法使取得的对象存在,但自己不持有对象,又是如何
 实现的呢?根据上文命名规则,不能使用以 alloc/new/copy/ mutable Copy开头的方法名,因此要
-使用 object这个方法名。
+使用 object这个方法名<br><br>
     </p>
+
     <pre>
     	
 (id)object
@@ -310,36 +360,44 @@ id ob]= [[NSObject alloc] init]i
 取得的对象存在,但自己不持有对象
 return obj;
     </pre>
-    <p>
-    	上例中,我们使用了 autorelease方法。用该方法,可以使取得的对象存在,但自己不持有对象。 autorelease提供这样的功能,使对象在超出指定的生存范围时能够自动并正确地释放(调用
-release方法)。如图1-6所示。
+    
+<p>
+    	上例中,我们使用了 autorelease方法<br><br>用该方法,可以使取得的对象存在,但自己不持有对象<br><br> autorelease提供这样的功能,使对象在超出指定的生存范围时能够自动并正确地释放(调用
+release方法)<br><br>如图1-6所示<br><br>
     </p>
+
     <img src="../img/dasdasd110234505.PNG">
-    <p>
-    	在后面,对 autorelease做了更为详细的解说,具体可参看1.2.5节。使用 NSMutableArray
-类的aray类方法等可以取得谁都不持有的对象,这些方法都是通过 autorelease而实现的。此
+    
+<p>
+    	在后面,对 autorelease做了更为详细的解说,具体可参看1.2.5节<br><br>使用 NSMutableArray
+类的aray类方法等可以取得谁都不持有的对象,这些方法都是通过 autorelease而实现的<br><br>此
 外,根据上文的命名规则,这些用来取得谁都不持有的对象的方法名不能以 alloc/new/copy
-mutable Copy开头,这点需要注意。
+mutable Copy开头,这点需要注意<br><br>
     </p>
+
     <pre>
     	id obj1- [obj object]i
 取得的对象存在,但自己不持有对象
     </pre>
-    <p>
-    	当然,也能够通过 retain方法将调用 autorelease方法取得的对象变为自己持有。
+    
+<p>
+    	当然,也能够通过 retain方法将调用 autorelease方法取得的对象变为自己持有<br><br>
     </p>
+
     <pre>
     	id obj1 [ob]0 object];
     	[obj1 retain];
 		//自己持有对象
     </pre>
     <h1>无法释放非自己持有的对象</h1>
-    <p>
+    
+<p>
     	对于用 alloc/new/copy./ mutable Copy方法生成并持有的对象,或是用 retain方法持有的对象,
-由于持有者是自己,所以在不需要该对象时需要将其释放。而由此以外所得到的对象绝对不能释
-放。倘若在应用程序中释放了非自己所持有的对象就会造成崩溃。例如自己生成并持有对象后,
-在释放完不再需要的对象之后再次释放。
+由于持有者是自己,所以在不需要该对象时需要将其释放<br><br>而由此以外所得到的对象绝对不能释
+放<br><br>倘若在应用程序中释放了非自己所持有的对象就会造成崩溃<br><br>例如自己生成并持有对象后,
+在释放完不再需要的对象之后再次释放<br><br>
     </p>
+
     <pre>
     	自己生成并持有对象
 id obj=[[NSObject alloc] init];
@@ -352,9 +410,11 @@ id obj=[[NSObject alloc] init];
 再度废弃已经废弃了的对象时崩溃
 访问已经废弃的对象时崩溃
     </pre>
-    <p>
-    	或者在“取得的对象存在,但自己不持有对象”时释放。
+    
+<p>
+    	或者在“取得的对象存在,但自己不持有对象”时释放<br><br>
     </p>
+
     <pre>
     	id obj1 [obj object];
 取得的对象存在,但自己不持有对象
@@ -363,32 +423,38 @@ id obj=[[NSObject alloc] init];
 		*这肯定会导致应用程序崩溃!
 		*/
     </pre>
-    <p>
-    	如这些例子所示,释放非自己持有的对象会造成程序崩溃。因此绝对不要去释放非自己持有
+    
+<p>
+    	如这些例子所示,释放非自己持有的对象会造成程序崩溃<br><br>因此绝对不要去释放非自己持有
 的对象
-以上四项内容,就是“引用计数式内存管理”的思考方式。
+以上四项内容,就是“引用计数式内存管理”的思考方式<br><br>
     </p>
+
     <h1>alloc/ retain/ release/ dealloc实现</h1>
-    <p>
+    
+<p>
     	接下来,以 Objective-c内存管理中使用的 alloc/retain/release/dealloc方法为基础,通过实际
-操作来理解内存管理。
-OSx、iOS中的大部分作为开源软件公开在 Apple Open Source上。虽然想让大家参考
-NSobject类的源代码,但是很遗憾,包含 NSobject类的 Foundation框架并没有公开。不过,
+操作来理解内存管理<br><br>
+OSx、iOS中的大部分作为开源软件公开在 Apple Open Source上<br><br>虽然想让大家参考
+NSobject类的源代码,但是很遗憾,包含 NSobject类的 Foundation框架并没有公开<br><br>不过,
 Foundation框架使用的 Core Foundation框架的源代码,以及通过调用 NSObject类进行内存管理
-部分的源代码是公开的。但是,没有 NSObject类的源代码,就很难了解 NSObject类的内部实现
-细节。为此,我们首先使用开源软件 GNUstep来说明。
-GNUstep是 Cocoa框架的互换框架。也就是说, GNUstep的源代码虽不能说与苹果的 Cocoa
-实现完全相同,但是从使用者角度来看,两者的行为和实现方式是一样的,或者说非常相似。理
+部分的源代码是公开的<br><br>但是,没有 NSObject类的源代码,就很难了解 NSObject类的内部实现
+细节<br><br>为此,我们首先使用开源软件 GNUstep来说明<br><br>
+GNUstep是 Cocoa框架的互换框架<br><br>也就是说, GNUstep的源代码虽不能说与苹果的 Cocoa
+实现完全相同,但是从使用者角度来看,两者的行为和实现方式是一样的,或者说非常相似<br><br>理
 解了 GNUstep源代码也就相当于理解了苹果的 Cocoa实现
-我们来看看 GNUstep源代码中 NSObject类的allc类方法。为明确重点,有的地方对引用
-的源代码进行了摘录或在不改变意思的范围内进行了修改。
+我们来看看 GNUstep源代码中 NSObject类的allc类方法<br><br>为明确重点,有的地方对引用
+的源代码进行了摘录或在不改变意思的范围内进行了修改<br><br>
     </p>
+
     <pre>
     	id ob]= [NSObject alloc];
     </pre>
-    <p>
-    	上述调用 NSObject类的allc类方法在 NSObject. m源代码中的实现如下。
+    
+<p>
+    	上述调用 NSObject类的allc类方法在 NSObject. m源代码中的实现如下<br><br>
     </p>
+
     <pre>
     	 //GNUstep/modules/core/base/Source/NSObject.m alloc
     	 +(id)alloc
@@ -396,11 +462,13 @@ return [self allocwithZone: NSDefaultMallocZone()1
 +(id) allocwithZone: NSZone*)z
 return NSAllocateObject self, 0, z);
     </pre>
-    <p>
+    
+<p>
     	
-通过 alloc With Zone:类方法调用 NSAllocateObject函数分配了对象。下面我们来看看
-NSAllocateObject函数。
+通过 alloc With Zone:类方法调用 NSAllocateObject函数分配了对象<br><br>下面我们来看看
+NSAllocateObject函数<br><br>
     </p>
+
     <pre>
     	 GNUstep/modules/core/base/Source/NSObject.m NSAllocateobject
 struct obj_layout
@@ -416,22 +484,28 @@ NSAllocateObject class aclass, NSUInteger extraBytes, NSZone *zone
 	new=(id)&(( struct obj layout *)new )[11:
 }
     </pre>
-    <p>
+    
+<p>
     	NSAllocateObject函数通过调用 NSZone Malloc函数来分配存放对象所需的内存空间,之后
-将该内存空间置0,最后返回作为对象而使用的指针。
+将该内存空间置0,最后返回作为对象而使用的指针<br><br>
     </p>
-    <p>
+
+    
+<p>
     	NSDefaultMallocZone、 NSZone Malloc等名称中包含的 NSZone是什么呢?它是为防
-止内存碎片化而引入的结构。对内存分配的区域本身进行多重化管理,根据使用对象的目
-的、对象的大小分配内存,从而提高了内存管理的效率。
+止内存碎片化而引入的结构<br><br>对内存分配的区域本身进行多重化管理,根据使用对象的目
+的、对象的大小分配内存,从而提高了内存管理的效率<br><br>
 但是,如同苹果官方文档 Programming With ARC Release Notes中所说,现在的运行
-时系统只是简单地忽略了区域的概念。运行时系统中的内存管理本身已极具效率,使用区域
-来管理内存反而会引起内存使用效率低下以及源代码复杂化等问题。如图1-7所示
+时系统只是简单地忽略了区域的概念<br><br>运行时系统中的内存管理本身已极具效率,使用区域
+来管理内存反而会引起内存使用效率低下以及源代码复杂化等问题<br><br>如图1-7所示
     </p>
+
     <img src="../img/dasdasd110234506.PNG">
-    <p>
+    
+<p>
     	以下是去掉 NSZone后简化了的源代码:
     </p>
+
     <pre>
     	// GNUstep/ modules/core/ base/Source/ NSObject. m alloc简化版
 struct ob layout t
@@ -442,23 +516,29 @@ struct ob layout t
 	struct obj layout *p=( struct obj layout *)calloc (l, size);
 	return(id)(p+1);
     </pre>
-    <p>
+    
+<p>
     	allc类方法用 struct obj_ layout中的 I retained整数来保存引用计数,并将其写入对象内存头部,
-该对象内存块全部置0后返回。以下用图示来展示有关 GNUstep的实现,aloc类方法返回的对象。
-如图1-8所示。
+该对象内存块全部置0后返回<br><br>以下用图示来展示有关 GNUstep的实现,aloc类方法返回的对象<br><br>
+如图1-8所示<br><br>
     </p>
+
     <img src="../img/dasdasd110234507.PNG">
-    <p>
+    
+<p>
     	对象的引用计数可通过 retain Count实例方法取得
     </p>
+
     <pre>
     	id obj = [[NSObject alloc] init];
 NSLog("retaincount=sd", [obj retainCount]);
 //显示 retaincount=1
     </pre>
-    <p>
-    	执行alc后对象的 retain Count是“1”。下面通过 GNUstep的源代码来确认。
+    
+<p>
+    	执行alc后对象的 retain Count是“1”<br><br>下面通过 GNUstep的源代码来确认<br><br>
     </p>
+
     <pre>
     	// GNUstep/modules/core/base/Source/NSObject. m retain Count
 -(NSUInteger )retainCount{
@@ -469,20 +549,26 @@ NSExtraRefCount( id anobject){
 	return (( struct ob] layout *)anobject )[-1].retained;
 }
     </pre>
-    <p>
-    	由对象寻址找到对象内存头部,从而访问其中的 retained变量。如图1-9所示。
+    
+<p>
+    	由对象寻址找到对象内存头部,从而访问其中的 retained变量<br><br>如图1-9所示<br><br>
     </p>
+
     <img src="../img/dasdasd110234508.PNG">
-    <p>
-    	因为分配时全部置0,所以 retained为0。由 NSExtraRefCount(self)+1得出, retain Count为1。
-    	可以推测出, retaIn方法使 retained变量加1,而 release方法使 retained变量减1。
+    
+<p>
+    	因为分配时全部置0,所以 retained为0<br><br>由 NSExtraRefCount(self)+1得出, retain Count为1<br><br>
+    	可以推测出, retaIn方法使 retained变量加1,而 release方法使 retained变量减1<br><br>
     </p>
+
     <pre>
     	[obj retain];
     </pre>
-    <p>
+    
+<p>
     	下面来看一下像上面那样调用出的 retain实例方法
     </p>
+
    	<pre>
    		// GNUstep/modules/core/base/Source/NSObject m retain
 (id)retain{
@@ -497,17 +583,21 @@ NSIncrementExtraRefCount (id anobject){
 	( struct obj layout *)anobject )[-1].retained++;
 }
    	</pre> 
-   	<p>
+   	
+<p>
    		虽然写入了当 retained变量超出最大值时发生异常的代码,但实际上只运行了使 retained变
-量加1的 retained++代码。同样地, release实例方法进行 retained-并在该引用计数变量为0时
-做出处理。下面通过源代码来确认
+量加1的 retained++代码<br><br>同样地, release实例方法进行 retained-并在该引用计数变量为0时
+做出处理<br><br>下面通过源代码来确认
    	</p>
+
    	<pre>
    		[obj release];
    	</pre>
-   	<p>
+   	
+<p>
    		以下为此 release实例方法的实现
    	</p>
+
    	<pre>
    		// GNUstep/modules/core/base/Source/NSObject.m release
 (void)release{
@@ -524,10 +614,12 @@ NSDecrementExtraRefCountWasZero (id anObject){
 	}
 }
    	</pre>
-   	<p>
-   		同预想的一样,当 retained变量大于0时减1,等于0时调用 dealloc实例方法,废弃对象。
+   	
+<p>
+   		同预想的一样,当 retained变量大于0时减1,等于0时调用 dealloc实例方法,废弃对象<br><br>
 以下是废弃对象时所调用的 dealloc实例方法的实现
    	</p>
+
    	<pre>
    		// GNUstep/modules/core/base/Source/NSObject.m dealloc
 (void)dealloc{
@@ -540,37 +632,43 @@ NSDeallocateObject (id anobject){
 	free(o);
 }
    	</pre>
-   	<p>
-   		上述代码仅废弃由alc分配的内存块。
-以上就是 alloc/retain/release/dealloc在 GNUstep中的实现。具体总结如下
+   	
+<p>
+   		上述代码仅废弃由alc分配的内存块<br><br>
+以上就是 alloc/retain/release/dealloc在 GNUstep中的实现<br><br>具体总结如下
    	</p>
-   	<ul>
-   		<li> 在 Objective-C的对象中存有引用计数这一整数值</li>
-   		<li> 调用alc或是 retain方法后,引用计数值加1</li>
-   		<li> 调用 release后,引用计数值减1</li>
-   		<li> 引用计数值为0时,调用 dealloc方法废弃对象</li>
-   	</ul>
+
+   	
+   		 在 Objective-C的对象中存有引用计数这一整数值
+   		 调用alc或是 retain方法后,引用计数值加1
+   		 调用 release后,引用计数值减1
+   		 引用计数值为0时,调用 dealloc方法废弃对象
+   	
    	<h1>苹果的实现</h1>
-   	<p>
-   		在看了 GNUstep中的内存管理和引用计数的实现后,我们来看看苹果的实现。因为
-NSObject类的源代码没有公开,此处利用xcode的调试器(lldb)和ioS大概追溯出其实现过程。
-在 NSObject类的aloc类方法上设置断点,追踪程序的执行。以下列出了执行所调用的方法
-和函数。
+   	
+<p>
+   		在看了 GNUstep中的内存管理和引用计数的实现后,我们来看看苹果的实现<br><br>因为
+NSObject类的源代码没有公开,此处利用xcode的调试器(lldb)和ioS大概追溯出其实现过程<br><br>
+在 NSObject类的aloc类方法上设置断点,追踪程序的执行<br><br>以下列出了执行所调用的方法
+和函数<br><br>
    	</p>
+
    	<pre>
    		+alloc
 +allocwithZone
 class createInstance
 calloc
    	</pre>
-   	<p>
+   	
+<p>
    		allc类方法首先调用 alloc withZone:类方法,这和 GNUstep的实现相同,然后调用 class
 createInstance函数①,该函数在 Objective-C运行时参考中也有说明,最后通过调用 calloc.分配
-内存块。这和前面讲述的 GNUstep的实现并无多大差异。 class createlnstance函数的源代码可以
-通过obic4库中的 runtime/objc- runtime-new.mm进行确认。
+内存块<br><br>这和前面讲述的 GNUstep的实现并无多大差异<br><br> class createlnstance函数的源代码可以
+通过obic4库中的 runtime/objc- runtime-new.mm进行确认<br><br>
 retain Count/retain/release实例方法又是怎样实现的呢?同刚才的方法一样,下面列出各个方
-法分别调用的方法和函数。
+法分别调用的方法和函数<br><br>
    	</p>
+
    	<pre>
    		-retaincount
 __CFDoExternRefoperation
@@ -582,12 +680,14 @@ __CFDOExternRefoperation
 CFBasicHashRemovevalue
 ( CFBasicHashRemoveva1ue返回0时,- release调用dea1loc)
    	</pre>
-   	<p>
+   	
+<p>
    		各个方法都通过同一个调用了 CFDoExternRefOperation函数,调用了一系列名称
-相似的函数。如这些函数名的前缀“CF”所示,它们包含于 Core Foundation框架源代码
-中,即是 CFRuntime. c的 CFDoExternRefOperation函数。为了理解其实现,下面简化了
-CFDoExternRefOperation函数后的源代码。
+相似的函数<br><br>如这些函数名的前缀“CF”所示,它们包含于 Core Foundation框架源代码
+中,即是 CFRuntime. c的 CFDoExternRefOperation函数<br><br>为了理解其实现,下面简化了
+CFDoExternRefOperation函数后的源代码<br><br>
    	</p>
+
    	<pre>
    		// CF/CFRuntime.c__CFDoEXtern RefOperation
 int CFDoExternRefOperation (uintptr t op, id obj){
@@ -606,10 +706,12 @@ switch( op ){
 	}
 }
    	</pre>
-   	<p>
-   		CFDoExternRefoperation函数按 retain Count/retain/release操作进行分发,调用不同的函数。
+   	
+<p>
+   		CFDoExternRefoperation函数按 retain Count/retain/release操作进行分发,调用不同的函数<br><br>
 NSObject类的 retain Count/retain/release实例方法也许如下面代码所示:
    	</p>
+
    	<pre>
 -(NSUInteger)retainCount{
 	return( NSUInteger) __CFDoExternRefoperation( OPERATION retainCount, self
@@ -621,44 +723,54 @@ NSObject类的 retain Count/retain/release实例方法也许如下面代码所�
 	return __CFDoExternRefOperation( OPERATION release, self):
 }
    	</pre>
-   	<p>
+   	
+<p>
    		可以从_ CFDoExternRefoperation函数以及由此函数调用的各个函数名看出,苹果的实现大
-概就是采用散列表(引用计数表)来管理引用计数。如图1-10所示。
+概就是采用散列表(引用计数表)来管理引用计数<br><br>如图1-10所示<br><br>
    	</p>
+
    	<img src="../img/dasdasd110234509.PNG">
-   	<p>
+   	
+<p>
    		GNUstep将引用计数保存在对象占用内存块头部的变量中,而苹果的实现,则是保存在引用
-计数表的记录中。 GNUstep的实现看起来既简单又高效,而苹果如此实现必然有它的好处。下面
-我们来讨论一下。
+计数表的记录中<br><br> GNUstep的实现看起来既简单又高效,而苹果如此实现必然有它的好处<br><br>下面
+我们来讨论一下<br><br>
 通过内存块头部管理引用计数的好处如下:
    	</p>
-   	<ul>
-   		<li>少量代码即可完成 </li>
-   		<li> 能够统一管理引用计数用内存块与对象用内存块</li>
-   	</ul>
-   	<p>
+
+   	
+   		少量代码即可完成 
+   		 能够统一管理引用计数用内存块与对象用内存块
+   	
+   	
+<p>
    		通过引用计数表管理引用计数的好处如下:
    	</p>
-   	<ul>
-   		<li>对象用内存块的分配无需考虑内存块头部 </li>
-   		<li>引用计数表各记录中存有内存块地址,可从各个记录追溯到各对象的内存块 </li>
-   	</ul>
-   	<p>
-   		这里特别要说的是,第二条这一特性在调试时有着举足轻重的作用。即使出现故障导致对象
-占用的内存块损坏,但只要引用计数表没有被破坏,就能够确认各内存块的位置。如图1-11所示。
+
+   	
+   		对象用内存块的分配无需考虑内存块头部 
+   		引用计数表各记录中存有内存块地址,可从各个记录追溯到各对象的内存块 
+   	
+   	
+<p>
+   		这里特别要说的是,第二条这一特性在调试时有着举足轻重的作用<br><br>即使出现故障导致对象
+占用的内存块损坏,但只要引用计数表没有被破坏,就能够确认各内存块的位置<br><br>如图1-11所示<br><br>
    	</p>
+
    	<img src="../img/dasdasd110234510.PNG">
-   	<p>
+   	
+<p>
    		另外,在利用工具检测内存泄漏时,引用计数表的各记录也有助于检测各对象的持有者是否
 存在
-通过以上解说即可理解苹果的实现。
+通过以上解说即可理解苹果的实现<br><br>
 1.2.5 autorelease
 说到 Objective-C内存管理,就不能不提 autorelease
-顾名思义, autorelease就是自动释放。这看上去很像ARC,但实际上它更类似于C语言中
-自动变量(局部变量)的特性。
-我们来复习一下C语言的自动变量。程序执行时,若某自动变量超出其作用域,该自动变
-量将被自动废弃。
+顾名思义, autorelease就是自动释放<br><br>这看上去很像ARC,但实际上它更类似于C语言中
+自动变量(局部变量)的特性<br><br>
+我们来复习一下C语言的自动变量<br><br>程序执行时,若某自动变量超出其作用域,该自动变
+量将被自动废弃<br><br>
    	</p>
+
    	
 
 

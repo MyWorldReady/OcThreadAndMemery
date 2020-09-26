@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--clear--clear--clear--><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -8,85 +8,111 @@
 <body style="font-family:sans-serif">
     
 	<h1>Block语法</h1>
-	<p>
-		下面我们详细讲解一下带有自动变量值的匿名函数 Block的语法,即 Block表达式语法( Block Literal Syntax)。前面按钮回调例子中使用的 Block语法如下
+	
+<p>
+		下面我们详细讲解一下带有自动变量值的匿名函数 Block的语法,即 Block表达式语法( Block Literal Syntax)<br><br>前面按钮回调例子中使用的 Block语法如下
 	</p>
+
 	<pre>
 ^(int event){
-	printf("buttonId: %d event=%d\n", i, event);
+	printf("buttonId: %d event=%d
+", i, event);
 }
 	</pre>
-	<p>
+	
+<p>
 		实际上,该 Block语法使用了省略方式,其完整形式如下:
 	</p>
+
 	<pre>
 ^ void (int event){
-	printf("buttonId: %d event=%d\n", i, event);
+	printf("buttonId: %d event=%d
+", i, event);
 }
 	</pre>
-	<p>
+	
+<p>
 		如上所示,完整形式的Bock语法与一般的C语言函数定义相比,仅有两点不同
 	</p>
-	<ol>
-		<li> 没有函数名。</li>
-		<li> 带有“^”。</li>
-	</ol>
-	<p>
-		第一点不同是没有函数名,因为它是匿名函数。第二点不同是返回值类型前带有“^”(插入
-记号, caret)记号。因为OSX、iOs应用程序的源代码中将大量使用 Block,所以插入该记号便
-于查找。
-以下为 Block语法的BN范式。
+
+	
+		 没有函数名<br><br>
+		 带有“^”<br><br>
+	
+	
+<p>
+		第一点不同是没有函数名,因为它是匿名函数<br><br>第二点不同是返回值类型前带有“^”(插入
+记号, caret)记号<br><br>因为OSX、iOs应用程序的源代码中将大量使用 Block,所以插入该记号便
+于查找<br><br>
+以下为 Block语法的BN范式<br><br>
 	</p>
+
 	<pre>
 Block literal expression : block decl compound statement body
 block decl::=
 block decl : parameter list
 block decl :: type expression
 	</pre>
-	<p>
-		即使此前不了解BN范式,通过说明也能有个概念。如图2-1所示。
+	
+<p>
+		即使此前不了解BN范式,通过说明也能有个概念<br><br>如图2-1所示<br><br>
 	</p>
+
 	<img src="../img/dasdasd110234535.PNG">
-	<p>
+	
+<p>
 		“返回值类型”同C语言函数的返回值类型,“参数列表”同C语言函数的参数列表,“表达
-式”同C语言函数中允许使用的表达式。当然与C语言函数一样,表达式中含有 retur语句时,
-其类型必须与返回值类型相同。
+式”同C语言函数中允许使用的表达式<br><br>当然与C语言函数一样,表达式中含有 retur语句时,
+其类型必须与返回值类型相同<br><br>
 例如可以写出如下形式的 Block语法:
 	</p>
+
 	<pre>
 		^int (int count){return count 1; }
 	</pre>
-	<p>
-		虽然前面出现过省略方式,但 Block语法可省略好几个项目。首先是返回值类型。如图2-2
-所示。
+	
+<p>
+		虽然前面出现过省略方式,但 Block语法可省略好几个项目<br><br>首先是返回值类型<br><br>如图2-2
+所示<br><br>
 	</p>
+
 	<img src="../img/dasdasd110234536.PNG">
-	<p>
+	
+<p>
 		<strong>
 		省略返回值类型时,如果表达式中有 retur语句就使用该返回值的类型,如果表达式中没有
-return语句就使用void类型。表达式中含有多个 return语句时,所有 return的返回值类型必须相
-同。前面的源代码省略其返回值类型时如下所示:</strong>
+return语句就使用void类型<br><br>表达式中含有多个 return语句时,所有 return的返回值类型必须相
+同<br><br>前面的源代码省略其返回值类型时如下所示:</strong>
 	</p>
+
 	<pre>
 		^(int count){return count 1; }
 	</pre>
-	<p>
+	
+<p>
 		<strong>
-		该 Block语法将按照 return语句的类型,返回int型返回值。
-其次,如果不使用参数,参数列表也可省略。以下为不使用参数的 Block语法:</strong>
+		该 Block语法将按照 return语句的类型,返回int型返回值<br><br>
+其次,如果不使用参数,参数列表也可省略<br><br>以下为不使用参数的 Block语法:</strong>
 	</p>
+
 	<pre>
-		^void (void){printf("Blocks\n");}
+		^void (void){printf("Blocks
+");}
 	</pre>
-	<p>
+	
+<p>
 		该源代码可省略为如下形式:
 	</p>
+
 	<pre>
-		<strong>^{printf("Blocks\n");}</strong>
+		<strong>^{printf("Blocks
+");}</strong>
 	</pre>
-	<p>
-		返回值类型以及参数列表均被省略的 Block语法是大家最为熟知的记述方式吧。如图23
+	
+<p>
+		返回值类型以及参数列表均被省略的 Block语法是大家最为熟知的记述方式吧<br><br>如图23
 	</p>
+
 	<img src="../img/dasdasd110234537.PNG">
 
 

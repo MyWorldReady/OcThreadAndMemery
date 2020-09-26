@@ -50,7 +50,7 @@ function DeleteTag(){
 	if [[ $os = 1 ]]; then
 		sed -i -e "s~<${oldStr} [^>]*>~~g" -e "s~<${oldStr}>~~g"  -e "s~</${oldStr}>~~g"  ${htmlPath}
 	else
-		sed -i -e "" "s~<${oldStr} [^>]*>~~g" -e "s~<${oldStr}>~~g" -e "s~</${oldStr}>~~g"  ${htmlPath}
+		sed -i "" -e "s~<${oldStr} [^>]*>~~g" -e "s~<${oldStr}>~~g" -e "s~</${oldStr}>~~g"  ${htmlPath}
 	fi
 }
 

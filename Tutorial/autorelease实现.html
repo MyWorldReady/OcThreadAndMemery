@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--clear--clear--clear--><!--../img/--><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -7,59 +7,73 @@
 </head>
 <body style="font-family:sans-serif">
     
-	<p>
+	
+<p>
 		autorelease是怎样实现的呢?为了加深理解,同 alloc/retain/release/dealloc一样,我们来查看
 下 GNUstep的源代码
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		[ob] autorelease]
-	</pre>
-	<p>
-		此源代码调用 NSObject类的 autorelease实例方法。
+	</pre><!--rnrnrn-->
+	
+<p>
+		此源代码调用 NSObject类的 autorelease实例方法<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		// GNUstep/modules/core/base/Source/NSObject.m autorelease
 (id)autorelease
 [NSAutoreleasePool addobject: self];
-	</pre>
-	<p>
-		autorelease实例方法的本质就是调用 NSAutoreleasePool对象的 addobject类方法。
+	</pre><!--rnrnrn-->
+	
+<p>
+		autorelease实例方法的本质就是调用 NSAutoreleasePool对象的 addobject类方法<br><br>
 	</p>
+
 	<h1>专栏提高调用 Objective-C方法的速度</h1>
-	<p>
-		GNUstep中的 autorelease实际上是用一种特殊的方法来实现的。这种方法能够高效
-地运行OSX、OS用应用程序中频繁调用的 autorelease方法,它被称为" MP Caching"。
+	
+<p>
+		GNUstep中的 autorelease实际上是用一种特殊的方法来实现的<br><br>这种方法能够高效
+地运行OSX、OS用应用程序中频繁调用的 autorelease方法,它被称为" MP Caching"<br><br>
 在进行方法调用时,为了解决类名/方法名以及取得方法运行时的函数指针,要在框架初始
-化时对其结果值进行缓存。
+化时对其结果值进行缓存<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		id autorelease class = [NSAutoreleasepool class]
 SEL autorelease sel =@selector( addobject:);
 IMP autorelease imp- [autorelease class methodForSelector: autorelease sel];
-	</pre>
-	<p>
-		实际的方法调用就是使用缓存的结果值。
+	</pre><!--rnrnrn-->
+	
+<p>
+		实际的方法调用就是使用缓存的结果值<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		-(id) autorelease
 		{
 			(*autorelease_imp ) (autorelease_class, autorelease_sel, self);
 		}		
-	</pre>
-	<p>
-		这就是 IMP Caching的方法调用。虽然同以下源代码完全相同,但从运行效率上看,即
-使它依赖于运行环境,一般而言速度也是其他方法的2倍。
+	</pre><!--rnrnrn-->
+	
+<p>
+		这就是 IMP Caching的方法调用<br><br>虽然同以下源代码完全相同,但从运行效率上看,即
+使它依赖于运行环境,一般而言速度也是其他方法的2倍<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		-(id)autorelease{
 		[NSAutoreleasePool addobject: self];
 	}
-	</pre>
-	<p>
-		下面来看一下 NSAutorelease Pool类的实现。由于 NSAutoreleasePool类的源代码比较复杂
-所以我们假想一个简化的源代码进行说明。
+	</pre><!--rnrnrn-->
+	
+<p>
+		下面来看一下 NSAutorelease Pool类的实现<br><br>由于 NSAutoreleasePool类的源代码比较复杂
+所以我们假想一个简化的源代码进行说明<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		// GNUstep/modules/core/base/Source/NSAutorelease Pool m addobject
 + void )addobject: (id )anobj
 	NSAutoreleasePool*pool=取得正在使用的 NSAutoreleasePo1对象;
@@ -68,48 +82,58 @@ IMP autorelease imp- [autorelease class methodForSelector: autorelease sel];
 	} else{
 		NSLOg(Q" NSAutoreleasepool对象非存在状态下调用 autorelease");
 	}
-	</pre>
-	<p>
-		addobject类方法调用正在使用的 NSAutorelease Pool对象的 addobject实例方法。以下源代
-码中,被赋予pool变量的即为正在使用的 NSAutoreleasePool对象。
+	</pre><!--rnrnrn-->
+	
+<p>
+		addobject类方法调用正在使用的 NSAutorelease Pool对象的 addobject实例方法<br><br>以下源代
+码中,被赋予pool变量的即为正在使用的 NSAutoreleasePool对象<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		NSAutoreleasePool *pool =[[NSAutoreleasePool alloc] init];
 id obj= [[NSObject alloc] init];
 [obj autorelease];
-	</pre>
-	<p>
-		如果嵌套生成或持有的 NSAutorelease pool对象,理所当然会使用最内侧的对象。下例中
-pool2为正在使用的 NSAutorelease Pool对象。
+	</pre><!--rnrnrn-->
+	
+<p>
+		如果嵌套生成或持有的 NSAutorelease pool对象,理所当然会使用最内侧的对象<br><br>下例中
+pool2为正在使用的 NSAutorelease Pool对象<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		NSAutoreleasePool *pool0 =[[NSAutoreleasePool alloc] init];
 NSAutoreleasePool *poll =[[NSAutoreleasePool alloc] init];
 NSAutoreleasePool *pool2 =[[NSAutoreleasePool alloc] init];
 id ob]=[[NSObject alloc] init];
 [pool2 drain];
 [pool drain];
-	</pre>
-	<p>
-		下面看一下 addObject实例方法的实现。
+	</pre><!--rnrnrn-->
+	
+<p>
+		下面看一下 addObject实例方法的实现<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		// GNUstep/modules/core/base/Source/NSAutorelease Pool.m addobject
 		-(void)addobject: (id) anobj
 [array addobject: anobj];
-	</pre>
-	<p>
-		实际的 GNUstep实现使用的是连接列表,这同在 NSMutableArray对象中追加对象参数是一样的。
+	</pre><!--rnrnrn-->
+	
+<p>
+		实际的 GNUstep实现使用的是连接列表,这同在 NSMutableArray对象中追加对象参数是一样的<br><br>
 如果调用 NSObject类的 autorelease实例方法,该对象将被追加到正在使用的 NSAutorelease Pool
 对象中的数组里
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		[pool drain];
-	</pre>
-	<p>
-		以下为通过 drain实例方法废弃正在使用的 NSAutoreleasePool对象的过程。
+	</pre><!--rnrnrn-->
+	
+<p>
+		以下为通过 drain实例方法废弃正在使用的 NSAutoreleasePool对象的过程<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		// GNUstep/modules/core/base/Source/NSAutorelease Pool.m drain
 -(void) drain{
 	[self dealloc]
@@ -123,18 +147,24 @@ id ob]=[[NSObject alloc] init];
 		[ob] release];
 	}
 }
-	</pre>
-	<p>
-虽然调用了好几个方法,但可以确定对于数组中的所有对象都调用了 release实例方法。
+	</pre><!--rnrnrn-->
+	
+<p>
+虽然调用了好几个方法,但可以确定对于数组中的所有对象都调用了 release实例方法<br><br>
 		
 	</p>
-	<p>
+
+	
+<p>
 		苹果的实现
 	</p>
-	<p>
-		可通过objc4库的 runtime/objc-armm来确认苹果中 autorelease的实现。
+
+	
+<p>
+		可通过objc4库的 runtime/objc-armm来确认苹果中 autorelease的实现<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 	 // objc4/runtime/objc-arr.mm class Autorelease PoolPage
 class AutoreleasePoolPage{
 static inline void *push(){
@@ -167,13 +197,15 @@ id *objc autorelease(id obj){
 	return AutoreleasePoolPage: : autorelease ( obj)
 }
 
-	</pre>
-	<p>
-		C++类中虽然有动态数组的实现,但其行为和 GNUstep的实现完全相同。
-我们使用调试器来观察一下 NSAutorelease Pool类方法和 autorelease方法的运行过程。如下
+	</pre><!--rnrnrn-->
+	
+<p>
+		C++类中虽然有动态数组的实现,但其行为和 GNUstep的实现完全相同<br><br>
+我们使用调试器来观察一下 NSAutorelease Pool类方法和 autorelease方法的运行过程<br><br>如下
 所示,这些方法调用了关联于objc4库 autorelease实现的函数
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		NSAutoreleasePool *pool =[[NSAutoreleasePool alloc] init]:
 /*等同于 objc autoreleasePoolPush()*/
 id ob= [[NSObject alloc] init]i
@@ -181,28 +213,34 @@ id ob= [[NSObject alloc] init]i
 /*等同于 objc autorelease(obj)*/
 [pool drain];
 等同于 objc autoreleasePool Pop(poo1)
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		另外,可通过 NSAutorelease Pool类中的调试用非公开类方法 show Pools来确认已被 autorelease
-的对象的状况。 show Pools会将现在的 NSAutoreleasePool的状况输出到控制台。
+的对象的状况<br><br> show Pools会将现在的 NSAutoreleasePool的状况输出到控制台<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		[NSAutorelease Pool showPools);
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		NSAutorelease Pool类的 show Pools类方法只能在ioS中使用,作为替代,在现在的运行时系
 统中我们使用调试用非公开函数 objc_autorelease_PoolPrint()
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		*函数声明*/
 extern void objc autoreleasePoolPrint ()i
 /* autoreleasepoo1调试用输出开始*/
 objc autoreleasePoolPrint ()
-	</pre>
-	<p>
-		如果运行此函数,就能像下面这样在控制台中确认 Autorelease PoolPage类的情况。
+	</pre><!--rnrnrn-->
+	
+<p>
+		如果运行此函数,就能像下面这样在控制台中确认 Autorelease PoolPage类的情况<br><br>
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		objc[14481]:##########排
 objc[14481]: AUTORELEASE POOLS for thread Oxad0892c0
 objc[14481]: 14 releases pending
@@ -235,31 +273,39 @@ objc[14481]:[0x6a851ac
 objc[14481]:[0x6a851b0
 0x671c660 NSObject
 objc[14481]:#######普普井
-	</pre>
-	<p>
-		该函数在检查某对象是否被自动 release时非常有用。
+	</pre><!--rnrnrn-->
+	
+<p>
+		该函数在检查某对象是否被自动 release时非常有用<br><br>
 	</p>
+
 	<h1>专档 autorelease NSAutoreleasepoo1对象</h1>
-	<p>
+	
+<p>
 		提问:如果 autorelease NsAutorelease pool对象会如何?
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		NSAutoreleasePool *pool [[NSAutoreleasePool alloc] init];
 [pool autorelease];
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		回答:发生异常
 	</p>
-	<pre>
+
+	<!--rnrnrnrnrn--> <!-- 代码 --><!--rnrn--> <pre>
 		** Terminating app due to uncaught exception 'NSInvalidArgumentException
 reason: ***-[NSAutoreleasePool autorelease];
 Cannot autorelease an autorelease pool'
-	</pre>
-	<p>
+	</pre><!--rnrnrn-->
+	
+<p>
 		通常在使用 Objective-C,也就是 Foundation框架时,无论调用哪一个对象的
-autorelease实例方法,实现上是调用的都是 NSObject类的 autorelease实例方法。但是对
-于 NSAutorelease Pool类, autorelease实例方法已被该类重载,因此运行时就会出错。
+autorelease实例方法,实现上是调用的都是 NSObject类的 autorelease实例方法<br><br>但是对
+于 NSAutorelease Pool类, autorelease实例方法已被该类重载,因此运行时就会出错<br><br>
 	</p>
+
 	
 
 

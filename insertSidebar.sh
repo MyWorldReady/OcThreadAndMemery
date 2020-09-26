@@ -98,7 +98,8 @@ if [[ $os = 1 ]]; then
 	# start $newHtmlPath
 	"/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" -incognito $newHtmlPath
 else
-	open $newHtmlPath
+	# open $newHtmlPath
+	/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome -incognito $newHtmlPath
 fi
 
 
