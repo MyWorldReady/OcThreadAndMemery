@@ -5,18 +5,17 @@
     <title id="xxxf">The Frameset Boilerplate</title>
 
 
-    
     <script type="text/javascript">
 
             function pcIndex(){              
-              document.write("<frameset border=\"0\" cols=\"10%,*\">")
+              document.write("<frameset id=\"indexHtml\" border=\"0\" cols=\"10%,*\">")
                document.write("<frame src=\"menus/sidebar.html\" name=\"sidebar\">")
                document.write("<frame id=\"mMainFrames\" src=\"frames/main.html\" name=\"main\">")
                document.write("</frameset>")
             }
 
             function phoneIndex(){              
-              document.write("<frameset border=\"0\" cols=\"10%,*\">")
+              document.write("<frameset id=\"indexHtml\" border=\"0\" cols=\"10%,*\">")
                document.write("<frame src=\"menus/sidebar.html\" name=\"sidebar\">")
                document.write("<frameset border=\"0\" rows=\"9*,*\">")
                document.write("<frame id=\"mMainFrames\" src=\"frames/main.html\" name=\"main\">")
@@ -52,6 +51,28 @@
                 }
             }
 
+            var showCol = "10%,*";
+            var hideCol = "0%,*";
+            var sidebarIsShow = false
+            var mFrameset = document.getElementById("indexHtml")
+            
+            addEventListener('message', e => {
+                // e.data为子页面发送的数据
+                var data = e.data
+                if(data!=null && data["mKey"] == "LongPressSwitch"){
+                    var sidebarStatus = data["status"]
+                    if(sidebarIsShow!=sidebarStatus){
+                      if(sidebarStatus){
+                        mFrameset.cols=showCol;
+                      }
+                      else{
+                        mFrameset.cols=hideCol;
+                      }
+                    }
+                    sidebarIsShow = sidebarStatus
+                }
+                
+            })
 
     </script>
 

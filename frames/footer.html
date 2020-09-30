@@ -20,15 +20,29 @@
 		         document.getElementById("downClick").click();
 		    }   
 
+		    function LongPressSwitch() {
+		    	
+		    	var status = MLongPressSwitch();
+		    	//子frame通知父frame
+		    	 window.parent.postMessage({
+			        "mKey":"LongPressSwitch",
+			        "status": status
+			      }, '*')
+
+		    }
+
+
+
      </script>
 </head>
 	<body style="font-family:sans-serif">
 			<a id="upClick" href="./../menus/sidebar.html" target="sidebar" style="display: none">上一页</a>
 			<a id="downClick" href="./../menus/sidebar.html" target="sidebar" style="display: none">下一页</a>
-			<a id="" href="" target="" style="float: left; font-size: 40px; margin-left: 50px;margin-right: 50px"  onclick="up()">下一页</a>
-	      	<a id="" href="" target="" style="float: left; font-size: 40px;" onclick="down()">上一页</a>
-	      	<a id="" href="" target="" style="float: right; font-size: 40px; margin-left: 50px;margin-right: 50px"  onclick="up()">下一页</a>
-	      	<a id="" href="" target="" style="float: right; font-size: 40px;" onclick="down()">上一页</a>
+			<a id="" href="" target="" style="float: left; font-size: 40px; margin-left: 50px;"  onclick="up()">下一页</a>
+	      	<a id="" href="" target="" style="float: left; font-size: 40px; margin-left: 20px;" onclick="down()">上一页</a>
+	      	<a id="" href="" target="" style="float: left; font-size: 20px; margin-left: 20px; margin-top:20px" onclick="LongPressSwitch()">全屏</a>
+	      	<a id="" href="" target="" style="float: right; font-size: 40px; 50px;margin-right: 50px"  onclick="up()">下一页</a>
+	      	<a id="" href="" target="" style="float: right; font-size: 40px; margin-right: 20px;" onclick="down()">上一页</a>
 	      	
 
 	</body>

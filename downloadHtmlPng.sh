@@ -128,9 +128,22 @@ function Download(){
 
 	htmlOriContent=$(cat ${htmlPath})
 
+	#下载<img标签之后第一个匹配的图片链接, 否则直到再次匹配之前都不下载
+	isAfterImgTag=0
 	for imgHttpEx in `grep "${strSearchHttp}" ${htmlPath}`
 	do
 		url=${imgHttpEx}
+
+		mustContainStr='<img'
+	
+		if [[ $url == *$mustContainStr* ]]
+		then
+			isAfterImgTag=1
+		else
+			if [[ $isAfterImgTag == 0 ]]; then
+				continue
+			fi
+		fi
 		
 		#提取包含src字段的超链接
 		if [[ $url = src* ]] || [[ $url = data-src* ]] || [[ $url = data-original-src* ]]
@@ -214,6 +227,9 @@ function Download(){
 
 		# wget -O $imgNewName $url -q
 		wget -O $imgNewName $httpUrl
+
+		isAfterImgTag=0
+
 	done
 
 
@@ -237,7 +253,7 @@ function Download(){
 	fi
 
 	
-	ClearTags $1
+	
 
 }
 
@@ -255,37 +271,52 @@ cd img
 
 
 
-#TDOO文件名包含空格未处理 只处理了包看 "副本" 字眼的文件
-SAVEIFS=$IFS
-if [ $os = 1 ]
-then
-	IFS=$(echo -en "\n\b")
-fi
+#遍历全部的html后缀文件
+#只处理了包看 "副本" 字眼的文件
+# SAVEIFS=$IFS
+# if [ $os = 1 ]
+# then
+# 	IFS=$(echo -en "\n\b")
+# fi
 
+# fileArr=()
+# for f in $(ls $rootHtmlPath)
+# do
+# 	fullPath="${rootHtmlPath}"'/'"$f"
+# 	if  [[ "$f" != *副本* ]] && [  -f "$fullPath"  ]
+# 	then
+# 		len=${#fileArr[@]}
+# 		fileArr[$len]="$f"
+# 	fi
+# done
+
+
+# if [ $os = 1 ]
+# then
+# 	IFS=$SAVEIFS
+# fi
+
+
+#需要处理的文件优化成使用git
 fileArr=()
-for f in $(ls $rootHtmlPath)
+modifyArr=$(git status -s | grep -a -Eoi 'Tutorial/.*html')
+for f in ${modifyArr}
 do
-	fullPath="${rootHtmlPath}"'/'"$f"
-	if  [[ "$f" != *副本* ]] && [  -f "$fullPath"  ]
+	fullPath="${filepath}/$f"
+	if  [[ "$f" != *副本* ]] && [  -e "$fullPath"  ]
 	then
+		name=${f:9} #删除Tutorial/  得到带后缀的文件名
 		len=${#fileArr[@]}
-		fileArr[$len]="$f"
+		fileArr[$len]="$name"
 	fi
 done
-
-
-if [ $os = 1 ]
-then
-	IFS=$SAVEIFS
-fi
-
-
 
 
 
 
 for f in ${fileArr[*]}
 do
+	ClearTags $f
 	Download $f
 done
 
