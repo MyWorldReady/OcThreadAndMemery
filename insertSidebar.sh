@@ -96,7 +96,14 @@ fi
 
 if [[ $os = 1 ]]; then
 	# start $newHtmlPath
-	"/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" -incognito $newHtmlPath
+	x86Exe="/c/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+	x64Exe="/c/Program Files/Google/Chrome/Application/chrome.exe"
+	tarExe=${x64Exe}
+	if [[ -e ${x86Exe} ]]; then
+		tarExe=${x86Exe}
+	fi
+	"${tarExe}" -incognito $newHtmlPath
+
 else
 	# open $newHtmlPath
 	/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome -incognito $newHtmlPath
