@@ -33,7 +33,7 @@ filepath=$(cd "$(dirname "$0")"; pwd)
 # 清理一次文件夹
 # rm -rf img
 # mkdir img
-
+png2jpgOnePath="${filepath}/_png2jpgOne.py"
 imgPath="${filepath}/img"
 rootHtmlPath="${filepath}/Tutorial"
 
@@ -227,6 +227,9 @@ function Download(){
 
 		# wget -O $imgNewName $url -q
 		wget -O $imgNewName $httpUrl
+
+		#使用python脚本处理图片
+		python "${png2jpgOnePath}" "${imgNewName}"
 
 		isAfterImgTag=0
 
