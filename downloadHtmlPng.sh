@@ -229,7 +229,9 @@ function Download(){
 		wget -O $imgNewName $httpUrl
 
 		#使用python脚本处理图片
-		python "${png2jpgOnePath}" "${imgNewName}"
+		pngFullPath="$imgPath/${imgNewName}"
+		python "${png2jpgOnePath}" "${pngFullPath}"
+		# python "${png2jpgOnePath}" "${imgNewName}"
 
 		isAfterImgTag=0
 

@@ -47,7 +47,12 @@ fi
 
 
 filepath=$(cd "$(dirname "$0")"; pwd)  
+png2jpgOnePath="${filepath}/_png2jpgOne.py"
 
+if [[ ! -f $png2jpgOnePath ]]; then
+	echo "python处理脚本不存在 $png2jpgOnePath"
+	exit
+fi
 
 finalPicSavingPath=$filepath/img
 
@@ -60,6 +65,7 @@ fi
 
 allPicArr=$(ls $handingImgPath | grep -E '\.png|\.JPG|\.JPEG')
 lenghtCheck=0
+
 picName=''
 for name in $allPicArr; do
 	((lenghtCheck++))
@@ -76,8 +82,6 @@ echo "现有图片文件  $picName"
 
 
 arr=$(ls $handingImgPath| grep 'A_')
-
-
 
 baseStr=''
 lenghtCheck=0
@@ -133,8 +137,13 @@ fi
 echo "新生成图片文件名 $newImgName"
 
 
+newImgFullPath=$handingImgPath/$newImgName
+mv $handingImgPath/$picName $newImgFullPath
 
-mv $handingImgPath/$picName $handingImgPath/$newImgName
+# 使用python脚本处理图片
+python "${png2jpgOnePath}" "${newImgFullPath}"
+
+
 cp $handingImgPath/$newImgName $finalPicSavingPath/$newImgName
 #删除老文件
 rm -f $handingImgPath/$baseStr

@@ -22,14 +22,15 @@ if not os.path.exists(handler_path):
 	sys.exit(0)
 
 def PNG_JPG(PngPath):
-    img = Image.open(PngPath)
+    fp = open(PngPath,'rb')
+    img = Image.open(fp)
     w = img.width
     h = img.height
     infile = PngPath
     outfileNoExt = os.path.splitext(infile)[0] + ""
     outfile = outfileNoExt + ".jpg"
     img = Image.open(infile)
-    os.remove(PngPath)
+    
     outW = w
     outH = h
 
@@ -61,10 +62,13 @@ def PNG_JPG(PngPath):
             img.convert('RGB').save(outfile, quality=70)           
         else:
             img.convert('RGB').save(outfile, quality=70)
-        os.rename(outfile,outfileNoExt)
-        return outfile
+
     except Exception as e:
     	print("PNG转换JPG 错误", e)
+
+    fp.close()
+    os.remove(PngPath)
+    os.rename(outfile,outfileNoExt)
 
 
 PNG_JPG(handler_path)
