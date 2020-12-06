@@ -50,7 +50,7 @@ def PNG_JPG(PngPath):
         if outH > 650:
             outH = 650
             ratio = float(outH) / h
-            outW = int(width*ratio)
+            outW = int(w*ratio)
             
     
     img = img.resize((outW, outH), Image.ANTIALIAS)
