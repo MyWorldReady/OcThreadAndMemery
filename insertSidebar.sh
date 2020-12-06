@@ -102,11 +102,13 @@ if [[ $os = 1 ]]; then
 	if [[ -e ${x86Exe} ]]; then
 		tarExe=${x86Exe}
 	fi
-	"${tarExe}" -incognito $newHtmlPath
+	#隐藏模式打开
+	# "${tarExe}" -incognito $newHtmlPath
+	"${tarExe}" $newHtmlPath
 
 else
-	# open $newHtmlPath
-	/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome -incognito $newHtmlPath
+	open $newHtmlPath
+	# /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome -incognito $newHtmlPath
 fi
 
 
