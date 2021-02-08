@@ -63,7 +63,7 @@ fi
 
 
 
-allPicArr=$(ls $handingImgPath | grep -E '\.png|\.JPG|\.JPEG')
+allPicArr=$(ls $handingImgPath | grep -E '\.png|\.JPG|\.JPEG|\.jpg')
 lenghtCheck=0
 
 picName=''
