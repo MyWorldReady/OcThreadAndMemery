@@ -140,16 +140,21 @@ def CheckFileNameLegal(dic):
 		if fileName.find("&") != -1:
 			raise RuntimeError('文件名包含&!!!!fileName='+fileName)
 
-def CheckFileExit(dic):
+def CheckFileExit(listFileName):
 	exists = 0
-	for key,value in dic.items():
-		# print(key+'     '+value)
-		fileName = key
+	exitArr = []
+	for i, fileName in enumerate(listFileName):
 		filePath = GetFilePath(fileName)
 		# print(filePath)
 		if os.path.exists(filePath):
 			exists = 1
-			raise RuntimeError('文件存在!!!!fileName='+fileName)
+			exitArr.append(fileName)
+			
+	if exists == 1:
+		print("--------以下文件存在-------")
+		for i, fileName in enumerate(exitArr):
+			print(fileName)
+		raise RuntimeError('文件存在!!!!')
 	return exists
 
 def CheckSidebar(dic):
@@ -161,12 +166,11 @@ def CheckSidebar(dic):
 		if sidebarHtmlStr.find(mark) != -1:
 			raise RuntimeError('sidebar文件已经存在制定超链接!!!!'+mark)
 
-def AddSidebar(dic):
+def AddSidebar(dic,listFileName):
 	filePath = SIDEBARHTML
 	sidebarHtmlStr = open(filePath).read()
 	resultStr = ''
-	for key,value in dic.items():
-		fileName = key
+	for i, fileName in enumerate(listFileName):
 		resultStr = resultStr+'\n'
 		resultStr = resultStr+'<li><a href="../Tutorial/{0}.html" target="main">{1}</a></li>'.format(fileName, fileName)
 	replaceMark = "</ul>"
@@ -216,7 +220,7 @@ dic = info[0]
 listFileName = info[1]
 
 CheckURL(dic)
-CheckFileExit(dic)
+CheckFileExit(listFileName)
 CheckFileNameLegal(dic)
 CheckSidebar(dic)
 # for key,value in dic.items():
@@ -234,5 +238,5 @@ for i, fileName in enumerate(listFileName):
 	print(fileName+"\t\t"+url)
 
 Download(dic,listFileName)
-AddSidebar(dic)
+AddSidebar(dic,listFileName)
 SublimeShell(dic)
