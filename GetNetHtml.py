@@ -33,7 +33,7 @@ SIDEBARHTML = PWD+"/menus/"+"sidebar.html"
 
 ################### 需要返回自己截取html需要的部分  ###################
 def SplitTargetHtml(html,fileName):
-	htmlArr = re.findall(r'<article[\s\S]*?</article>',html)
+	htmlArr = re.findall(r'<div class="section">[\s\S]*?<div class="footer-wrapper">',html)
 	if len(htmlArr) > 0:
 		return htmlArr[0]
 	raise RuntimeError('网页没有包含对应的提取标签!!!!fileName='+fileName)
@@ -112,6 +112,10 @@ def GetAllHyperlinksData(fileContent):
     		title = title.replace("）","")
     		title = title.replace("(","")
     		title = title.replace(")","")
+    		# title = title.replace("#","S")
+    		title = title.replace("？","")
+    		title = title.replace("?","")
+    		title = title.replace("：","")
 
     		# print(title)
 
@@ -239,4 +243,4 @@ for i, fileName in enumerate(listFileName):
 
 Download(dic,listFileName)
 AddSidebar(dic,listFileName)
-SublimeShell(dic)
+# SublimeShell(dic)
