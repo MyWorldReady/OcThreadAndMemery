@@ -33,11 +33,15 @@ SIDEBARHTML = PWD+"/menus/"+"sidebar.html"
 
 ################### 需要返回自己截取html需要的部分  ###################
 def SplitTargetHtml(html,fileName):
-	htmlArr = re.findall(r'<div class="section">[\s\S]*?<div class="footer-wrapper">',html)
-	if len(htmlArr) > 0:
-		return htmlArr[0]
-	raise RuntimeError('网页没有包含对应的提取标签!!!!fileName='+fileName)
-	return html
+    match_str = r'<div id="x-content[\s\S]*?<a href="https://github.com'
+    htmlArr = re.findall(match_str,html)
+    if len(htmlArr) > 0:
+        html = htmlArr[0]
+        html = html.replace("<h3>读后有收获可以支付宝请作者喝咖啡","")
+        return html
+
+    print (html)
+    raise RuntimeError('网页没有包含对应的提取标签!!!!fileName='+fileName+" match_str="+match_str)
 
 
 
@@ -71,7 +75,9 @@ if not os.path.exists(SIDEBARHTML):
 
 def GetHtml(fileName,url):
 	print("正在下载------"+fileName)
-	r = requests.get(url)
+	headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+	r = requests.get(url, headers=headers)
 	code = r.status_code
 	if code != 200 :
 		raise RuntimeError('网页下载失败!!!!fileName='+fileName+"  code="+str(code)+"  url="+url)
@@ -153,7 +159,7 @@ def CheckFileExit(listFileName):
 		if os.path.exists(filePath):
 			exists = 1
 			exitArr.append(fileName)
-			
+
 	if exists == 1:
 		print("--------以下文件存在-------")
 		for i, fileName in enumerate(exitArr):

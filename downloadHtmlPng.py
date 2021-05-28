@@ -61,7 +61,12 @@ def StrIsContain(mStr, mark):
 
 
 def PNG_JPG(PngPath, outPutFolder):
-    img = Image.open(PngPath)
+    try:
+        img = Image.open(PngPath)
+    except:
+        if os.path.isfile(PngPath):
+            os.remove(PngPath)
+            return 
     w = img.width
     h = img.height
 
