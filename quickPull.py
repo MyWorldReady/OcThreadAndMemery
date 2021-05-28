@@ -12,6 +12,21 @@ import time
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
+
+def IsMac():
+    p = sys.platform
+    return p == "darwin"
+
+def IsWin():
+    p = sys.platform
+    return p == "win32"
+
+
+if IsWin():
+    os.system('chcp 65001')
+
+
 path_root = os.getcwd()
 
 MAXTHREAD = 8
@@ -32,7 +47,12 @@ def get_all_folder_name():
 
 
 def do_pull(threadName, foler_name):
-    process = os.popen("cd " + foler_name + ";git pull")
+    cmd = ""
+    if IsMac():
+        cmd = "cd " + foler_name + ";git pull"
+    else:
+        cmd = "cd " + foler_name + "&git pull"
+    process = os.popen(cmd)
     output = process.read()
     process.close()
 

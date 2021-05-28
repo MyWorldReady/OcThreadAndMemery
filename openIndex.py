@@ -33,7 +33,7 @@ def OpenInChrome():
     elif IsWin():
         x86Exe = "/c/Program Files (x86)/Google/Chrome/Application/chrome.exe"
         x64Exe = "/c/Program Files/Google/Chrome/Application/chrome.exe"
-        os.system("x64Exe {}".format(newHtmlPath))
+        os.system("{} {}".format(x64Exe,newHtmlPath))
     else:
         raise ("没有处理这个平台")
 
