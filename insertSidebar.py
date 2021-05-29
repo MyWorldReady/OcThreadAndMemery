@@ -11,12 +11,14 @@ sys.setdefaultencoding('utf-8')
 len_argv = len(sys.argv)
 
 InputFileNameNoExt = ''
-if len_argv >= 2:
+if len_argv == 2:
     InputFileNameNoExt = str(sys.argv[1])
+elif len_argv > 2:
+    print ("不能含空格")
+    exit(0)
 else:
     print("没有传入文件名")
     exit(0)
-
 # InputFileNameNoExt = "q7"
 InputFileName = InputFileNameNoExt + ".html"
 
