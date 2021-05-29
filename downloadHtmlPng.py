@@ -28,6 +28,7 @@ ConflictagList = (
 # 和DelTagList，SimpeTagList正则匹配冲突的Tag
 ReplaceTagDic = {
     "。": "<br><br>\n\n",
+    "¶": "",
 }
 
 # 已经清理过的html文件的标记

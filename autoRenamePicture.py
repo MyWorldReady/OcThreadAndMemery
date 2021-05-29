@@ -26,6 +26,7 @@ def IsWin():
     p = sys.platform
     return p == "win32"
 
+IsMacShot = False
 
 if IsWin():
     os.system('chcp 65001')
@@ -79,26 +80,24 @@ def PNG_JPG(PngPath, outPutFolder):
     outW = w
     outH = h
     if outW > outH:
-        if outW > 650:
-            outW = 650
-            ratio = float(outW) / w
-            outH = int(h * ratio)
+        if IsMacShot:
+            outW = int(outW / 3)
+        elif outW > 550:
+            outW = 550
+        ratio = float(outW) / w
+        outH = int(h * ratio)
     else:
-        if outH > 650:
-            outH = 650
-            ratio = float(outH) / h
-            outW = int(w * ratio)
+        if IsMacShot:
+            outH = int(outH / 3)
+        elif outH > 550:
+            outH = 550
+        ratio = float(outH) / h
+        outW = int(w * ratio)
 
     infile = PngPath
     outfileNoExt = os.path.splitext(infile)[0] + ""
     outfile = outfileNoExt + ".jpg"
     img = Image.open(infile)
-    outW = w
-    if outW > 550:
-        outW = 550
-    outH = h
-    if outH > 550:
-        outH = 550
     img = img.resize((outW, outH), Image.ANTIALIAS)
     try:
         if len(img.split()) == 4:
@@ -224,6 +223,11 @@ def get_pic_path():
     screen_shot_arr = get_all_screen_shot()
     check_screen_shot_length(screen_shot_arr)
     pic_path = screen_shot_arr[0]
+
+    if IsMac():
+        global IsMacShot
+        IsMacShot = True
+
     return pic_path
 
 
@@ -234,7 +238,7 @@ pic_path = move_pic_2_Screenshot(pic_path, new_name)
 PNG_JPG(pic_path, "")
 
 move_pic_2_img(new_name_no_ext)
-pyperclip.copy('<img src="../img/{}">'.format(new_name_no_ext))
+pyperclip.copy('<br><img src="../img/{}"><br>'.format(new_name_no_ext))
 
 print ("生成文件名 {}".format(new_name_no_ext))
 print ("操作结束 退出程序")

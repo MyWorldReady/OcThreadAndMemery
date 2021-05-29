@@ -33,11 +33,11 @@ SIDEBARHTML = PWD+"/menus/"+"sidebar.html"
 
 ################### 需要返回自己截取html需要的部分  ###################
 def SplitTargetHtml(html,fileName):
-    match_str = r'<div id="x-content[\s\S]*?<a href="https://github.com'
+    match_str = r'<div class="section" id="id1">[\s\S]*?<div class="rst-footer-buttons'
     htmlArr = re.findall(match_str,html)
     if len(htmlArr) > 0:
         html = htmlArr[0]
-        html = html.replace("<h3>读后有收获可以支付宝请作者喝咖啡","")
+        html = html.replace('<div class="rst-footer-buttons',"")
         return html
 
     print (html)
@@ -122,6 +122,7 @@ def GetAllHyperlinksData(fileContent):
     		title = title.replace("？","")
     		title = title.replace("?","")
     		title = title.replace("：","")
+    		title = title.replace("*","")
 
     		# print(title)
 
