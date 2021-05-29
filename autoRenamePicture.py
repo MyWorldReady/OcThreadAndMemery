@@ -98,8 +98,9 @@ def PNG_JPG(PngPath, outPutFolder):
     outfileNoExt = os.path.splitext(infile)[0] + ""
     outfile = outfileNoExt + ".jpg"
     img = Image.open(infile)
-    img = img.resize((outW, outH), Image.ANTIALIAS)
+    
     try:
+        img = img.resize((outW, outH), Image.ANTIALIAS)
         if len(img.split()) == 4:
             # prevent IOError: cannot write mode RGBA as BMP
             r, g, b, a = img.split()
