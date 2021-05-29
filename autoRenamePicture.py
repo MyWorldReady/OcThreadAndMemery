@@ -35,6 +35,8 @@ path_root = os.getcwd()
 ImgPath = path_root + "/img"
 ScreenshotFolder = "Screenshot"
 
+FilterPicTypeArr = [".png", ".JPG", ".jpg", ".JPEG", ".jpeg"]
+
 
 def get_destop_path():
     return os.path.join(os.path.expanduser("~"), 'Desktop')
@@ -200,14 +202,39 @@ def flush_new_pic_info():
     return new_pic_name
 
 
-screen_shot_arr = get_all_screen_shot()
-check_screen_shot_length(screen_shot_arr)
-pic_path = screen_shot_arr[0]
+def str_is_contain(m_str, mark):
+    return str(m_str).find(mark) != -1
+
+
+def get_pic_path():
+    pic_arr = []
+    res = os.listdir(ScreenshotPath)
+    for name in res:
+        full = ScreenshotPath + "/" + name
+        if os.path.isfile(full):
+            for m_type in FilterPicTypeArr:
+                if name.endswith(m_type):
+                    pic_arr.append(full)
+
+    if len(pic_arr) > 1:
+        raise RuntimeError("{}多张图片 ".format(ScreenshotPath))
+    if len(pic_arr) == 1:
+        return pic_arr[0]
+
+    screen_shot_arr = get_all_screen_shot()
+    check_screen_shot_length(screen_shot_arr)
+    pic_path = screen_shot_arr[0]
+    return pic_path
+
+
 new_name_no_ext = flush_new_pic_info()
 new_name = new_name_no_ext + ".png"
-
+pic_path = get_pic_path()
 pic_path = move_pic_2_Screenshot(pic_path, new_name)
 PNG_JPG(pic_path, "")
 
 move_pic_2_img(new_name_no_ext)
 pyperclip.copy('<img src="../img/{}">'.format(new_name_no_ext))
+
+print ("生成文件名 {}".format(new_name_no_ext))
+print ("操作结束 退出程序")
