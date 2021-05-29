@@ -99,8 +99,9 @@ def PNG_JPG(PngPath, outPutFolder):
     outH = h
     if outH > 550:
         outH = 550
-    img = img.resize((outW, outH), Image.ANTIALIAS)
+    
     try:
+        img = img.resize((outW, outH), Image.ANTIALIAS)
         if len(img.split()) == 4:
             # prevent IOError: cannot write mode RGBA as BMP
             r, g, b, a = img.split()
