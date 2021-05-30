@@ -124,6 +124,7 @@ def GetAllHyperlinksData(fileContent):
     		title = title.replace("：","")
     		title = title.replace("*","")
     		title = title.replace("、","")
+    		title = title.replace("@","")
 
     		# print(title)
 
