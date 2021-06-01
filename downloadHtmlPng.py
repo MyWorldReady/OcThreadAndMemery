@@ -36,6 +36,25 @@ HasFlushHtmlMark = "<!--clear--clear--clear-->"
 # 已经下载过图片的标记
 HasDowloadPicMark = "<!--../img/-->"
 
+
+
+
+
+def IsMac():
+    p = sys.platform
+    return p == "darwin"
+
+
+def IsWin():
+    p = sys.platform
+    return p == "win32"
+
+IsMacShot = False
+
+if IsWin():
+    os.system('chcp 65001')
+
+
 path_root = os.getcwd()
 
 ImgPath = path_root + "/img"
@@ -67,7 +86,7 @@ def PNG_JPG(PngPath, outPutFolder):
     except:
         if os.path.isfile(PngPath):
             os.remove(PngPath)
-            return 
+        return
     w = img.width
     h = img.height
 
@@ -79,26 +98,24 @@ def PNG_JPG(PngPath, outPutFolder):
     outW = w
     outH = h
     if outW > outH:
-        if outW > 650:
-            outW = 650
-            ratio = float(outW) / w
-            outH = int(h * ratio)
+        if IsMacShot:
+            outW = int(outW / 3)
+        elif outW > 550:
+            outW = 550
+        ratio = float(outW) / w
+        outH = int(h * ratio)
     else:
-        if outH > 650:
-            outH = 650
-            ratio = float(outH) / h
-            outW = int(w * ratio)
+        if IsMacShot:
+            outH = int(outH / 3)
+        elif outH > 550:
+            outH = 550
+        ratio = float(outH) / h
+        outW = int(w * ratio)
 
     infile = PngPath
     outfileNoExt = os.path.splitext(infile)[0] + ""
     outfile = outfileNoExt + ".jpg"
     img = Image.open(infile)
-    outW = w
-    if outW > 550:
-        outW = 550
-    outH = h
-    if outH > 550:
-        outH = 550
     
     try:
         img = img.resize((outW, outH), Image.ANTIALIAS)
