@@ -129,6 +129,8 @@ def GetAllHyperlinksData(fileContent):
     		title = title.replace("C#","CS")
 
     		# print(title)
+    		if dic.has_key(title):
+				raise RuntimeError("重复title={}".format(title))
 
     		dic[title] = url
     		listFileName.append(title)
