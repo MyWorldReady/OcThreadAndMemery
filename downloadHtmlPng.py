@@ -18,7 +18,7 @@ from PIL import Image
 DelTagList = (
     'a',
     'div', 'span', 'code', 'font', 'li ', 'ul', 'ol', 'article', 'button', 'blockquote', 'path', 'svg', 'figure',
-    'ins',
+    'ins', 
     'section', 'em', 'ignore_js_op', 'span', 'data-original-src', 'hr', 'strong', 'iframe', 'mark')
 # 需要精简的Tag
 SimpeTagList = ('p ', 'br', 'pre', 'table', 'tbody', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6')
@@ -29,6 +29,7 @@ ConflictagList = (
 ReplaceTagDic = {
     "。": "<br><br>\n\n",
     "¶": "",
+    "<p >": "<p>",
 }
 
 # 已经清理过的html文件的标记
