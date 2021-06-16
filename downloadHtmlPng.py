@@ -276,6 +276,9 @@ def Download(htmlFileName):
     if HasFlushHtmlMark not in htmlTmpContent:
         htmlTmpContent = HasFlushHtmlMark + htmlTmpContent
 
+    if IsWin():
+        #git bash 控制台是gb2312编码
+        htmlPath = htmlPath.decode('utf-8').encode('gb2312')
     f = open(htmlPath, "w")
     f.write(htmlTmpContent)
     f.flush()
@@ -292,6 +295,9 @@ def HandlerWithGit():
     for name in resArr:
         if StrIsContain(name, "Tutorial/"):
             fulllPath = path_root + "/" + name
+            if IsWin():
+                #git bash 控制台是gb2312编码
+                fulllPath = fulllPath.decode('utf-8').encode('gb2312')
             if os.path.exists(fulllPath):
                 name = name.replace("Tutorial/", "")
                 Download(name)

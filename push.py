@@ -9,6 +9,18 @@ import shutil
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+def IsMac():
+    p = sys.platform
+    return p == "darwin"
+
+def IsWin():
+    p = sys.platform
+    return p == "win32"
+
+
+if IsWin():
+    os.system('chcp 65001')
+
 path_root = os.getcwd()
 
 
@@ -21,8 +33,13 @@ def get_foler_name():
 
 def do_push(foler_name):
     print(foler_name + " push")
+    cmd = ""
+    if IsMac():
+        cmd = "git add ./;git commit -m ex;git push"
+    else:
+        cmd = "git add ./&git commit -m ex&git push"
 
-    process = os.popen('git add ./;git commit -m ex;git push')
+    process = os.popen(cmd)
     output = process.read()
     process.close()
 

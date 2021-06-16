@@ -8,6 +8,15 @@ import re
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+def IsMac():
+    p = sys.platform
+    return p == "darwin"
+
+def IsWin():
+    p = sys.platform
+    return p == "win32"
+
+
 len_argv = len(sys.argv)
 
 InputFileNameNoExt = ''
@@ -22,11 +31,20 @@ else:
 # InputFileNameNoExt = "q7"
 InputFileName = InputFileNameNoExt + ".html"
 
+if IsWin():
+    #git bash 控制台是gb2312编码
+    InputFileNameNoExt = str(InputFileNameNoExt).decode('gb2312')
+    InputFileName = str(InputFileNameNoExt + ".html")
+
 filepath = os.getcwd()
 
 sidebarHtmlPath = "{}/menus/sidebar.html".format(filepath)
 copyHtmlPath = "{}/copy.html".format(filepath)
 newHtmlPath = "{}/Tutorial/{}".format(filepath, InputFileName)
+
+if IsWin():
+    newHtmlPath = newHtmlPath.decode('utf-8')
+
 
 
 def InputFileExit():
@@ -64,7 +82,8 @@ def OpenInSublime():
     if IsMac():
         os.system("subl {}".format(newHtmlPath))
     elif IsWin():
-        os.system("/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl {}".format(newHtmlPath))
+        #git bash 控制台是gb2312编码
+        os.system(("subl "+newHtmlPath).decode('utf-8').encode('gb2312'))
     else:
         raise ("没有处理这个平台")
 
@@ -73,9 +92,10 @@ def OpenInChrome():
     if IsMac():
         os.system("open {}".format(newHtmlPath))
     elif IsWin():
-        x86Exe = "/c/Program Files (x86)/Google/Chrome/Application/chrome.exe"
-        x64Exe = "/c/Program Files/Google/Chrome/Application/chrome.exe"
-        os.system("x64Exe {}".format(newHtmlPath))
+        x86Exe = "c:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+        x64Exe = "c:/Program Files/Google/Chrome/Application/chrome.exe"
+        #git bash 控制台是gb2312编码
+        os.system('"{}" {}'.format(x64Exe,newHtmlPath.decode('utf-8').encode('gb2312')))
     else:
         raise ("没有处理这个平台")
 

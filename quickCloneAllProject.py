@@ -61,9 +61,9 @@ def get_all_name():
 def do_clone(git_name):
     print (git_name + "   start\n")
     cmd = "git clone https://github.com/MyWorldReady/" + git_name
-    process = os.popen(cmd)
-    output = process.read()
-    process.close()
+    if IsWin():
+        cmd = cmd.decode('utf-8').encode('gb2312')
+    os.system(cmd)
 
     print (git_name + "   finish\n")
 
