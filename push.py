@@ -39,11 +39,12 @@ def do_push(foler_name):
     else:
         cmd = "git add ./&git commit -m ex&git push"
 
-    process = os.popen(cmd)
-    output = process.read()
-    process.close()
+    # process = os.popen(cmd)
+    # output = process.read()
+    # process.close()
+    os.system(cmd)
 
-    print (foler_name + "   " + output)
+    # print (foler_name + "   " + output)
 
 foler_name = get_foler_name()
 do_push(foler_name)

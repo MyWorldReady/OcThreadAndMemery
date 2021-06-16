@@ -22,11 +22,13 @@ def get_foler_name():
 def do_pull(foler_name):
     print(foler_name + " pull")
 
-    process = os.popen('git pull')  # return file
-    output = process.read()
-    process.close()
+    cmd = 'git pull'
+    # process = os.popen(cmd)  # return file
+    # output = process.read()
+    # process.close()
+    os.system(cmd)
 
-    print (foler_name + "   " + output)
+    # print (foler_name + "   " + output)
 
 
 foler_name = get_foler_name()
