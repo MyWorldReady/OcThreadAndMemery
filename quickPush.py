@@ -50,11 +50,12 @@ def do_pull(threadName, foler_name):
         cmd = "cd " + foler_name + ";git add ./;git commit -m ex;git push"
     else:
         cmd = "cd " + foler_name + "&git add ./&git commit -m ex&git push"
-    process = os.popen(cmd)
-    output = process.read()
-    process.close()
+    # process = os.popen(cmd)
+    # output = process.read()
+    # process.close()
+    os.system(cmd)
 
-    print (threadName + "   " + foler_name + "   " + output + "\n")
+    # print (threadName + "   " + foler_name + "   " + output + "\n")
 
 
 foler_name_arr = get_all_folder_name()
