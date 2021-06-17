@@ -9,6 +9,16 @@ import shutil
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
+
+def IsMac():
+    p = sys.platform
+    return p == "darwin"
+
+def IsWin():
+    p = sys.platform
+    return p == "win32"
+
 path_root = os.getcwd()
 
 
@@ -44,9 +54,10 @@ def do_remove_file(folder_path):
 
 
 def do_copy_file(folder_path):
-    copy_name = "openIndex.py"
-    # old_path = path_root + "/" + copy_name
+    copy_name = "quickDocmd.py"
     old_path = "C:/Users/Administrator/Downloads/456" + "/" + copy_name
+    if IsMac():
+        old_path = "/Users/wu/Downloads/123" + "/" + copy_name
     new_path = folder_path + "/" + copy_name
     shutil.copy(old_path, new_path)
 
