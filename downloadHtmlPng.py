@@ -19,7 +19,7 @@ DelTagList = (
     'a',
     'div', 'span', 'code', 'font', 'li ', 'ul', 'ol', 'article', 'button', 'blockquote', 'path', 'svg', 'figure',
     'ins', 
-    'section', 'em', 'ignore_js_op', 'span', 'data-original-src', 'hr', 'strong', 'iframe', 'mark')
+    'section', 'em', 'ignore_js_op', 'span', 'data-original-src', 'hr', 'strong', 'iframe', 'mark', 'style')
 # 需要精简的Tag
 SimpeTagList = ('p ', 'br', 'pre', 'table', 'tbody', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 # 和DelTagList，SimpeTagList正则匹配冲突的Tag
