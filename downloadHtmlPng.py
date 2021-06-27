@@ -219,8 +219,8 @@ def Download(htmlFileName):
         for arrItem in arr:
             content = str(arrItem)
             if StrIsContain(content, "src="):
-                keyValueArr = content.split("=")
-                key = keyValueArr[0]
+                keyValueArr = content.split("src=")
+                key = keyValueArr[0] + "src"
                 url = keyValueArr[1]
                 url = url.replace('"', "").replace("<", "").replace(">", "")
                 dic[key] = url
@@ -245,7 +245,10 @@ def Download(htmlFileName):
                 print("当前url=   " + url)
                 ThrowErrorAndDelDownload(downOkDic, "想要传入完整的域名部分(不能有引号) 如 https://www.baidu.com")
             else:
-                url = DomainName + url
+                if DomainName.endswith("/"):
+                    url = DomainName + url.replace("/","",1)
+                else:
+                    url = DomainName + url
 
         if url in downOkDic.keys():
             htmlTmpContent = __ReplaceImgTag(htmlTmpContent, itemStr, fileNameNoExt)
