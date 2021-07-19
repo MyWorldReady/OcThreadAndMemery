@@ -27,7 +27,8 @@ def IsWin():
     return p == "win32"
 
 IsMacShot = False
-
+if IsMac():
+    IsMacShot = True
 if IsWin():
     os.system('chcp 65001')
 
@@ -224,10 +225,6 @@ def get_pic_path():
     screen_shot_arr = get_all_screen_shot()
     check_screen_shot_length(screen_shot_arr)
     pic_path = screen_shot_arr[0]
-
-    if IsMac():
-        global IsMacShot
-        IsMacShot = True
 
     return pic_path
 
