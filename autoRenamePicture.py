@@ -37,7 +37,7 @@ path_root = os.getcwd()
 ImgPath = path_root + "/img"
 ScreenshotFolder = "Screenshot"
 
-FilterPicTypeArr = [".png", ".JPG", ".jpg", ".JPEG", ".jpeg"]
+FilterPicTypeArr = [".png", ".JPG", ".jpg", ".JPEG", ".jpeg", ".gif"]
 
 
 def get_destop_path():
@@ -221,6 +221,9 @@ def get_pic_path():
         raise RuntimeError("{}多张图片 ".format(ScreenshotPath))
     if len(pic_arr) == 1:
         return pic_arr[0]
+
+    if IsWin():
+        raise RuntimeError("windows的截图需要放在路径{} ".format(ScreenshotPath))
 
     screen_shot_arr = get_all_screen_shot()
     check_screen_shot_length(screen_shot_arr)
