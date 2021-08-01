@@ -14,11 +14,14 @@ import random
 import shutil
 from PIL import Image
 
+# 清理匹配,比如<noscript[\s\S]*?</noscript>
+PowDelMatchList = (
+    'noscript','noscript')
 # 需要清理的Tag
 DelTagList = (
     'a',
     'div', 'span', 'code', 'font', 'li ', 'ul', 'ol', 'article', 'button', 'blockquote', 'path', 'svg', 'figure',
-    'ins', 
+    'ins',  'noscript',
     'section', 'em', 'ignore_js_op', 'span', 'data-original-src', 'hr', 'strong', 'iframe', 'mark', 'style')
 # 需要精简的Tag
 SimpeTagList = ('p ', 'br', 'pre', 'table', 'tbody', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6')
@@ -177,6 +180,10 @@ def __ClearTag(htmlTmpContent, mTagStr, isDelTag):
         htmlTmpContent = re.sub(r'<{0}[\s\S]*?>'.format(mTagStr), "<{0}>".format(mTagStr), htmlTmpContent)
     return htmlTmpContent
 
+def __PowDeleteTags(htmlTmpContent):
+    for tag in PowDelMatchList:
+        htmlTmpContent = re.sub(r'<{}[\s\S]*?</{}>'.format(tag,tag), "", htmlTmpContent)
+    return htmlTmpContent
 
 def __ClearTags(htmlTmpContent):
     for tag in DelTagList:
@@ -200,6 +207,7 @@ def Download(htmlFileName):
     htmlPath = RootHtmlPath + "/" + htmlFileName
     f = open(htmlPath.decode('utf-8'), "r")
     htmlOriContent = f.read()
+    htmlOriContent = __PowDeleteTags(htmlOriContent)
     htmlTmpContent = htmlOriContent
     f.close()
 
@@ -272,6 +280,7 @@ def Download(htmlFileName):
             else:
                 os.remove(filePath)
 
+    
     htmlTmpContent = __ClearTags(htmlTmpContent)
     htmlTmpContent = __ReplaceMoreBrTag(htmlTmpContent)
     if HasDowloadPicMark not in htmlTmpContent:
