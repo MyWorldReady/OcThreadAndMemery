@@ -26,7 +26,8 @@ def get_all_html():
     arr = os.listdir(TutorialPath)
     for name in arr:
         if name.endswith(".html"):
-            res.append(name.decode("utf-8"))
+            # res.append(name.decode("utf-8"))
+            res.append(name)
     return res
 
 
@@ -35,8 +36,12 @@ def do_re(name):
     f = open(path, "r")
     content = f.read()
     f.close()
-    content = re.sub(r'<a href="http://www.52im[\s\S]*?</a>', "", content)
+    # content = re.sub(r'<a href="http://www.52im[\s\S]*?</a>', "", content)
     # content = content.replace("</a>", "")
+    content = content.replace("""<img src="../images/""", """<img src="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/images/""")
+    content = content.replace("""<img src="images/""", """<img src="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/images/""")
+    content = content.replace("""<img src="images\\""", """<img src="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/images/""")
+    content = content.replace("""<img src="/Images/""", """<img src="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/images/""")
     f = open(path, "w")
     f.write(content)
     f.flush()
