@@ -8,6 +8,7 @@ import ConfigParser
 reload(sys)
 sys.setdefaultencoding('utf-8')
 import os
+import os.path
 import re
 import requests
 import time
@@ -26,16 +27,14 @@ def IsWin():
     p = sys.platform
     return p == "win32"
 
-IsMacShot = False
-if IsMac():
-    IsMacShot = True
 if IsWin():
     os.system('chcp 65001')
 
 path_root = os.getcwd()
 
 ImgPath = path_root + "/img"
-ScreenshotFolder = "Screenshot"
+ScreenshotName = "Screenshot"
+ScreenshotFolder = ScreenshotName
 
 FilterPicTypeArr = [".png", ".JPG", ".jpg", ".JPEG", ".jpeg", ".gif"]
 
@@ -63,7 +62,7 @@ def creat_name_no_ext():
     return fileNameNoExt
 
 
-def PNG_JPG(PngPath, outPutFolder):
+def PNG_JPG(PngPath, outPutFolder,do_scale):
     try:
         img = Image.open(PngPath)
     except:
@@ -80,15 +79,16 @@ def PNG_JPG(PngPath, outPutFolder):
 
     outW = w
     outH = h
+
     if outW > outH:
-        if IsMacShot:
+        if do_scale:
             outW = int(outW / 3)
         elif outW > 550:
             outW = 550
         ratio = float(outW) / w
         outH = int(h * ratio)
     else:
-        if IsMacShot:
+        if do_scale:
             outH = int(outH / 3)
         elif outH > 550:
             outH = 550
@@ -207,6 +207,14 @@ def str_is_contain(m_str, mark):
     return str(m_str).find(mark) != -1
 
 
+
+def is_mac_shot(pic_path):
+    if IsMac():
+        pic_name = os.path.basename(pic_path)
+        is_contain = str_is_contain(pic_name,ScreenshotName)
+        return is_contain
+    return False
+
 def get_pic_path():
     pic_arr = []
     res = os.listdir(ScreenshotPath)
@@ -234,9 +242,13 @@ def get_pic_path():
 
 new_name_no_ext = flush_new_pic_info()
 new_name = new_name_no_ext + ".png"
-pic_path = get_pic_path()
-pic_path = move_pic_2_Screenshot(pic_path, new_name)
-PNG_JPG(pic_path, "")
+ori_pic_path = get_pic_path()
+pic_path = move_pic_2_Screenshot(ori_pic_path, new_name)
+
+do_scale = is_mac_shot(ori_pic_path)
+
+
+PNG_JPG(pic_path, "",do_scale)
 
 move_pic_2_img(new_name_no_ext)
 pyperclip.copy('<br><img src="../img/{}"><br>'.format(new_name_no_ext))
