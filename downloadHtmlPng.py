@@ -20,11 +20,11 @@ PowDelMatchList = (
 # 需要清理的Tag
 DelTagList = (
     'a',
-    'div', 'span', 'code', 'font', 'li ', 'ul', 'ol', 'article', 'button', 'blockquote', 'path', 'svg', 'figure',
+    'div', 'span', 'code', 'font', 'li ', 'article', 'button', 'blockquote', 'path', 'svg', 'figure',
     'ins',  'noscript',
     'section', 'em', 'ignore_js_op', 'span', 'data-original-src', 'hr', 'strong', 'iframe', 'mark', 'style')
 # 需要精简的Tag
-SimpeTagList = ('p ', 'br', 'pre', 'table', 'tbody', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6')
+SimpeTagList = ('p ', 'br', 'pre', 'table', 'tbody', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol')
 # 和DelTagList，SimpeTagList正则匹配冲突的Tag
 ConflictagList = (
     'i', 'b')
@@ -90,14 +90,14 @@ def PNG_JPG(PngPath, outPutFolder):
     except:
         if os.path.isfile(PngPath):
             os.remove(PngPath)
-        return
+        return False
     w = img.width
     h = img.height
 
     if w == 0:
-        return
+        return False
     if h == 0:
-        return
+        return False
 
     outW = w
     outH = h
@@ -132,13 +132,14 @@ def PNG_JPG(PngPath, outPutFolder):
             img.convert('RGB').save(outfile, quality=70)
         os.rename(outfile, outfileNoExt)
         os.remove(PngPath)
-        return outfile
+        return True
     except Exception as e:
         if os.path.exists(outfile):
             os.remove(outfile)
         if os.path.exists(PngPath):
             os.remove(PngPath)
-        print(u"PNG转换JPG 错误 已删除源文件" + str(e))
+        print(u"PNG转换JPG 错误 已删除源文件" + e)
+    return False
 
 
 def GetRemotePng(filePath, url, fileName):
@@ -148,7 +149,7 @@ def GetRemotePng(filePath, url, fileName):
     r = requests.get(url, headers=headers)
     code = r.status_code
     if code != 200:
-        print ("下载错误!!! code=" + str(code) + " filePath=" + str(filePath))
+        print ("下载错误!!! code={}".format(code) + " filePath={}".format(filePath))
         return False
     with open(filePath, "wb") as f:
         f.write(r.content)
@@ -158,8 +159,12 @@ def GetRemotePng(filePath, url, fileName):
 
 def ThrowErrorAndDelDownload(downOkDic, strReason):
     for filePath in downOkDic.values():
-        os.remove(filePath)
-    raise (strReason + " , 已删除下载的图片, 正在退出程序 , 请重新执行脚本!!!".format())
+        if os.path.exists(filePath):
+            os.remove(filePath)
+        paht_no_ext = filePath.replace(".png","")
+        if os.path.exists(paht_no_ext):
+            os.remove(paht_no_ext)
+    raise (strReason + " , 已删除下载的图片, 正在退出程序 , 请重新执行脚本!!!".format(strReason))
 
 
 def __ReplaceMoreBrTag(htmlTmpContent):
@@ -272,13 +277,27 @@ def Download(htmlFileName):
             if os.path.exists(filePath):
                 ThrowErrorAndDelDownload(downOkDic, "图片保存路径重复")
 
-            result = GetRemotePng(filePath, url, fileName)
-            if result:
+            try:
                 downOkDic[url] = filePath
-                htmlTmpContent = __ReplaceImgTag(htmlTmpContent, itemStr, fileNameNoExt)
-                PNG_JPG(filePath, ImgPath)
-            else:
-                os.remove(filePath)
+                result = GetRemotePng(filePath, url, fileName)
+                
+                if result:
+                    htmlTmpContent = __ReplaceImgTag(htmlTmpContent, itemStr, fileNameNoExt)
+
+                    try:
+                        jpg_res = PNG_JPG(filePath, ImgPath)
+                        if not jpg_res:
+                            ThrowErrorAndDelDownload(downOkDic, "图片转jpg失败!!+filePath="+str(filePath))
+                    except Exception as e:
+                        ThrowErrorAndDelDownload(downOkDic, "图片转jpg!!+e="+str(e)+"  filePath="+str(filePath))
+                        return
+                    
+                else:
+                    os.remove(filePath)
+            except Exception as e:
+                ThrowErrorAndDelDownload(downOkDic, "下载失败!!+e={}".format(str(e)))
+                return
+            
 
     
     htmlTmpContent = __ClearTags(htmlTmpContent)
