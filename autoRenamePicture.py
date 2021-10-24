@@ -82,14 +82,14 @@ def PNG_JPG(PngPath, outPutFolder,do_scale):
 
     if outW > outH:
         if do_scale:
-            outW = int(outW / 3)
+            outW = int(outW / 2)
         elif outW > 550:
             outW = 550
         ratio = float(outW) / w
         outH = int(h * ratio)
     else:
         if do_scale:
-            outH = int(outH / 3)
+            outH = int(outH / 2)
         elif outH > 550:
             outH = 550
         ratio = float(outH) / h
