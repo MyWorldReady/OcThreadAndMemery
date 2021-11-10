@@ -117,6 +117,7 @@ def GetAllHyperlinksData(fileContent):
     		title = title.replace("<","")
     		title = title.replace(">","")
     		title = title.replace(" ","")
+    		title = title.replace('"',"_")
     		title = title.replace("-","_")
     		title = title.replace(".","_")
     		title = title.replace("/","")
@@ -136,6 +137,7 @@ def GetAllHyperlinksData(fileContent):
     		title = title.replace('"',"")
     		title = title.replace("'","")
     		title = title.replace(":","")
+    		title = title.replace("#","_")
 
     		# print(title)
     		if dic.has_key(title):
