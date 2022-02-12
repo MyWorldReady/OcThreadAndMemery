@@ -19,7 +19,7 @@ PowDelMatchList = (
     'noscript','noscript')
 # 需要清理的Tag
 DelTagList = (
-    'a',
+    'a','u',
     'div', 'span', 'code', 'font', 'li ', 'article', 'button', 'blockquote', 'path', 'svg', 'figure',
     'ins',  'noscript',
     'section', 'em', 'ignore_js_op', 'span', 'data-original-src', 'hr', 'strong', 'iframe', 'mark', 'style')
