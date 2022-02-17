@@ -66,6 +66,21 @@
       }
     }
     }
+    
+
+    document.addEventListener('keydown', function(event) {
+      if (event.code == 'KeyZ') {
+        var oDiv = document.body;
+        var aDisplay = oDiv.style.display;
+        var aDisplay = oDiv.style.display;
+        if("none" == aDisplay){
+          oDiv.style.display = "block";
+        }else{
+          oDiv.style.display = "none";
+        }
+      }
+    });
+
     </script>
 
 
