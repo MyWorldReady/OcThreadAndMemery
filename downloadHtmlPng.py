@@ -16,12 +16,12 @@ from PIL import Image
 
 # 清理匹配,比如<noscript[\s\S]*?</noscript>
 PowDelMatchList = (
-    'noscript','noscript')
+    'noscript', 'noscript')
 # 需要清理的Tag
 DelTagList = (
-    'a','u',
+    'a', 'u',
     'div', 'span', 'code', 'font', 'li ', 'article', 'button', 'blockquote', 'path', 'svg', 'figure',
-    'ins',  'noscript',
+    'ins', 'noscript',
     'section', 'em', 'ignore_js_op', 'span', 'data-original-src', 'hr', 'strong', 'iframe', 'mark', 'style')
 # 需要精简的Tag
 SimpeTagList = ('p ', 'br', 'pre', 'table', 'tbody', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol')
@@ -41,7 +41,29 @@ HasFlushHtmlMark = "<!--clear--clear--clear-->"
 HasDowloadPicMark = "<!--../img/-->"
 
 
+def get_destop_path():
+    return os.path.join(os.path.expanduser("~"), 'Desktop')
 
+
+def get_downloads_path():
+    return os.path.join(os.path.expanduser("~"), 'Downloads')
+
+
+def get_fatkun_path():
+    return os.path.join(get_downloads_path(), 'Fatkun')
+
+
+def getAll(path):
+    Dirlist = []
+    Filelist = []
+    for home, dirs, files in os.walk(path):
+        # 获得所有文件夹
+        for dirname in dirs:
+            Dirlist.append(os.path.join(home, dirname))
+        # 获得所有文件
+        for filename in files:
+            Filelist.append(os.path.join(home, filename))
+    return Dirlist, Filelist  # 返回所有文件夹列表和文件列表[dirlist, filelist]
 
 
 def IsMac():
@@ -53,11 +75,11 @@ def IsWin():
     p = sys.platform
     return p == "win32"
 
+
 IsMacShot = False
 
 if IsWin():
     os.system('chcp 65001')
-
 
 path_root = os.getcwd()
 
@@ -120,7 +142,7 @@ def PNG_JPG(PngPath, outPutFolder):
     outfileNoExt = os.path.splitext(infile)[0] + ""
     outfile = outfileNoExt + ".jpg"
     img = Image.open(infile)
-    
+
     try:
         img = img.resize((outW, outH), Image.ANTIALIAS)
         if len(img.split()) == 4:
@@ -142,29 +164,80 @@ def PNG_JPG(PngPath, outPutFolder):
     return False
 
 
+# def GetRemotePng(filePath, url, fileName):
+#     print("正在下载url------    " + url + "    fileName=" + fileName)
+#     headers = {
+#         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+#     r = requests.get(url, headers=headers)
+#     code = r.status_code
+#     if code != 200:
+#         print ("下载错误!!! code={}".format(code) + " filePath={}".format(filePath))
+#         return False
+#     with open(filePath, "wb") as f:
+#         f.write(r.content)
+#         f.flush()
+#     return True
+#
 def GetRemotePng(filePath, url, fileName):
-    print("正在下载url------    " + url + "    fileName=" + fileName)
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-    r = requests.get(url, headers=headers)
-    code = r.status_code
-    if code != 200:
-        print ("下载错误!!! code={}".format(code) + " filePath={}".format(filePath))
-        return False
-    with open(filePath, "wb") as f:
-        f.write(r.content)
-        f.flush()
+    nameWithExt = GetRemotePngNameWithExt(filePath, url, fileName)
+    fatkun_path = get_fatkun_path()
+    arr = []
+    resultArr = getAll(fatkun_path)
+    fileArr = resultArr[1]
+    exit_file = False
+    src_abs_path = ""
+    for abs_path in fileArr:
+        tmp_path = abs_path.replace("\\", "/")
+        if "/" in tmp_path:
+            tmp_arr = tmp_path.split("/")
+            length = len(tmp_arr)
+            tmp_nameWithExt = tmp_arr[length - 1]
+            if tmp_nameWithExt == nameWithExt:
+                exit_file = True
+                src_abs_path = abs_path
+                break
+
+    exit_foler = os.path.exists(get_fatkun_path())
+    if not exit_foler:
+        ThrowError("Fatkun 路径不存在!!!")
+
+    if not exit_file:
+        ThrowError("没有这个下载图片,请手动保存到 Fatkun 路径!!!nameWithExt=" + nameWithExt)
+
+    shutil.copyfile(src_abs_path, filePath)
     return True
+
+
+def GetRemotePngNameWithExt(filePath, url, fileName):
+    tmpUrl = url.replace("\\", "/")
+    nameWithExt = ""
+    if "?" in tmpUrl:
+        arr = tmpUrl.split("?")
+        length = len(arr)
+        tmpUrl = arr[0]
+    if "/" in tmpUrl:
+        arr = tmpUrl.split("/")
+        length = len(arr)
+        nameWithExt = arr[length - 1]
+    else:
+        ThrowError("这里代码还没有实现!!!")
+    if nameWithExt == "":
+        ThrowError("获取图片名的结果是空字符串!!!")
+    return nameWithExt
+
+
+def ThrowError(strReason):
+    raise Exception(strReason)
 
 
 def ThrowErrorAndDelDownload(downOkDic, strReason):
     for filePath in downOkDic.values():
         if os.path.exists(filePath):
             os.remove(filePath)
-        paht_no_ext = filePath.replace(".png","")
+        paht_no_ext = filePath.replace(".png", "")
         if os.path.exists(paht_no_ext):
             os.remove(paht_no_ext)
-    raise (strReason + " , 已删除下载的图片, 正在退出程序 , 请重新执行脚本!!!".format(strReason))
+    ThrowError(strReason)
 
 
 def __ReplaceMoreBrTag(htmlTmpContent):
@@ -177,6 +250,7 @@ def __ReplaceImgTag(htmlTmpContent, imgTagStr, fileName):
     htmlTmpContent = htmlTmpContent.replace(imgTagStr, '<br><img src="../img/' + fileName + '"><br>')
     return htmlTmpContent
 
+
 def __ClearTag(htmlTmpContent, mTagStr, isDelTag):
     if isDelTag:
         htmlTmpContent = re.sub(r'<{0}[\s\S]*?>'.format(mTagStr), "", htmlTmpContent)
@@ -185,10 +259,12 @@ def __ClearTag(htmlTmpContent, mTagStr, isDelTag):
         htmlTmpContent = re.sub(r'<{0}[\s\S]*?>'.format(mTagStr), "<{0}>".format(mTagStr), htmlTmpContent)
     return htmlTmpContent
 
+
 def __PowDeleteTags(htmlTmpContent):
     for tag in PowDelMatchList:
-        htmlTmpContent = re.sub(r'<{}[\s\S]*?</{}>'.format(tag,tag), "", htmlTmpContent)
+        htmlTmpContent = re.sub(r'<{}[\s\S]*?</{}>'.format(tag, tag), "", htmlTmpContent)
     return htmlTmpContent
+
 
 def __ClearTags(htmlTmpContent):
     for tag in DelTagList:
@@ -240,28 +316,12 @@ def Download(htmlFileName):
         bExitUrl = False
         url = ""
 
-        if "../" in itemStr:
-            ThrowErrorAndDelDownload(downOkDic, "图片路径包含../")
-
         if "src" in dic.keys():
             bExitUrl = True
             url = dic["src"]
         elif "data-original-src" in dic.keys():
             bExitUrl = True
             url = dic["data-original-src"]
-        if url.startswith("://"):
-            url = "https" + url
-        elif url.startswith("//"):
-            url = "https:" + url
-        elif url.startswith("/"):
-            if DomainName == '':
-                print("当前url=   " + url)
-                ThrowErrorAndDelDownload(downOkDic, "想要传入完整的域名部分(不能有引号) 如 https://www.baidu.com")
-            else:
-                if DomainName.endswith("/"):
-                    url = DomainName + url.replace("/","",1)
-                else:
-                    url = DomainName + url
 
         if url in downOkDic.keys():
             htmlTmpContent = __ReplaceImgTag(htmlTmpContent, itemStr, fileNameNoExt)
@@ -280,26 +340,24 @@ def Download(htmlFileName):
             try:
                 downOkDic[url] = filePath
                 result = GetRemotePng(filePath, url, fileName)
-                
+
                 if result:
                     htmlTmpContent = __ReplaceImgTag(htmlTmpContent, itemStr, fileNameNoExt)
 
                     try:
                         jpg_res = PNG_JPG(filePath, ImgPath)
                         if not jpg_res:
-                            ThrowErrorAndDelDownload(downOkDic, "图片转jpg失败!!+filePath="+str(filePath))
+                            ThrowErrorAndDelDownload(downOkDic, "图片转jpg失败!!  正在处理:filePath={}".format(filePath))
                     except Exception as e:
-                        ThrowErrorAndDelDownload(downOkDic, "图片转jpg!!+e="+str(e)+"  filePath="+str(filePath))
+                        ThrowErrorAndDelDownload(downOkDic, " {} 图片转jpg!!  正在处理:filePath= {}".format(e, filePath))
                         return
-                    
+
                 else:
                     os.remove(filePath)
             except Exception as e:
-                ThrowErrorAndDelDownload(downOkDic, "下载失败!!+e={}".format(str(e)))
+                ThrowErrorAndDelDownload(downOkDic, "下载失败!! {}   正在处理:{}".format(e, url))
                 return
-            
 
-    
     htmlTmpContent = __ClearTags(htmlTmpContent)
     htmlTmpContent = __ReplaceMoreBrTag(htmlTmpContent)
     if HasDowloadPicMark not in htmlTmpContent:
@@ -308,7 +366,7 @@ def Download(htmlFileName):
         htmlTmpContent = HasFlushHtmlMark + htmlTmpContent
 
     if IsWin():
-        #git bash 控制台是gb2312编码
+        # git bash 控制台是gb2312编码
         htmlPath = htmlPath.decode('utf-8').encode('gb2312')
     f = open(htmlPath, "w")
     f.write(htmlTmpContent)
@@ -316,18 +374,24 @@ def Download(htmlFileName):
     f.close()
 
 
+def CheckAndDeleteDir(fulllPath):
+    if os.path.exists(fulllPath):
+        shutil.rmtree(fulllPath)
+
+
 def HandlerWithGit():
     shell = "git status -s | grep -a -Eoi 'Tutorial/.*html'"
     process = os.popen(shell)
     output = process.read()
     process.close()
-
+    
     resArr = output.split("\n")
+
     for name in resArr:
         if StrIsContain(name, "Tutorial/"):
             fulllPath = path_root + "/" + name
             if IsWin():
-                #git bash 控制台是gb2312编码
+                # git bash 控制台是gb2312编码
                 fulllPath = fulllPath.decode('utf-8').encode('gb2312')
             if os.path.exists(fulllPath):
                 name = name.replace("Tutorial/", "")
@@ -335,5 +399,7 @@ def HandlerWithGit():
 
 
 HandlerWithGit()
+
+CheckAndDeleteDir(get_fatkun_path())
 
 print("操作结束,退出程序")

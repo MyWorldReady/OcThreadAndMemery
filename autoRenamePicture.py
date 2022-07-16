@@ -35,6 +35,7 @@ path_root = os.getcwd()
 ImgPath = path_root + "/img"
 ScreenshotName = "Screenshot"
 ScreenshotFolder = ScreenshotName
+PicDownScaleSize = 4
 
 FilterPicTypeArr = [".png", ".JPG", ".jpg", ".JPEG", ".jpeg", ".gif"]
 
@@ -82,14 +83,14 @@ def PNG_JPG(PngPath, outPutFolder,do_scale):
 
     if outW > outH:
         if do_scale:
-            outW = int(outW / 2)
+            outW = int(outW / PicDownScaleSize)
         elif outW > 550:
             outW = 550
         ratio = float(outW) / w
         outH = int(h * ratio)
     else:
         if do_scale:
-            outH = int(outH / 2)
+            outH = int(outH / PicDownScaleSize)
         elif outH > 550:
             outH = 550
         ratio = float(outH) / h
