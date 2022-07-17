@@ -52,12 +52,11 @@
             system.x11 = (p == "X11") || (p.indexOf("Linux") == 0);
             system.ipad = (navigator.userAgent.match(/iPad/i) != null)?true:false;
             //跳转语句，如果是手机访问就自动跳转到wap.baidu.com页面
-            // if (system.win || system.mac || system.xll||system.ipad) { //电脑 ipad
-            //     pcIndex();
-            // } else {                                                    //手机
-            //     phoneIndex();
-            // }
-            phoneIndex();
+            if (system.win || system.mac || system.xll||system.ipad) { //电脑 ipad
+                pcIndex();
+            } else {                                                    //手机
+                phoneIndex();
+            }
 
             document.onreadystatechange=function(){
                 var oFrm = document.getElementById("mMainFrames");
