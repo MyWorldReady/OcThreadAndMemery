@@ -14,10 +14,24 @@
                document.write("</frameset>")
             }
 
-            function phoneIndex(){              
+            function phoneIndex(){    
+              // Get the browser window size
+              var windowWidth = window.innerWidth;
+              var windowHeight = window.innerHeight;
+              // console.log("windowHeight===")
+              // console.log(windowWidth)
+              // console.log(windowHeight)
+
+          
               document.write("<frameset id=\"indexHtml\" border=\"0\" cols=\"10%,*\">")
                document.write("<frame src=\"menus/sidebar.html\" name=\"sidebar\">")
-               document.write("<frameset border=\"0\" rows=\"9*,*\">")
+               if(windowWidth>windowHeight){
+                // document.write("<frameset border=\"0\" rows=\"9*,*\">")
+                document.write("<frameset border=\"0\" rows=\"*,40\">")
+              }else{
+                document.write("<frameset border=\"0\" rows=\"*,90\">")
+              }
+               
                document.write("<frame id=\"mMainFrames\" src=\"frames/main.html\" name=\"main\">")
                document.write("<frame src=\"frames/footer.html\" name=\"footer\">")
                document.write("</frameset>")
@@ -38,11 +52,12 @@
             system.x11 = (p == "X11") || (p.indexOf("Linux") == 0);
             system.ipad = (navigator.userAgent.match(/iPad/i) != null)?true:false;
             //跳转语句，如果是手机访问就自动跳转到wap.baidu.com页面
-            if (system.win || system.mac || system.xll||system.ipad) { //电脑 ipad
-                pcIndex();
-            } else {                                                    //手机
-                phoneIndex();
-            }
+            // if (system.win || system.mac || system.xll||system.ipad) { //电脑 ipad
+            //     pcIndex();
+            // } else {                                                    //手机
+            //     phoneIndex();
+            // }
+            phoneIndex();
 
             document.onreadystatechange=function(){
                 var oFrm = document.getElementById("mMainFrames");
@@ -80,7 +95,7 @@
 
 <!-- <frameset border="0" cols="10%,*">
 	<frame src="menus/sidebar.html" name="sidebar">
-	<frameset border="0" rows="9*,*">
+	<frameset border="0" rows="*,90">
         <frame id="mMainFrames" src="frames/main.html" name="main">
         <frame src="frames/footer.html" name="footer">
 	</frameset>

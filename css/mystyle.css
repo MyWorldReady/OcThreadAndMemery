@@ -50,6 +50,16 @@ td,  th
   	 background-color:#B5E6B5;
   }
   
+/*iphoneX、iphoneXs*/
+@media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
+	body {font-size:200%;}
+}
+  
+/*iphone Xs Max*/
+@media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio:3) {
+	body {font-size:250%;}
+}
+
 /*适配，6，7，8*/
 @media only screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) {
     body {font-size:300%;}
