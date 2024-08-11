@@ -38,6 +38,32 @@
                document.write("</frameset>")
             }
 
+
+
+            function androidIndex(){    
+              // Get the browser window size
+              var windowWidth = window.innerWidth;
+              var windowHeight = window.innerHeight;
+              // console.log("windowHeight===")
+              // console.log(windowWidth)
+              // console.log(windowHeight)
+
+          
+              document.write("<frameset id=\"indexHtml\" border=\"0\" cols=\"30%,*\">")
+               document.write("<frame src=\"menus/sidebar.html\" name=\"sidebar\">")
+               if(windowWidth>windowHeight){
+                // document.write("<frameset border=\"0\" rows=\"9*,*\">")
+                document.write("<frameset border=\"0\" rows=\"*,40\">")
+              }else{
+                document.write("<frameset border=\"0\" rows=\"*,90\">")
+              }
+               
+               document.write("<frame id=\"mMainFrames\" src=\"frames/main.html\" name=\"main\">")
+               document.write("<frame src=\"frames/footer.html\" name=\"footer\">")
+               document.write("</frameset>")
+               document.write("</frameset>")
+            }
+
             //平台、设备和操作系统
             var system = {
                 win: false,
@@ -46,15 +72,22 @@
                 ipad:false
             };
             //检测平台
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            var isAndroid = /Android/i.test(userAgent);
+            var isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
             var p = navigator.platform;
             system.win = p.indexOf("Win") == 0;
             system.mac = p.indexOf("Mac") == 0;
+            system.android = (p.indexOf("Android") == 0) || (p.indexOf("Adr") == 0) || isAndroid;
             system.x11 = (p == "X11") || (p.indexOf("Linux") == 0);
             system.ipad = (navigator.userAgent.match(/iPad/i) != null)?true:false;
             //跳转语句，如果是手机访问就自动跳转到wap.baidu.com页面
             if (system.win || system.mac || system.xll||system.ipad) { //电脑 ipad
                 pcIndex();
-            } else {                                                    //手机
+            }else if(system.android) {                                                    //手机
+                androidIndex();
+            }
+            else{
                 phoneIndex();
             }
 
@@ -65,7 +98,7 @@
                 }
             }
 
-            var showCol = "10%,*";
+            var showCol = "40%,*";
             var hideCol = "0%,*";
             var sidebarIsShow = false
             var mFrameset = document.getElementById("indexHtml")
@@ -93,11 +126,11 @@
 </head>
 
 <!-- <frameset border="0" cols="10%,*">
-	<frame src="menus/sidebar.html" name="sidebar">
-	<frameset border="0" rows="*,90">
+    <frame src="menus/sidebar.html" name="sidebar">
+    <frameset border="0" rows="*,90">
         <frame id="mMainFrames" src="frames/main.html" name="main">
         <frame src="frames/footer.html" name="footer">
-	</frameset>
+    </frameset>
 </frameset> -->
 
 
